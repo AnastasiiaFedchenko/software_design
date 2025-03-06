@@ -24,6 +24,9 @@
 ## Use-case 
 ![2025-02-26_18-53-04](https://github.com/user-attachments/assets/f8c72720-64f0-4b15-9a99-1332de5a44a0)
 
+## ER-диаграмма сущностей
+![ER](https://github.com/user-attachments/assets/38bfcbdb-fd17-4f37-aa20-f18b7d947c00)
+
 ## Пользовательские сценарии
 * Основной пользовательский сценарий клиента: покупка товара
 ```
