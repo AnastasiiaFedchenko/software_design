@@ -56,3 +56,11 @@
   1. Авторизация как администратора
   2. Просмотр сегментации клиентов по возвращаемости
 ```
+## Формализация бизнес-правил
+![BPMN добавление товара в корзину](https://github.com/user-attachments/assets/f50c47ed-5b46-46ca-b0c8-a0a9bb454e50)
+![BPMN изменение количества товара в корзине](https://github.com/user-attachments/assets/daf963ec-acb9-4431-a352-470c460005ab)
+![BPMN удаление товара из корзины](https://github.com/user-attachments/assets/aa4b15af-760d-47dc-b65d-484c31ccd183)
+![BPMN загрузка поставки](https://github.com/user-attachments/assets/fe08f93d-2c99-4f41-b8dd-39f9882d7b9f)
+
+
+
