@@ -84,5 +84,8 @@
 ## Верхнеуровневое разбиение на компоненты
 ![2025-03-13_13-07-14](https://github.com/user-attachments/assets/eb020483-eb9c-4a77-b987-548283789c8e)
 
+## UML диаграммы классов
+![ClassDiagram](https://github.com/user-attachments/assets/6a8be293-b709-4c45-9dd8-5453d7f79c69)
+
 ## Схема БД
 ![2025-03-13_12-28-10](https://github.com/user-attachments/assets/f9ea1241-5484-4d96-8eef-1d8f3045674c)
