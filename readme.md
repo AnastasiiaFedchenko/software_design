@@ -1,4 +1,4 @@
-# Анализ клиентской базы и динамики продаж в цветочном магазин
+![class_diagram](https://github.com/user-attachments/assets/8f877cb7-08d4-4eea-b0c6-e5f4afed94ed)# Анализ клиентской базы и динамики продаж в цветочном магазин
 
 ## Идея проекта
 
@@ -85,7 +85,7 @@
 ![2025-03-13_13-07-14](https://github.com/user-attachments/assets/eb020483-eb9c-4a77-b987-548283789c8e)
 
 ## UML диаграммы классов
-![ClassDiagram](https://github.com/user-attachments/assets/6a8be293-b709-4c45-9dd8-5453d7f79c69)
+![class_diagram](https://github.com/user-attachments/assets/5a98e56a-3227-4327-af83-8509e710821f)
 
 ## Схема БД
 ![2025-03-13_12-28-10](https://github.com/user-attachments/assets/f9ea1241-5484-4d96-8eef-1d8f3045674c)
