@@ -74,5 +74,18 @@
 ![BPMN удаление товара из корзины](https://github.com/user-attachments/assets/aa4b15af-760d-47dc-b65d-484c31ccd183)
 ![BPMN загрузка поставки](https://github.com/user-attachments/assets/fe08f93d-2c99-4f41-b8dd-39f9882d7b9f)
 
+## Описание типа приложения и выбранного технологического стека
+Приложением будет Web MPA (Multi-Page Application), которое будет реализовано с использованием ASP.NET на C#.
 
+Модули, использующие технологии машинного обучения будут написаны на Python.
 
+Для создания интерактивных элементов и улучшения пользовательского интерфейса, могут быть применены дополнительные средства.
+
+## Верхнеуровневое разбиение на компоненты
+![2025-03-13_13-07-14](https://github.com/user-attachments/assets/eb020483-eb9c-4a77-b987-548283789c8e)
+
+## UML диаграммы классов
+![class_diagram](https://github.com/user-attachments/assets/5a98e56a-3227-4327-af83-8509e710821f)
+
+## Схема БД
+![2025-03-13_12-28-10](https://github.com/user-attachments/assets/f9ea1241-5484-4d96-8eef-1d8f3045674c)
