@@ -1,0 +1,255 @@
+\chapter*{ПРИЛОЖЕНИЕ Б}
+\addcontentsline{toc}{chapter}{ПРИЛОЖЕНИЕ Б}
+
+\begin{center}
+	\textbf{Реализации алгоритмов}
+\end{center}
+
+\begin{lstlisting}[label=lst:bubble_positioning, caption=Реализация алгоритма расстановки пузырьков]
+	public static List<Obj> PositionBubbles(Bubble b1, Bubble b2, bool from_combined)
+	{
+		double contactAngle = ContactAngle(b1, b2);
+		List<Obj> res = new List<Obj>();
+		if (contactAngle.Equals(double.NaN))
+		return null;
+		if (contactAngle < 55.0)
+		{
+			Bubble res_b = MergeBubbles(b1, b2);
+			res.Add(res_b);
+		}
+		else if (contactAngle > 65.0)
+		{
+			List<Bubble> bubbles = PushBubblesApart(b1, b2, from_combined);
+			res.Add(bubbles[0]);
+			res.Add(bubbles[1]);
+		}
+		else
+		{
+			if (from_combined)
+			return null;
+			CombinedBubble cluster = new CombinedBubble(b1.Id, b1, b2);
+			cluster.CreateClusters();
+			res.Add(cluster);
+		}
+		return res;
+	}
+\end{lstlisting}
+
+\begin{lstlisting}[label=lst:merge_bubbles, caption=Реализация слияния в один большой пузырь]
+	private static Bubble MergeBubbles(Bubble b1, Bubble b2)
+	{
+		if (b1 == null || b2 == null)
+		return null;
+		
+		Vector3D newCenter = (b1.Center + b2.Center) / 2;
+		
+		double volume1 = (4.0 / 3.0) * Math.PI * Math.Pow(b1.Radius, 3);
+		double volume2 = (4.0 / 3.0) * Math.PI * Math.Pow(b2.Radius, 3);
+		
+		double totalVolume = volume1 + volume2;
+		
+		double newRadius = Math.Pow((totalVolume * 3.0) / (4.0 * Math.PI), 1.0 / 3.0);
+		
+		b1.Center = newCenter;
+		b1.Radius = newRadius;
+		
+		b2 = null;
+		
+		return b1;
+	}
+\end{lstlisting}
+
+\begin{lstlisting}[label=lst:push_bubbles_apart, caption=Реализация отталкивания пузырьков друг от друга]
+	private static List<Bubble> PushBubblesApart(Bubble b1, Bubble b2, bool from_combined)
+	{
+		List<Bubble> res = new List<Bubble>();
+		if (b1 == null || b2 == null)
+		{
+			res.Add(b1);
+			res.Add(b2);
+			return res;
+		}
+		
+		Vector3D direction = b2.Center - b1.Center;
+		double currentDistance = direction.Length;
+		double requiredDistance = b1.Radius + b2.Radius;
+		
+		if (currentDistance < requiredDistance)
+		{
+			direction.Normalize();
+			
+			double pushDistance = requiredDistance - currentDistance;
+			if (from_combined)
+			b2.Center += direction * (pushDistance + 0.0000002);
+			else
+			{
+				b1.Center -= (direction * (pushDistance / 2 + 0.0000001));
+				b2.Center += direction * (pushDistance / 2 + 0.0000001); 
+			}
+			b1.Radius = b1.Radius;
+			b2.Radius = b2.Radius;
+		}
+		res.Add(b1);
+		res.Add(b2);
+		return res;
+	}
+\end{lstlisting}
+
+\begin{lstlisting}[label=lst:create_bubble_cluster, caption=Реализация создания пузырькового кластера]
+	private void CreateClusters()
+	{
+		if (bubble1 == null || bubble2 == null)
+		return;
+		
+		List<Vector3D> Points = GetIntersectionPoint(bubble1, bubble2);
+		Vector3D centerOfIntersect = Points[0];
+		
+		Vector3D membraneNormal = bubble2.Center - bubble1.Center;
+		membraneNormal.Normalize();
+		
+		bubble1.MembraneNormal = membraneNormal;
+		bubble2.MembraneNormal = membraneNormal;
+		
+		SphericalSegment newPart1A = CreateSegment(bubble1.Part1, bubble1.MembraneNormal);
+		SphericalSegment newPart1B = CreateSegment(bubble1.Part2, bubble1.MembraneNormal);
+		
+		SphericalSegment newPart2A = CreateSegment(bubble2.Part1, bubble2.MembraneNormal);
+		SphericalSegment newPart2B = CreateSegment(bubble2.Part2, bubble2.MembraneNormal);
+		
+		newPart1A.Direction = membraneNormal;
+		newPart1B.Direction = -newPart1A.Direction;
+		
+		newPart2A.Direction = -newPart1A.Direction;
+		newPart2B.Direction = -newPart1B.Direction;
+		
+		newPart1A.Height = CalculateHeight(newPart1A, centerOfIntersect, newPart1A.Direction);
+		newPart1B.Height = CalculateHeight(newPart1B, centerOfIntersect, newPart1B.Direction);
+		newPart2A.Height = CalculateHeight(newPart2A, centerOfIntersect, newPart2A.Direction);
+		newPart2B.Height = CalculateHeight(newPart2B, centerOfIntersect, newPart2B.Direction);
+		
+		bubble1.Part1 = newPart1A;
+		bubble1.Part2 = newPart1B;
+		bubble2.Part1 = newPart2A;
+		bubble2.Part2 = newPart2B;
+		
+		double membraneRadius = bubble1.MembraneRadius;
+		bubble1.Membrane = new Circle3D(centerOfIntersect, membraneRadius, bubble1.MembraneNormal);
+		bubble2.Membrane = new Circle3D(centerOfIntersect, membraneRadius, bubble2.MembraneNormal);
+	}
+\end{lstlisting}
+
+\begin{lstlisting}[label=lst:position_objects, caption=Реализация алгоритма анализа объектов сцены]
+	private int position_bubbles(int n)
+	{
+		if (n <= 0)
+			return -1;
+		bool any_intersection = false;
+		bool any_more_than_2 = false;
+		List<List<int>> a = counting_contacts(ref any_intersection, ref  any_more_than_2);
+		
+		if (any_more_than_2)
+		{
+			MessageBox.Show(
+			"More than two contacts",
+			"ERROR");
+			return -1;
+		}
+		else if (any_intersection == false)
+		{
+			Console.WriteLine("no intersections");
+			return 0;
+		}
+		else
+		{
+			for (int i = 0; i < a.Count; i++)
+			for (int j = 0; j < a[i].Count; j++)
+			{
+				if (a[i][j] == 1)
+				{
+					int rc = 0;
+					if (drawer.Spheres(i) is Bubble && drawer.Spheres(j) is Bubble)
+						rc = position_two_bubbles(i, j, (Bubble)drawer.Spheres(i), (Bubble)drawer.Spheres(j));
+					else if (drawer.Spheres(i) is CombinedBubble && drawer.Spheres(j) is Bubble)
+						rc = position_cluster_and_bubble(i, j, (CombinedBubble)drawer.Spheres(i), (Bubble)drawer.Spheres(j));
+					else if (drawer.Spheres(i) is Bubble b4 && drawer.Spheres(j) is CombinedBubble cb2)
+						rc = position_cluster_and_bubble(j, i, (CombinedBubble)drawer.Spheres(j), (Bubble)drawer.Spheres(i));
+					if (rc == -1)
+						return -1;
+					a[i][j] = 0;
+					a[j][i] = 0;
+					position_bubbles(n);
+				}
+			}
+		}
+		
+		return position_bubbles(n - 1);
+	}
+\end{lstlisting} 
+\begin{lstlisting}[label=lst:trace_ray, caption=Реализация алгоритма обратной трассировки лучей]
+	public void Render()
+	{
+		g.FillRectangle(new SolidBrush(Form1.DefaultBackColor),
+		0, 0, canvas_buffer.Width, canvas_buffer.Height);
+		
+		int w = canvas_buffer.Width / 2;
+		int h = canvas_buffer.Height / 2;
+		
+		for (double x = -w; x < w; x++)
+		{
+			for (double y = -h; y < h; y++)
+			{
+				Vector3D direction = CanvasToViewport(w, h, x, y);
+				System.Drawing.Color color = TraceRay(new TraceRayArgs((int)x, (int)y, camera_position, direction, 1, double.PositiveInfinity, recursion_depth));
+				PutPixel((int)x, (int)y, color, false);
+			}
+		}
+	}
+	System.Drawing.Color TraceRay(Object obj)
+	{
+		if (obj is TraceRayArgs args)
+		{
+			KeyValuePair<Bubble, double> intersection = ClosestIntersection(args.origin, args.direction, args.min_t, args.max_t);
+			if (intersection.Key == null)
+				return background_color;
+			
+			Bubble closest = intersection.Key;
+			double closest_t = intersection.Value;
+			
+			Vector3D point = args.origin + args.direction * closest_t;
+			Vector3D normal = point - closest.Center;
+			normal.Normalize();
+			
+			Vector3D view = args.direction * (-1);
+			double lighting = ComputeLighting(point, normal, view, closest.Specular);
+			System.Drawing.Color local_color = closest.Color_mul(lighting);
+			
+			if (closest.Reflective <= 0 || args.depth <= 0)
+				return local_color;
+			
+			double koef = 1 - closest.Reflective;
+			System.Drawing.Color local_contribution = System.Drawing.Color.FromArgb(
+			(int)(local_color.R * koef),
+			(int)(local_color.G * koef),
+			(int)(local_color.B * koef)
+			);
+			
+			Vector3D reflected_ray = ReflectRay(view, normal);
+			System.Drawing.Color reflected_color = TraceRay(new TraceRayArgs(args.x, args.y, point, reflected_ray, EPSILON,
+			double.PositiveInfinity, args.depth - 1));
+			System.Drawing.Color reflected_contribution = System.Drawing.Color.FromArgb(
+			(int)(reflected_color.R * closest.Reflective),
+			(int)(reflected_color.G * closest.Reflective),
+			(int)(reflected_color.B * closest.Reflective)
+			);
+			
+			System.Drawing.Color result_color = System.Drawing.Color.FromArgb(
+			Math.Min(255, local_contribution.R + reflected_contribution.R),
+			Math.Min(255, local_contribution.G + reflected_contribution.G),
+			Math.Min(255, local_contribution.B + reflected_contribution.B)
+			);
+
+			return result_color;
+		}
+		return background_color;
+	}
+\end{lstlisting}
