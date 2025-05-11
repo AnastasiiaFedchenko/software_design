@@ -11,7 +11,7 @@ namespace InventoryOfProducts
 {
     public class InventoryRepo: IInventoryRepo
     {
-        public Inventory create()
+        public Inventory GetAvailableProduct(int limit, int skip)
         {
             // Создаем заглушки для всех необходимых объектов
             var emptyUser = new User(Guid.Empty, "Unknown");
@@ -36,7 +36,7 @@ namespace InventoryOfProducts
                 products: emptyProductLines
             );
         }
-        public bool check_new_amount(Guid product_id, int new_n)
+        public bool CheckNewAmount(Guid product_id, int new_n)
         {
             return true;
         }

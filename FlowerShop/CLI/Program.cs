@@ -12,10 +12,10 @@ using SegmentAnalysis;
 var serviceProvider = new ServiceCollection()
     .AddSingleton<IInventoryRepo, InventoryRepo>()
     .AddSingleton<IReceiptRepo, ReceiptRepo>()
-    .AddTransient<IForecast, Forecast>()
+    .AddTransient<IForecastServiceAdapter, ForecastServiceAdapter>()
     .AddTransient<IProductBatchLoader, ProductBatchLoader>()
     .AddTransient<IProductBatchReader, ProductBatchReader>()
-    .AddTransient<ISegment, Segment>()
+    .AddTransient<IUserSegmentationServiceAdapter, UserSegmentationServiceAdapter>()
     .AddTransient<IAnalysisService, AnalysisService>()
     .AddTransient<ILoadService, LoadService>()
     .AddTransient<IProductService, ProductService>()
@@ -56,7 +56,7 @@ Console.WriteLine($"Результат загрузки партии товар�
 Console.WriteLine(new string('_', 70));
 
 // Пример 3: Получение списка товаров и совершение покупки
-var inventory = productService.GetAllAvailableProducts();
+var inventory = productService.GetAllAvailableProducts(20, 0);
 Console.WriteLine($"Доступно товаров на складе: {inventory.TotalAmount}");
 foreach (var productLine in inventory.Products)
 {

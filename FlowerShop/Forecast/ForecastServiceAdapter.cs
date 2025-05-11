@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace ForecastAnalysis
 {
-    public class Forecast: IForecast
+    public class ForecastServiceAdapter : IForecastServiceAdapter
     {
         public ForecastOfOrders create()
         {

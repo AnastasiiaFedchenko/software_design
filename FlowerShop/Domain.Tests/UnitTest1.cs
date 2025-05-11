@@ -36,80 +36,19 @@ namespace Domain.Tests
                 products: new List<ProductLine>()
             );
 
-            _mockInventoryRepo.Setup(x => x.create())
+            _mockInventoryRepo.Setup(x => x.GetAvailableProduct(20, 0))
                 .Returns(expectedInventory);
 
             // Act
-            var result = _productService.GetAllAvailableProducts();
+            var result = _productService.GetAllAvailableProducts(20, 0);
 
             // Assert
             Assert.Equal(expectedInventory, result);
-            _mockInventoryRepo.Verify(x => x.create(), Times.Once);
+            _mockInventoryRepo.Verify(x => x.GetAvailableProduct(20, 0), Times.Once);
         }
 
-        [Fact]
-        public void MakePurchase_WithValidItemsAndCustomer_ShouldReturnReceipt()
-        {
-            // Arrange
-            var items = new List<ReceiptLine>
-            {
-                new ReceiptLine(
-                    new Product(Guid.NewGuid(), 2, 10.99, 100, "Electronics", "China"),
-                    1)
-            };
-            var customer = new User(Guid.NewGuid(), "Customer");
-            var expectedReceipt = new Receipt(
-                Guid.NewGuid(), customer, 10.99, DateTime.Now, 1, items);
-
-            _mockReceiptRepo.Setup(x => x.create(items, customer))
-                .Returns(expectedReceipt);
-
-            // Act
-            var result = _productService.MakePurchase(items, customer);
-
-            // Assert
-            Assert.Equal(expectedReceipt, result);
-            _mockReceiptRepo.Verify(x => x.create(items, customer), Times.Once);
-        }
-
-        [Fact]
-        public void MakePurchase_WithNullItems_ShouldThrowArgumentNullException()
-        {
-            // Arrange
-            var customer = new User(Guid.NewGuid(), "Customer");
-
-            // Act & Assert
-            Assert.Throws<ArgumentNullException>(() =>
-                _productService.MakePurchase(null, customer));
-        }
-
-        [Fact]
-        public void MakePurchase_WithEmptyItems_ShouldThrowArgumentException()
-        {
-            // Arrange
-            var items = new List<ReceiptLine>();
-            var customer = new User(Guid.NewGuid(), "Customer");
-
-            // Act & Assert
-            Assert.Throws<ArgumentException>(() =>
-                _productService.MakePurchase(items, customer));
-        }
-
-        [Fact]
-        public void MakePurchase_WithNullCustomer_ShouldThrowArgumentNullException()
-        {
-            // Arrange
-            var items = new List<ReceiptLine>
-            {
-                new ReceiptLine(
-                    new Product(Guid.NewGuid(), 2, 10.99, 100, "Electronics", "China"),
-                    1)
-            };
-
-            // Act & Assert
-            Assert.Throws<ArgumentNullException>(() =>
-                _productService.MakePurchase(items, null));
-        }
+        //тест был удалён так как повторялся
+        // тесты отсюда были убраны так как они повторяли тесты в create receipt и полностью зависело от внутреннего функционала
 
         [Fact]
         public void CheckNewAmount_WithValidProductAndAmount_ShouldReturnTrue()
@@ -117,7 +56,7 @@ namespace Domain.Tests
             // Arrange
             var productId = Guid.NewGuid();
             var amount = 5;
-            _mockInventoryRepo.Setup(x => x.check_new_amount(productId, amount))
+            _mockInventoryRepo.Setup(x => x.CheckNewAmount(productId, amount))
                 .Returns(true);
 
             // Act
@@ -125,7 +64,7 @@ namespace Domain.Tests
 
             // Assert
             Assert.True(result);
-            _mockInventoryRepo.Verify(x => x.check_new_amount(productId, amount), Times.Once);
+            _mockInventoryRepo.Verify(x => x.CheckNewAmount(productId, amount), Times.Once);
         }
 
         [Fact]
@@ -134,7 +73,7 @@ namespace Domain.Tests
             // Arrange
             var productId = Guid.NewGuid();
             var amount = 5;
-            _mockInventoryRepo.Setup(x => x.check_new_amount(productId, amount))
+            _mockInventoryRepo.Setup(x => x.CheckNewAmount(productId, amount))
                 .Returns(false);
 
             // Act

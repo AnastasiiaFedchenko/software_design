@@ -10,10 +10,10 @@ namespace Domain
 {
     public class AnalysisService: IAnalysisService
     {
-        private readonly IForecast _forecast;
-        private readonly ISegment _segment;
+        private readonly IForecastServiceAdapter _forecast;
+        private readonly IUserSegmentationServiceAdapter _segment;
 
-        public AnalysisService(IForecast forecast, ISegment segment)
+        public AnalysisService(IForecastServiceAdapter forecast, IUserSegmentationServiceAdapter segment)
         {
             _forecast = forecast;
             _segment = segment;

@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Domain.OutputPorts
 {
-    public interface ISegment
+    public interface IUserSegmentationServiceAdapter
     {
         List<UserSegment> create();
     }

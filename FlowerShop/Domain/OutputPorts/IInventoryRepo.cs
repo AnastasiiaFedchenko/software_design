@@ -8,7 +8,7 @@ namespace Domain.OutputPorts
 {
     public interface IInventoryRepo
     {
-        Inventory create();
-        bool check_new_amount(Guid product_id, int new_n);
+        Inventory GetAvailableProduct(int limit, int skip);
+        bool CheckNewAmount(Guid product_id, int new_n);
     }
 }

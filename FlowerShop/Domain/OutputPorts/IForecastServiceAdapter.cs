@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Domain.OutputPorts
 {
-    public interface IForecast
+    public interface IForecastServiceAdapter
     {
         ForecastOfOrders create();
     }

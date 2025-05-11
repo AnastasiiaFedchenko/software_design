@@ -8,7 +8,7 @@ using Domain.OutputPorts;
 
 namespace SegmentAnalysis
 {
-    public class Segment: ISegment
+    public class UserSegmentationServiceAdapter : IUserSegmentationServiceAdapter
     {
         public List<UserSegment> create()
         {

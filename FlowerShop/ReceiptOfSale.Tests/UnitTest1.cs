@@ -34,7 +34,7 @@ namespace ReceiptOfSale.Tests
             var customer = new User(Guid.NewGuid(), "Customer");
 
             // Act
-            var result = _receiptRepo.create(items, customer);
+            var result = new Receipt(customer, items);
 
             // Assert
             Assert.NotNull(result);
@@ -60,7 +60,7 @@ namespace ReceiptOfSale.Tests
             var customer = new User(Guid.NewGuid(), "Customer");
 
             // Act
-            var result = _receiptRepo.create(items, customer);
+            var result = new Receipt(customer, items);
 
             // Assert
             Assert.Equal(7.50, result.FinalPrice);
@@ -81,7 +81,7 @@ namespace ReceiptOfSale.Tests
             var customer = new User(Guid.NewGuid(), "Customer");
 
             // Act
-            var result = _receiptRepo.create(items, customer);
+            var result = new Receipt(customer, items);
 
             // Assert
             Assert.Equal(0.00, result.FinalPrice);
@@ -95,7 +95,7 @@ namespace ReceiptOfSale.Tests
             var customer = new User(Guid.NewGuid(), "Customer");
 
             // Act & Assert
-            var ex = Assert.Throws<ArgumentNullException>(() => _receiptRepo.create(null, customer));
+            var ex = Assert.Throws<ArgumentNullException>(() => new Receipt(customer, null));
             Assert.Contains("items", ex.Message);
         }
 
@@ -107,7 +107,7 @@ namespace ReceiptOfSale.Tests
             var customer = new User(Guid.NewGuid(), "Customer");
 
             // Act & Assert
-            var ex = Assert.Throws<ArgumentException>(() => _receiptRepo.create(items, customer));
+            var ex = Assert.Throws<ArgumentException>(() => new Receipt(customer, items));
             Assert.Contains("items", ex.Message);
         }
 
@@ -123,7 +123,7 @@ namespace ReceiptOfSale.Tests
             };
 
             // Act & Assert
-            var ex = Assert.Throws<ArgumentNullException>(() => _receiptRepo.create(items, null));
+            var ex = Assert.Throws<ArgumentNullException>(() => new Receipt(null, items));
             Assert.Contains("customer", ex.Message);
         }
 
@@ -147,7 +147,7 @@ namespace ReceiptOfSale.Tests
             var customer = new User(Guid.NewGuid(), "Customer");
 
             // Act
-            var result = _receiptRepo.create(items, customer);
+            var result = new Receipt(customer, items);
 
             // Assert
             Assert.Equal((1.99 * 5) + (4.50 * 2) + (0.99 * 10), result.FinalPrice, 2);

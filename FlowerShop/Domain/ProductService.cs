@@ -16,36 +16,16 @@ namespace Domain
             _receiptRepo = receiptRepo ?? throw new ArgumentNullException(nameof(receiptRepo));
         }
 
-        public Inventory GetAllAvailableProducts()
+        public Inventory GetAllAvailableProducts(int limit, int skip)
         {
-            return _inventoryRepo.create();
+            return _inventoryRepo.GetAvailableProduct(limit, skip);
         }
 
         public Receipt MakePurchase(List<ReceiptLine> items, User customer)
         {
-            if (items == null)
-                throw new ArgumentNullException(nameof(items), "Items list cannot be null");
+            Receipt receipt = new Receipt(customer, items);
 
-            if (items.Count == 0)
-                throw new ArgumentException("Items list cannot be empty", nameof(items));
-
-            if (customer == null)
-                throw new ArgumentNullException(nameof(customer), "Customer cannot be null");
-
-            // Additional validation for each item
-            foreach (var item in items)
-            {
-                if (item == null)
-                    throw new ArgumentException("Receipt line cannot be null", nameof(items));
-
-                if (item.Product == null)
-                    throw new ArgumentException("Product cannot be null", nameof(items));
-
-                if (item.Amount <= 0)
-                    throw new ArgumentException("Amount must be greater than zero", nameof(items));
-            }
-
-            return _receiptRepo.create(items, customer);
+            return receipt;
         }
 
         public bool CheckNewAmount(Guid productId, int newAmount)
@@ -53,10 +33,10 @@ namespace Domain
             if (productId == Guid.Empty)
                 throw new ArgumentException("Product ID cannot be empty", nameof(productId));
 
-            if (newAmount < 0)
+            if (newAmount <= 0)
                 throw new ArgumentException("Amount cannot be negative", nameof(newAmount));
 
-            return _inventoryRepo.check_new_amount(productId, newAmount);
+            return _inventoryRepo.CheckNewAmount(productId, newAmount);
         }
     }
 }
