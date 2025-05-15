@@ -7,6 +7,10 @@
     <Nullable>enable</Nullable>
     <OutputType>Library</OutputType>
   </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Npgsql" Version="9.0.3" />
+  </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Domain\Domain.csproj" />
   </ItemGroup>

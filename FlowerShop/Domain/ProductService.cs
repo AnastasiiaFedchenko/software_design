@@ -21,16 +21,20 @@ namespace Domain
             return _inventoryRepo.GetAvailableProduct(limit, skip);
         }
 
-        public Receipt MakePurchase(List<ReceiptLine> items, User customer)
+        public Receipt MakePurchase(List<ReceiptLine> items, int customerID)
         {
-            Receipt receipt = new Receipt(customer, items);
+            Receipt receipt = new Receipt(customerID, items);
 
             return receipt;
         }
-
-        public bool CheckNewAmount(Guid productId, int newAmount)
+        public Product GetInfoOnProduct(int productId)
         {
-            if (productId == Guid.Empty)
+            return _inventoryRepo.GetInfoOnProduct(productId);
+        }
+
+        public bool CheckNewAmount(int productId, int newAmount)
+        {
+            if (productId == 0)
                 throw new ArgumentException("Product ID cannot be empty", nameof(productId));
 
             if (newAmount <= 0)

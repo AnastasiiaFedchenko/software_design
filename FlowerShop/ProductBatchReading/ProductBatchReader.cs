@@ -38,7 +38,7 @@ namespace ProductBatchReading
                     throw new InvalidDataException("Products count line is missing");
 
                 // Парсинг с обработкой ошибок
-                if (!Guid.TryParse(batchIdLine, out var batchId))
+                if (!int.TryParse(batchIdLine, out var batchId))
                     throw new InvalidDataException("Invalid Batch ID format");
 
                 if (!int.TryParse(totalAmountLine, out var totalAmount))
@@ -84,7 +84,7 @@ namespace ProductBatchReading
             try
             {
                 var product = new Product(
-                    Guid.Parse(parts[0]),
+                    int.Parse(parts[0]),
                     int.Parse(parts[1]),
                     double.Parse(parts[2], System.Globalization.CultureInfo.InvariantCulture),
                     int.Parse(parts[3]),
