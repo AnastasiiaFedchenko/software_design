@@ -9,6 +9,8 @@ using ProductBatchLoading;
 using ReceiptOfSale;
 using SegmentAnalysis;
 using System;
+using System.Runtime.InteropServices;
+using System.ComponentModel.Design;
 
 class Program
 {
@@ -172,6 +174,31 @@ class Menu
                         }
                     }
                     break;
+                case "4": // 4. Удалить товар из корзины
+                    Console.Write("Введите id товара для удаления из корзины: ");
+                    int productID3 = int.Parse(Console.ReadLine());
+                    for (int i = 0; i < items.Count; i++)
+                    {
+                        if (items[i].Product.Nomenclature == productID3)
+                        {
+                            items.RemoveAt(i);
+                            Console.WriteLine("Товар удалён из корзины.");
+                            i--;
+                        }
+                    }
+                    break; 
+                case "5": // 5. Показать содержание корзины
+                    Console.WriteLine("Корзина:");
+                    foreach (var item in items)
+                        Console.WriteLine($"{item.Product.Nomenclature} {item.Product.Type}, " +
+                                            $"{item.Product.Country}, количество: {item.Amount}, " +
+                                            $"цена за шт.: {item.Product.Price}");
+                    if (items.Count == 0)
+                        Console.WriteLine("Корзина пуста.");
+                    break;
+                case "6": // 6. Заказать
+                    productService.MakePurchase(items, customerID);
+                    break;
                 default:
                     Console.WriteLine("Неверный выбор. Попробуйте еще раз.");
                     Console.ReadKey();
@@ -185,8 +212,10 @@ class Menu
         Console.Clear();
         Console.WriteLine("=== Загрузка информации о новой партии ===");
         Console.WriteLine("Введите путь к файлу с данными о партии:");
-        string filePath = Console.ReadLine();
-
+        string filePath = Console.ReadLine()?
+            .Replace('\\', '/')
+            .Replace("\"", "");    // Удаляем кавычки;
+        //Console.WriteLine($"Путь для Visual Studio: {filePath}");
         try
         {
             using (var fileStream = new FileStream(filePath, FileMode.Open))
@@ -199,9 +228,6 @@ class Menu
         {
             Console.WriteLine($"Ошибка: {ex.Message}");
         }
-
-        Console.WriteLine("Нажмите любую клавишу для продолжения...");
-        Console.ReadKey();
     }
 
     private static void ShowAmountOfOrdersForecast()
