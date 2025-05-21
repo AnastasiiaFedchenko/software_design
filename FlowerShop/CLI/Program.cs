@@ -198,6 +198,7 @@ class Menu
                     break;
                 case "6": // 6. Заказать
                     productService.MakePurchase(items, customerID);
+                    items = new List<ReceiptLine>();
                     break;
                 default:
                     Console.WriteLine("Неверный выбор. Попробуйте еще раз.");

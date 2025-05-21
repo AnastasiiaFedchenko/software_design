@@ -77,13 +77,17 @@ namespace ReceiptOfSale
 
                 using (var findCommand = new NpgsqlCommand(
                     @"SELECT pis.id, p.id as price_id
-                      FROM product_in_stock pis
-                      JOIN price p ON pis.id_nomenclature = p.id_nomenclature 
-                                  AND pis.id_product_batch = p.id_product_batch
-                      WHERE pis.id_nomenclature = @nomenclatureId
-                      AND pis.amount >= @amount
-                      ORDER BY pis.id_product_batch, pis.amount DESC
-                      LIMIT 1",
+                        FROM product_in_stock pis
+                        JOIN price p ON pis.id_nomenclature = p.id_nomenclature 
+                                    AND pis.id_product_batch = p.id_product_batch
+                        JOIN batch_of_products bop ON pis.id_product_batch = bop.id_product_batch
+                                                  AND pis.id_nomenclature = bop.id_nomenclature
+                        WHERE pis.id_nomenclature = @nomenclatureId
+                        AND pis.amount >= @amount 
+                        AND bop.expiration_date > CURRENT_DATE  -- Проверка срока годности
+                        ORDER BY bop.expiration_date ASC,  -- Сначала партии с ближайшим сроком годности
+                                 pis.amount DESC
+                        LIMIT 1;",
                     connection,
                     transaction))
                 {
