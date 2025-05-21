@@ -4,7 +4,7 @@
 
 \begin{figure}
 	\centering
-	\includegraphics[width=1.5\linewidth, angle=-90]{pictures/BD}
+	\includegraphics[width=1.5\linewidth, angle=-90]{pictures/BD_2}
 	\caption{Диаграмма проектируемой базы данных}
 	\label{fig:BD}
 \end{figure}
@@ -51,7 +51,7 @@
 		\item Атрибуты:
 		\begin{itemize}
 			\item id - уникальный идентификатор
-			\item Номенклатура
+			\item номенклатура
 			\item количество товара
 			\item место хранения
 			\item номер партии
@@ -64,12 +64,21 @@
 		\item Атрибуты:
 		\begin{itemize}
 			\item id - уникальный идентификатор
-			\item товар
-			\item количество
-			\item прайс
-			\item номер склада
+			\item дата
 			\item контрагент
 			\item ответственный за заказ
+		\end{itemize}
+	\end{itemize}
+	
+	\item \textbf{Заказ товар}
+	\begin{itemize}
+		\item Сущность для сопоставления заказа и товаров
+		\item Атрибуты:
+		\begin{itemize}
+			\item id заказа
+			\item id товара
+			\item количество
+			\item прайс
 		\end{itemize}
 	\end{itemize}
 	
@@ -119,7 +128,6 @@
 		\begin{itemize}
 			\item id - уникальный идентификатор
 			\item название товара
-			\item тип товара
 			\item страна производства
 		\end{itemize}
 	\end{itemize}
@@ -154,4 +162,5 @@
 \end{itemize}
 \section{Описание проектируемых ограничений целостности базы данных}
 \section{Описание всех проектируемых процедур/функций/триггеров в формате схемы}
+
 \section{Описание проектируемой ролевой модели на уровне базы данных}
