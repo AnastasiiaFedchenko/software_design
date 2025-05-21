@@ -25,8 +25,8 @@ namespace Domain
         {
             ProductBatch batch = _product_batch_reader.create(stream);
             Console.WriteLine("Needs to be loaded");
-            for (int i = 0; i < batch.Products.Count; i++)
-                Console.WriteLine($"{batch.Products[i].Product.Nomenclature} {batch.Products[i].Product.Amount}");
+            for (int i = 0; i < batch.ProductsInfo.Count; i++)
+                Console.WriteLine($"{batch.ProductsInfo[i].Nomenclature} {batch.ProductsInfo[i].Amount}");
 
             return _product_batch_loader.load(batch);
         }

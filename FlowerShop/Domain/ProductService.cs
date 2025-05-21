@@ -24,7 +24,7 @@ namespace Domain
         public Receipt MakePurchase(List<ReceiptLine> items, int customerID)
         {
             Receipt receipt = new Receipt(customerID, items);
-
+            _receiptRepo.load(receipt);
             return receipt;
         }
         public Product GetInfoOnProduct(int productId)

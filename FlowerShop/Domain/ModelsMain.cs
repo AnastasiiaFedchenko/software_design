@@ -28,6 +28,29 @@ namespace Domain
             Country = country;
         }
     }
+    public class ProductInfo
+    {
+        /*
+        id_поставки
+        количество позиций в поставке
+        поставщик
+        ответственный
+        id_номенклатуры|production_date|expiration_date|cost_price|amount
+         */
+        public int Nomenclature { get; }
+        public DateTime ProductionDate { get; }
+        public DateTime ExpirationDate { get; }
+        public double CostPrice { get; }
+        public int Amount { get; }
+        public ProductInfo(int nomenclature, DateTime production_date, DateTime expiration_date, int amount, double price)
+        {
+            Nomenclature = nomenclature;
+            ProductionDate = production_date;
+            ExpirationDate = expiration_date;
+            Amount = amount;
+            CostPrice = price;
+        }
+    }
     public class User
     {
 

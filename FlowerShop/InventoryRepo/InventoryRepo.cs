@@ -73,25 +73,9 @@ namespace InventoryOfProducts
                 }
             }
 
-            // Получаем информацию о пользователе
-            var userQuery = "SELECT id, name FROM \"user\" LIMIT 1";
-            var userCommand = new NpgsqlCommand(userQuery, connection);
-            var userReader = userCommand.ExecuteReader();
-
-            User responsibleUser = new User(0, "Unknown");
-            if (userReader.Read())
-            {
-                responsibleUser = new User(
-                    0,
-                    userReader.GetString(1)
-                );
-            }
-
             return new Inventory(
                 id: Guid.NewGuid(),
                 date: DateTime.Now,
-                supplier: responsibleUser,
-                responsible: responsibleUser,
                 total_amount: totalAmount,
                 products: productLines
             );

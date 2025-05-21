@@ -52,7 +52,7 @@ class Menu
     {
         while (true)
         {
-            Console.Clear();
+            //Console.Clear();
             Console.WriteLine("=== ГЛАВНОЕ МЕНЮ ===");
             Console.WriteLine("1. Сделать заказ");
             Console.WriteLine("2. Загрузка информации о новой партии");
@@ -209,13 +209,12 @@ class Menu
 
     private static void ShowLoadBatchMenu()
     {
-        Console.Clear();
+        //Console.Clear();
         Console.WriteLine("=== Загрузка информации о новой партии ===");
         Console.WriteLine("Введите путь к файлу с данными о партии:");
         string filePath = Console.ReadLine()?
-            .Replace('\\', '/')
-            .Replace("\"", "");    // Удаляем кавычки;
-        //Console.WriteLine($"Путь для Visual Studio: {filePath}");
+                                    .Replace('\\', '/')
+                                    .Replace("\"", "");    
         try
         {
             using (var fileStream = new FileStream(filePath, FileMode.Open))
