@@ -1,0 +1,23 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net7.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\InventoryRepo\InventoryOfProducts.csproj" />
+    <ProjectReference Include="..\Forecast\ForecastAnalysis.csproj" />
+    <ProjectReference Include="..\ProductBatchLoading\ProductBatchLoading.csproj" />
+    <ProjectReference Include="..\ProductBatchReading\ProductBatchReading.csproj" />
+    <ProjectReference Include="..\Segment\SegmentAnalysis.csproj" />
+    <ProjectReference Include="..\ReceiptOfSale\ReceiptOfSale.csproj" />
+    <ProjectReference Include="..\UserValidation\UserValidation.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="9.0.4" />
+    <PackageReference Include="Npgsql" Version="9.0.3" />
+  </ItemGroup>
+
+</Project>
