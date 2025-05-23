@@ -24,9 +24,18 @@ namespace Domain
         public bool LoadProductBatch(FileStream stream) // сюда тоже по идее передаётся файл
         {
             ProductBatch batch = _product_batch_reader.create(stream);
-            Console.WriteLine("Needs to be loaded");
+            Console.WriteLine("Требует загрузки");
             for (int i = 0; i < batch.ProductsInfo.Count; i++)
-                Console.WriteLine($"{batch.ProductsInfo[i].Nomenclature} {batch.ProductsInfo[i].Amount}");
+            {
+                ProductInfo p = batch.ProductsInfo[i];
+                var sb = new StringBuilder();
+                sb.AppendLine("╔════════════════╦═════════════════════════╦════════════════╦════════════╦══════════════╦════════════════╗");
+                sb.AppendLine("║ Номенклатура   ║ Даты (произв./годен)    ║ Количество     ║ Цена       ║ Место хран.  ║ Срок годности  ║");
+                sb.AppendLine("╠════════════════╬═════════════════════════╬════════════════╬════════════╬══════════════╬════════════════╣");
+                sb.AppendLine($"║ {p.Nomenclature.ToString().PadRight(14)} ║ {p.ProductionDate:dd.MM.yyyy} / {p.ExpirationDate:dd.MM.yyyy} ║ {p.Amount.ToString().PadRight(14)} ║ {p.CostPrice:F2} ₽ ║ {p.StoragePlace.ToString().PadRight(12)} ║ {(p.ExpirationDate - DateTime.Today).Days} дней    ║");
+                sb.AppendLine("╚════════════════╩═════════════════════════╩════════════════╩════════════╩══════════════╩════════════════╝");
+                Console.WriteLine(sb.ToString());
+            }
 
             return _product_batch_loader.load(batch);
         }

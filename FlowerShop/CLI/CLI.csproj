@@ -13,6 +13,7 @@
     <ProjectReference Include="..\ProductBatchReading\ProductBatchReading.csproj" />
     <ProjectReference Include="..\Segment\SegmentAnalysis.csproj" />
     <ProjectReference Include="..\ReceiptOfSale\ReceiptOfSale.csproj" />
+    <ProjectReference Include="..\UserValidation\UserValidation.csproj" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="9.0.4" />

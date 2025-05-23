@@ -15,7 +15,7 @@ namespace InventoryOfProducts
         public Inventory GetAvailableProduct(int limit, int skip)
         {
             // Создаем подключение к базе данных
-            using var connection = new NpgsqlConnection("Host=127.0.0.1;Port=5432;Database=FlowerShop;Username=postgres;Password=5432");
+            using var connection = new NpgsqlConnection("Host=127.0.0.1;Port=5432;Database=FlowerShopPPO;Username=postgres;Password=5432");
             connection.Open();
 
             // Запрос для получения доступных продуктов с их номенклатурой, ценами и странами
@@ -83,8 +83,10 @@ namespace InventoryOfProducts
 
         public Product GetInfoOnProduct(int productID)
         {
+            if (productID <= 0)
+                throw new ArgumentException("Id товара не может быть отрицательным или равным нулю.");
             // Create database connection
-            using var connection = new NpgsqlConnection("Host=127.0.0.1;Port=5432;Database=FlowerShop;Username=postgres;Password=5432");
+            using var connection = new NpgsqlConnection("Host=127.0.0.1;Port=5432;Database=FlowerShopPPO;Username=postgres;Password=5432");
             connection.Open();
 
             var query = @"
@@ -139,8 +141,12 @@ namespace InventoryOfProducts
         }
         public bool CheckNewAmount(int product_id, int new_n)
         {
+            if (new_n <= 0)
+                throw new ArgumentException("Новое количество не может быть отрицательным или равным нулю.");
+            if (product_id <= 0)
+                throw new ArgumentException("Id товара не может быть отрицательным или равным нулю.");
             // Создаем подключение к базе данных
-            using var connection = new NpgsqlConnection("Host=127.0.0.1;Port=5432;Database=FlowerShop;Username=postgres;Password=5432");
+            using var connection = new NpgsqlConnection("Host=127.0.0.1;Port=5432;Database=FlowerShopPPO;Username=postgres;Password=5432");
             connection.Open();
 
             // Запрос для получения суммы доступного количества товара в годных партиях

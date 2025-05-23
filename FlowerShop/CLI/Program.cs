@@ -8,6 +8,7 @@ using ProductBatchReading;
 using ProductBatchLoading;
 using ReceiptOfSale;
 using SegmentAnalysis;
+using UserValidation;
 using System;
 using System.Runtime.InteropServices;
 using System.ComponentModel.Design;
@@ -16,15 +17,35 @@ class Program
 {
     static void Main(string[] args)
     {
-        var menu = new Menu();
 
-        Menu.ShowMainMenu();
+        var menu = new Menu();
+        int Id;
+        var type = Menu.WhatTypeOfUser(out Id);
+        switch (type)
+        {
+            case UserType.Administrator:
+                Console.WriteLine("Вы вошли как администратор.");
+                Menu.ShowAdminMenu(Id);
+                break;
+            case UserType.Seller:
+                Console.WriteLine("Вы вошли как продавец.");
+                Menu.ShowSellerMenu(Id);
+                break;
+            case UserType.Storekeeper:
+                Console.WriteLine("Вы вошли как кладовщик.");
+                Menu.ShowShopKeeperMenu(Id);
+                break;
+            case null:
+                Console.WriteLine("Ошибка: неверный ID или пароль.");
+                break;
+        }
     }
 }
 
 class Menu
 {
     private static IServiceProvider serviceProvider;
+    private static IUserService userService;
     private static IAnalysisService analysisService;
     private static ILoadService loadService;
     private static IProductService productService;
@@ -32,23 +53,53 @@ class Menu
     public Menu()
     {
         serviceProvider = new ServiceCollection()
+            .AddSingleton<IUserRepo, UserRepo>()
             .AddSingleton<IInventoryRepo, InventoryRepo>()
             .AddSingleton<IReceiptRepo, ReceiptRepo>()
             .AddTransient<IForecastServiceAdapter, ForecastServiceAdapter>()
             .AddTransient<IProductBatchLoader, ProductBatchLoader>()
             .AddTransient<IProductBatchReader, ProductBatchReader>()
             .AddTransient<IUserSegmentationServiceAdapter, UserSegmentationServiceAdapter>()
+            .AddTransient<IUserService, UserService>()
             .AddTransient<IAnalysisService, AnalysisService>()
             .AddTransient<ILoadService, LoadService>()
             .AddTransient<IProductService, ProductService>()
             .BuildServiceProvider();
 
+        userService = serviceProvider.GetRequiredService<IUserService>();
         analysisService = serviceProvider.GetRequiredService<IAnalysisService>();
         loadService = serviceProvider.GetRequiredService<ILoadService>();
         productService = serviceProvider.GetRequiredService<IProductService>();
     }
 
-    public static void ShowMainMenu()
+    public static UserType? WhatTypeOfUser(out int Id)
+    {
+        try
+        {
+            Console.Write("Введите логин (Ваш ID): ");
+            if (!int.TryParse(Console.ReadLine(), out int id))
+            {
+                Console.WriteLine("Ошибка: ID должен быть числом!");
+                Id = 0;
+                return null;
+            }
+            Id = id;
+            Console.Write("Введите пароль: ");
+            string password = Console.ReadLine() ?? string.Empty;
+
+            var userType = userService.CheckPasswordAndGetUserType(id, password);
+
+            return userType;
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Произошла ошибка: {ex.Message}");
+            Id = 0;
+            return null;
+        }
+    }
+
+    public static void ShowAdminMenu(int Id)
     {
         while (true)
         {
@@ -67,7 +118,7 @@ class Menu
                 case "0":
                     return;
                 case "1":
-                    ShowOrderMenu();
+                    ShowOrderMenu(Id);
                     break;
                 case "2":
                     ShowLoadBatchMenu();
@@ -85,11 +136,90 @@ class Menu
             }
         }
     }
-
-    private static void ShowOrderMenu()
+    public static void ShowSellerMenu(int Id)
     {
-        Console.WriteLine("Введите ID пользователя (продавца) :");
-        int customerID = int.Parse(Console.ReadLine());
+        while (true)
+        {
+            //Console.Clear();
+            Console.WriteLine("=== ГЛАВНОЕ МЕНЮ ===");
+            Console.WriteLine("1. Сделать заказ");
+            Console.WriteLine("0. Выход");
+            Console.Write("Выберите пункт меню: ");
+
+            var choice = Console.ReadLine();
+            switch (choice)
+            {
+                case "0":
+                    return;
+                case "1":
+                    ShowOrderMenu(Id);
+                    break;
+                default:
+                    Console.WriteLine("Неверный номер пункта меню. Попробуйте еще раз.");
+                    Console.ReadKey();
+                    break;
+            }
+        }
+    }
+
+    public static void ShowShopKeeperMenu(int Id)
+    {
+        while (true)
+        {
+            //Console.Clear();
+            Console.WriteLine("=== ГЛАВНОЕ МЕНЮ ===");
+            Console.WriteLine("1. Показать доступные товары");
+            Console.WriteLine("2. Загрузка информации о новой партии");
+            Console.WriteLine("0. Выход");
+            Console.Write("Выберите пункт меню: ");
+
+            var choice = Console.ReadLine();
+            switch (choice)
+            {
+                case "0":
+                    return;
+                case "1":
+                    // Показать доступные товары
+                    string choice2;
+                    int limit = 20;
+                    int skip = 0;
+                    do
+                    {
+                        var inventory_temp = productService.GetAllAvailableProducts(limit, skip);
+                        foreach (var pL in inventory_temp.Products)
+                        {
+                            Console.WriteLine($"Товар: {pL.Product.Nomenclature} {pL.Product.Type}, " +
+                                            $"{pL.Product.Country}, количество: {pL.Amount}, " +
+                                            $"цена: {pL.Product.Price}");
+                        }
+                        Console.WriteLine(new string('_', 70));
+                        skip += limit;
+                        if (inventory_temp.TotalAmount < 20)
+                        {
+                            Console.WriteLine("Выведены все доступные товары.");
+                            choice2 = "0";
+                        }
+                        else
+                        {
+                            Console.Write("Продолжить вывод доступных товаров? (0 - остановиться, 1 - продолжить): ");
+                            choice2 = Console.ReadLine();
+                        }
+                    } while (choice2 == "1");
+                    break;
+                case "2":
+                    ShowLoadBatchMenu();
+                    break;
+                default:
+                    Console.WriteLine("Неверный номер пункта меню. Попробуйте еще раз.");
+                    Console.ReadKey();
+                    break;
+            }
+        }
+    }
+
+    private static void ShowOrderMenu(int Id)
+    {
+        int customerID = Id;
         List<ReceiptLine> items = new List<ReceiptLine>();
         while (true)
         {
@@ -258,82 +388,3 @@ class Menu
         Console.ReadKey();
     }
 }
-
-
-
-// Пример 1: Анализ сегментов пользователей и прогнозирование заказов
-/*var analysisService = serviceProvider.GetRequiredService<IAnalysisService>();
-
-// Получаем прогноз заказов
-var forecast = analysisService.GetForecastOfOrders();
-Console.WriteLine($"Прогноз заказов: {forecast.AmountOfOrders} заказов, {forecast.AmountOfProducts} товаров");
-Console.WriteLine(new string('_', 70));
-
-// Получаем сегментацию пользователей
-var segments = analysisService.GetUserSegmentation();
-foreach (var segment in segments)
-{
-    Console.WriteLine($"Сегмент: {segment.Type}, количество пользователей: {segment.Amount}");
-}
-Console.WriteLine(new string('_', 70));*/
-
-// Пример 2: Загрузка партии товаров
-//var loadService = serviceProvider.GetRequiredService<ILoadService>();
-//var productService = serviceProvider.GetRequiredService<IProductService>();
-
-// Создаем тестовый файл (в реальном коде это был бы настоящий FileStream)
-/*if (!File.Exists(@"D:\bmstu\PPO\software_design\FlowerShop\batch1.txt"))
-{
-    Console.WriteLine($"Файл не найден: {@"D:\bmstu\PPO\software_design\FlowerShop\batch1.txt"}");
-    Console.WriteLine("Убедитесь, что файл products.txt находится в директории:");
-    return;
-}
-
-var testFile = new FileStream(@"D:\bmstu\PPO\software_design\FlowerShop\batch1.txt", FileMode.Open);
-// Загружаем партию товаров
-bool loadResult = loadService.LoadProductBatch(testFile);
-Console.WriteLine($"Результат загрузки партии товаров: {(loadResult ? "Успешно" : "Ошибка")}");
-Console.WriteLine(new string('_', 70));*/
-
-// Пример 3: Получение списка товаров и совершение покупки
-/*var inventory = productService.GetAllAvailableProducts(20, 0);
-Console.WriteLine($"Доступно товаров на складе: {inventory.TotalAmount}");
-foreach (var productLine in inventory.Products)
-{
-    Console.WriteLine($"Товар: {productLine.Product.Nomenclature} {productLine.Product.Type}, {productLine.Product.Country}, количество: {productLine.Amount}, цена: {productLine.Product.Price}");
-}
-Console.WriteLine(new string('_', 70));
-
-var inventory2 = productService.GetAllAvailableProducts(20, 20);
-Console.WriteLine($"Доступно товаров на складе: {inventory.TotalAmount}");
-foreach (var productLine in inventory2.Products)
-{
-    Console.WriteLine($"Товар: {productLine.Product.Nomenclature} {productLine.Product.Type}, {productLine.Product.Country}, количество: {productLine.Amount}, цена: {productLine.Product.Price}");
-}
-Console.WriteLine(new string('_', 70));
-
-Console.Write("Введите целое число: ");
-string input = Console.ReadLine();
-int id_product;
-
-if (int.TryParse(input, out id_product))
-    Console.WriteLine($"проверка {productService.CheckNewAmount(id_product, 6)}");
-// Создаем тестового пользователя
-//var customer = new User(Guid.NewGuid(), "Customer");
-
-// Создаем список товаров для покупки
-/*var productsToBuy = new List<ReceiptLine>
-{
-    new ReceiptLine(inventory.Products[0].Product, 2),
-    new ReceiptLine(inventory.Products[1].Product, 1)
-};
-
-// Совершаем покупку
-var receipt = productService.MakePurchase(productsToBuy, customer);
-Console.WriteLine($"Чек создан: ID = {receipt.Id}, Итоговая сумма = {receipt.FinalPrice}, Дата = {receipt.Date}");
-Console.WriteLine(new string('_', 70));
-
-// Проверяем доступное количество товара
-var productId = inventory.Products[0].Product.Nomenclature;
-bool checkResult = productService.CheckNewAmount(productId, 5);
-Console.WriteLine($"Проверка доступности 5 единиц товара {productId}: {(checkResult ? "Доступно" : "Недостаточно")}");*/

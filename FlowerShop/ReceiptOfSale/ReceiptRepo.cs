@@ -13,7 +13,7 @@ namespace ReceiptOfSale
 
         public ReceiptRepo()
         {
-            _connectionString = "Host=127.0.0.1;Port=5432;Database=FlowerShop;Username=postgres;Password=5432";
+            _connectionString = "Host=127.0.0.1;Port=5432;Database=FlowerShopPPO;Username=postgres;Password=5432";
         }
 
         public bool load(Receipt receipt)

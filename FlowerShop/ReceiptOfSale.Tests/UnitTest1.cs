@@ -24,25 +24,21 @@ namespace ReceiptOfSale.Tests
             var items = new List<ReceiptLine>
             {
                 new ReceiptLine(
-                    new Product(Guid.NewGuid(), 2, 10.99, 100, "Electronics", "China"),
+                    new Product(1, 2, 10.99, 100, "Electronics", "China"),
                     1),
                 new ReceiptLine(
-                    new Product(Guid.NewGuid(), 1, 5.99, 50, "Groceries", "Local"),
+                    new Product(2, 1, 5.99, 50, "Groceries", "Local"),
                     2)
             };
 
-            var customer = new User(Guid.NewGuid(), "Customer");
-
             // Act
-            var result = new Receipt(customer, items);
+            var result = new Receipt(1, items);
 
             // Assert
             Assert.NotNull(result);
-            Assert.Equal(customer, result.Customer);
             Assert.Equal(10.99 + (5.99 * 2), result.FinalPrice, 2); // Используем точность 2 знака после запятой
             Assert.Equal(3, result.TotalAmount);
             Assert.Equal(items, result.Products);
-            Assert.NotEqual(Guid.Empty, result.Id);
             Assert.True((DateTime.Now - result.Date).TotalSeconds < 1);
         }
 
@@ -53,14 +49,12 @@ namespace ReceiptOfSale.Tests
             var items = new List<ReceiptLine>
             {
                 new ReceiptLine(
-                    new Product(Guid.NewGuid(), 5, 2.50, 100, "Food", "Local"),
+                    new Product(1, 5, 2.50, 100, "Food", "Local"),
                     3)
             };
 
-            var customer = new User(Guid.NewGuid(), "Customer");
-
             // Act
-            var result = new Receipt(customer, items);
+            var result = new Receipt(1, items);
 
             // Assert
             Assert.Equal(7.50, result.FinalPrice);
@@ -74,14 +68,12 @@ namespace ReceiptOfSale.Tests
             var items = new List<ReceiptLine>
             {
                 new ReceiptLine(
-                    new Product(Guid.NewGuid(), 5, 0.00, 100, "Free Item", "Local"),
+                    new Product(1, 5, 0.00, 100, "Free Item", "Local"),
                     1)
             };
 
-            var customer = new User(Guid.NewGuid(), "Customer");
-
             // Act
-            var result = new Receipt(customer, items);
+            var result = new Receipt(1, items);
 
             // Assert
             Assert.Equal(0.00, result.FinalPrice);
@@ -92,10 +84,9 @@ namespace ReceiptOfSale.Tests
         public void Create_WithNullItems_ThrowsArgumentNullException()
         {
             // Arrange
-            var customer = new User(Guid.NewGuid(), "Customer");
 
             // Act & Assert
-            var ex = Assert.Throws<ArgumentNullException>(() => new Receipt(customer, null));
+            var ex = Assert.Throws<ArgumentNullException>(() => new Receipt(1, null));
             Assert.Contains("items", ex.Message);
         }
 
@@ -104,10 +95,9 @@ namespace ReceiptOfSale.Tests
         {
             // Arrange
             var items = new List<ReceiptLine>();
-            var customer = new User(Guid.NewGuid(), "Customer");
 
             // Act & Assert
-            var ex = Assert.Throws<ArgumentException>(() => new Receipt(customer, items));
+            var ex = Assert.Throws<ArgumentException>(() => new Receipt(1, items));
             Assert.Contains("items", ex.Message);
         }
 
@@ -118,12 +108,12 @@ namespace ReceiptOfSale.Tests
             var items = new List<ReceiptLine>
             {
                 new ReceiptLine(
-                    new Product(Guid.NewGuid(), 2, 10.99, 100, "Electronics", "China"),
+                    new Product(1, 2, 10.99, 100, "Electronics", "China"),
                     1)
             };
 
             // Act & Assert
-            var ex = Assert.Throws<ArgumentNullException>(() => new Receipt(null, items));
+            var ex = Assert.Throws<ArgumentNullException>(() => new Receipt(0, items));
             Assert.Contains("customer", ex.Message);
         }
 
@@ -134,20 +124,18 @@ namespace ReceiptOfSale.Tests
             var items = new List<ReceiptLine>
             {
                 new ReceiptLine(
-                    new Product(Guid.NewGuid(), 10, 1.99, 100, "Snacks", "Local"),
+                    new Product(1, 10, 1.99, 100, "Snacks", "Local"),
                     5),
                 new ReceiptLine(
-                    new Product(Guid.NewGuid(), 5, 4.50, 50, "Drinks", "Local"),
+                    new Product(2, 5, 4.50, 50, "Drinks", "Local"),
                     2),
                 new ReceiptLine(
-                    new Product(Guid.NewGuid(), 20, 0.99, 200, "Candy", "Local"),
+                    new Product(3, 20, 0.99, 200, "Candy", "Local"),
                     10)
             };
 
-            var customer = new User(Guid.NewGuid(), "Customer");
-
             // Act
-            var result = new Receipt(customer, items);
+            var result = new Receipt(1, items);
 
             // Assert
             Assert.Equal((1.99 * 5) + (4.50 * 2) + (0.99 * 10), result.FinalPrice, 2);

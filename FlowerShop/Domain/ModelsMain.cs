@@ -42,6 +42,7 @@ namespace Domain
         public DateTime ExpirationDate { get; }
         public double CostPrice { get; }
         public int Amount { get; }
+        public int StoragePlace { get; }
         public ProductInfo(int nomenclature, DateTime production_date, DateTime expiration_date, int amount, double price)
         {
             Nomenclature = nomenclature;
@@ -49,17 +50,28 @@ namespace Domain
             ExpirationDate = expiration_date;
             Amount = amount;
             CostPrice = price;
+            Random random = new Random();
+            StoragePlace = random.Next(1, 21);
         }
     }
+    public enum UserType
+    {
+        Administrator = 1,
+        Seller = 2,
+        Storekeeper = 3
+    }
+
     public class User
     {
 
         public int Id { get; }
-        public string Role { get; }
-        public User(int id, string role)
+        public UserType Role { get; }
+        public string Password { get; }
+        public User(int id, UserType role, string password)
         {
             Id = id;
             Role = role;
+            Password = password;
         }
     }
 }
