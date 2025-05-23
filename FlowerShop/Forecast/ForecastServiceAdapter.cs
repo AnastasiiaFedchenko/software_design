@@ -10,7 +10,7 @@ namespace ForecastAnalysis
 {
     public class ForecastServiceAdapter : IForecastServiceAdapter
     {
-        public ForecastOfOrders create()
+        public ForecastOfOrders Create()
         {
             return new ForecastOfOrders(0, 0, new List<ProductLine>());
         }

@@ -9,7 +9,9 @@ namespace Domain
     public class ReceiptLine
     {
         public Product Product { get; }
+        public int IdProductInStock { get; set; }
         public int Amount { get; set; }
+        public int PriceId { get; set; }
         public ReceiptLine(Product product, int amount)
         {
             if (product == null)
@@ -19,12 +21,14 @@ namespace Domain
                 throw new ArgumentException("Amount must be greater than zero");
 
             Product = product;
+            IdProductInStock = -1;
             Amount = amount;
+            PriceId = -1;
         }
     }
     public class Receipt
     {
-        public int Id { get; }
+        public int Id { get; set; }
         public int CustomerID { get; }
         public double FinalPrice { get; }
         public DateTime Date { get; }

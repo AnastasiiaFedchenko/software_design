@@ -188,7 +188,7 @@ class Menu
                         var inventory_temp = productService.GetAllAvailableProducts(limit, skip);
                         foreach (var pL in inventory_temp.Products)
                         {
-                            Console.WriteLine($"Товар: {pL.Product.Nomenclature} {pL.Product.Type}, " +
+                            Console.WriteLine($"Товар: {pL.Product.IdNomenclature} {pL.Product.Type}, " +
                                             $"{pL.Product.Country}, количество: {pL.Amount}, " +
                                             $"цена: {pL.Product.Price}");
                         }
@@ -245,10 +245,10 @@ class Menu
                     int skip = 0;
                     do
                     {
-                        var inventory_temp = productService.GetAllAvailableProducts(limit, skip);
+                        Inventory inventory_temp = productService.GetAllAvailableProducts(limit, skip);
                         foreach (var pL in inventory_temp.Products)
                         {
-                            Console.WriteLine($"Товар: {pL.Product.Nomenclature} {pL.Product.Type}, " +
+                            Console.WriteLine($"Товар: {pL.Product.IdNomenclature} {pL.Product.Type}, " +
                                             $"{pL.Product.Country}, количество: {pL.Amount}, " +
                                             $"цена: {pL.Product.Price}");
                         }
@@ -290,7 +290,7 @@ class Menu
                     int productID2 = int.Parse(Console.ReadLine());
                     for (int i = 0; i < items.Count; i++)
                     {
-                        if (items[i].Product.Nomenclature == productID2)
+                        if (items[i].Product.IdNomenclature == productID2)
                         {
                             Console.Write("Введите новое количество товара: ");
                             int amount2 = int.Parse(Console.ReadLine());
@@ -309,7 +309,7 @@ class Menu
                     int productID3 = int.Parse(Console.ReadLine());
                     for (int i = 0; i < items.Count; i++)
                     {
-                        if (items[i].Product.Nomenclature == productID3)
+                        if (items[i].Product.IdNomenclature == productID3)
                         {
                             items.RemoveAt(i);
                             Console.WriteLine("Товар удалён из корзины.");
@@ -320,7 +320,7 @@ class Menu
                 case "5": // 5. Показать содержание корзины
                     Console.WriteLine("Корзина:");
                     foreach (var item in items)
-                        Console.WriteLine($"{item.Product.Nomenclature} {item.Product.Type}, " +
+                        Console.WriteLine($"{item.Product.IdNomenclature} {item.Product.Type}, " +
                                             $"{item.Product.Country}, количество: {item.Amount}, " +
                                             $"цена за шт.: {item.Product.Price}");
                     if (items.Count == 0)

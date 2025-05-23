@@ -60,7 +60,7 @@ namespace InventoryOfProducts
                 while (reader.Read())
                 {
                     var product = new Product(
-                        nomenclature: reader.GetInt32(0),
+                        id_nomenclature: reader.GetInt32(0),
                         amount: reader.GetInt32(3),    // available_amount
                         price: reader.GetDouble(2),   // price
                         amount_in_stock: reader.GetInt32(3), // available_amount
@@ -125,7 +125,7 @@ namespace InventoryOfProducts
             if (reader.Read())
             {
                 var product = new Product(
-                    nomenclature: reader.GetInt32(0),
+                    id_nomenclature: reader.GetInt32(0),
                     amount: 0,  // Default amount, can be set later
                     price: reader.GetDouble(2),
                     amount_in_stock: reader.GetInt32(3),

@@ -8,7 +8,7 @@ namespace ProductBatchLoading
 {
     public class ProductBatchLoader : IProductBatchLoader
     {
-        public bool load(ProductBatch batch)
+        public bool Load(ProductBatch batch)
         {
             if (batch == null || batch.ProductsInfo == null || batch.ProductsInfo.Count == 0)
             {
@@ -65,7 +65,7 @@ namespace ProductBatchLoading
             foreach (var product in batch.ProductsInfo)
             {
                 // Валидация данных
-                if (product.Nomenclature <= 0 || product.Amount <= 0 || product.CostPrice <= 0)
+                if (product.IdNomenclature <= 0 || product.Amount <= 0 || product.CostPrice <= 0)
                 {
                     return false;
                 }
@@ -100,7 +100,7 @@ namespace ProductBatchLoading
                 using (var command = new NpgsqlCommand(sql, connection, transaction))
                 {
                     command.Parameters.AddWithValue("@batchId", batch.Id);
-                    command.Parameters.AddWithValue("@nomenclatureId", product.Nomenclature);
+                    command.Parameters.AddWithValue("@nomenclatureId", product.IdNomenclature);
                     command.Parameters.AddWithValue("@productionDate", product.ProductionDate);
                     command.Parameters.AddWithValue("@expirationDate", product.ExpirationDate);
                     command.Parameters.AddWithValue("@costPrice", (decimal)product.CostPrice);
@@ -148,7 +148,7 @@ namespace ProductBatchLoading
                     using (var command = new NpgsqlCommand(sql, connection, transaction))
                     {
                         command.Parameters.AddWithValue("@id", nextId++);
-                        command.Parameters.AddWithValue("@nomenclatureId", product.Nomenclature);
+                        command.Parameters.AddWithValue("@nomenclatureId", product.IdNomenclature);
                         command.Parameters.AddWithValue("@batchId", batch.Id);
                         command.Parameters.AddWithValue("@amount", product.Amount);
                         command.Parameters.AddWithValue("@storage_place", product.StoragePlace);
@@ -156,7 +156,7 @@ namespace ProductBatchLoading
                         int affectedRows = command.ExecuteNonQuery();
                         if (affectedRows != 1)
                         {
-                            Console.WriteLine($"Не удалось вставить запись для номенклатуры {product.Nomenclature}");
+                            Console.WriteLine($"Не удалось вставить запись для номенклатуры {product.IdNomenclature}");
                             return false;
                         }
                     }

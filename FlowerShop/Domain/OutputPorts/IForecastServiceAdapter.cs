@@ -8,6 +8,6 @@ namespace Domain.OutputPorts
 {
     public interface IForecastServiceAdapter
     {
-        ForecastOfOrders create();
+        ForecastOfOrders Create();
     }
 }

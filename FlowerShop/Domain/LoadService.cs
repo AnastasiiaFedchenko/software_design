@@ -32,12 +32,12 @@ namespace Domain
                 sb.AppendLine("╔════════════════╦═════════════════════════╦════════════════╦════════════╦══════════════╦════════════════╗");
                 sb.AppendLine("║ Номенклатура   ║ Даты (произв./годен)    ║ Количество     ║ Цена       ║ Место хран.  ║ Срок годности  ║");
                 sb.AppendLine("╠════════════════╬═════════════════════════╬════════════════╬════════════╬══════════════╬════════════════╣");
-                sb.AppendLine($"║ {p.Nomenclature.ToString().PadRight(14)} ║ {p.ProductionDate:dd.MM.yyyy} / {p.ExpirationDate:dd.MM.yyyy} ║ {p.Amount.ToString().PadRight(14)} ║ {p.CostPrice:F2} ₽ ║ {p.StoragePlace.ToString().PadRight(12)} ║ {(p.ExpirationDate - DateTime.Today).Days} дней    ║");
+                sb.AppendLine($"║ {p.IdNomenclature.ToString().PadRight(14)} ║ {p.ProductionDate:dd.MM.yyyy} / {p.ExpirationDate:dd.MM.yyyy} ║ {p.Amount.ToString().PadRight(14)} ║ {p.CostPrice:F2} ₽ ║ {p.StoragePlace.ToString().PadRight(12)} ║ {(p.ExpirationDate - DateTime.Today).Days} дней    ║");
                 sb.AppendLine("╚════════════════╩═════════════════════════╩════════════════╩════════════╩══════════════╩════════════════╝");
                 Console.WriteLine(sb.ToString());
             }
 
-            return _product_batch_loader.load(batch);
+            return _product_batch_loader.Load(batch);
         }
     }
 }

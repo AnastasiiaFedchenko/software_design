@@ -21,7 +21,7 @@ namespace Domain
 
         public ForecastOfOrders GetForecastOfOrders() // опять таки в каком формате это возвращать
         {
-            return _forecast.create();
+            return _forecast.Create();
         }
         public List<UserSegment> GetUserSegmentation()
         {

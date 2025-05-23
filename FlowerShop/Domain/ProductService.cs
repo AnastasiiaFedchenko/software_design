@@ -18,24 +18,34 @@ namespace Domain
 
         public Inventory GetAllAvailableProducts(int limit, int skip)
         {
+            if (limit <= 0) 
+                throw new ArgumentOutOfRangeException(nameof(limit));
+            if (skip < 0) 
+                throw new ArgumentOutOfRangeException(nameof(skip));
+
             return _inventoryRepo.GetAvailableProduct(limit, skip);
         }
 
-        public Receipt MakePurchase(List<ReceiptLine> items, int customerID)
+        public Receipt? MakePurchase(List<ReceiptLine> items, int customerID)
         {
             Receipt receipt = new Receipt(customerID, items);
-            _receiptRepo.load(receipt);
-            return receipt;
+
+            if (_receiptRepo.LoadReceiptItemsSale_UpdateAmount(ref receipt))
+                    return receipt;
+            return null;
         }
         public Product GetInfoOnProduct(int productId)
         {
+            if (productId <= 0)
+                throw new ArgumentException("Product ID cannot be <= 0", nameof(productId));
+
             return _inventoryRepo.GetInfoOnProduct(productId);
         }
 
         public bool CheckNewAmount(int productId, int newAmount)
         {
-            if (productId == 0)
-                throw new ArgumentException("Product ID cannot be empty", nameof(productId));
+            if (productId <= 0)
+                throw new ArgumentException("Product ID cannot be <= 0", nameof(productId));
 
             if (newAmount <= 0)
                 throw new ArgumentException("Amount cannot be negative", nameof(newAmount));

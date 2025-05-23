@@ -9,6 +9,6 @@ namespace Domain.OutputPorts
     public interface IProductBatchLoader
     {
         // как вообще происходит загрузка файла на сервер
-        bool load(ProductBatch batch);
+        bool Load(ProductBatch batch);
     }
 }
