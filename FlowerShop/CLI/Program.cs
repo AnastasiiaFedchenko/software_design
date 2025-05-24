@@ -12,6 +12,7 @@ using UserValidation;
 using System;
 using System.Runtime.InteropServices;
 using System.ComponentModel.Design;
+using System.Text;
 
 class Program
 {
@@ -362,29 +363,125 @@ class Menu
 
     private static void ShowAmountOfOrdersForecast()
     {
+        Console.OutputEncoding = Encoding.UTF8;
+        Console.InputEncoding = Encoding.UTF8;
         Console.Clear();
-        Console.WriteLine("=== Прогнозирование количества заказов ===");
+        Console.WriteLine("=== ПРОГНОЗ ЗАКАЗОВ НА НЕДЕЛЮ ===");
+        Console.WriteLine(new string('=', 30));
 
-        var forecast = analysisService.GetForecastOfOrders();
-        Console.WriteLine($"Прогнозируемое количество заказов: {forecast.AmountOfOrders}");
-        Console.WriteLine($"Прогнозируемое количество товаров: {forecast.AmountOfProducts}");
+        try
+        {
+            var forecast = analysisService.GetForecastOfOrders();
 
-        Console.WriteLine("Нажмите любую клавишу для продолжения...");
+            Console.WriteLine($"\nОБЩАЯ СТАТИСТИКА:");
+            Console.WriteLine($"• Прогноз заказов: {forecast.AmountOfOrders}");
+            Console.WriteLine($"• Товаров к заказу: {forecast.AmountOfProducts}");
+
+            Console.WriteLine("\nПРОГНОЗ ПО ДНЯМ:");
+            Console.WriteLine("{0,-15} {1,-10} {2,-10}", "Дата", "День недели", "Заказов");
+            Console.WriteLine(new string('-', 35));
+
+            foreach (var day in forecast.DailyForecast)
+            {
+                string dayOfWeek = GetRussianDayOfWeek(day.day_of_week);
+                Console.WriteLine("{0,-15} {1,-10} {2,-10}",
+                    day.date,
+                    dayOfWeek,
+                    day.orders);
+            }
+
+            Console.WriteLine("\nТОП 10 ТОВАРОВ ДЛЯ ЗАКАЗА:");
+            Console.WriteLine("{0,-5} {1,-40} {2,-10}", "ID", "Название", "Кол-во");
+            Console.WriteLine(new string('-', 60));
+
+            var topProducts = forecast.Products
+                .OrderByDescending(p => p.Amount)
+                .Take(10);
+
+            foreach (var product in topProducts)
+            {
+                Console.WriteLine("{0,-5} {1,-40} {2,-10}",
+                    product.Product.IdNomenclature,
+                    product.Product.Type,
+                    product.Amount);
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine("\nОшибка при получении прогноза:");
+            Console.WriteLine(ex.Message);
+        }
+
+        Console.WriteLine("\nНажмите любую клавишу для возврата в меню...");
         Console.ReadKey();
+    }
+
+    private static string GetRussianDayOfWeek(int dayOfWeek)
+    {
+        return dayOfWeek switch
+        {
+            0 => "Понедельник",
+            1 => "Вторник",
+            2 => "Среда",
+            3 => "Четверг",
+            4 => "Пятница",
+            5 => "Суббота",
+            6 => "Воскресенье",
+            _ => "Неизвестно"
+        };
     }
 
     private static void ShowUserSegmentation()
     {
+        Console.OutputEncoding = Encoding.UTF8;
+        Console.InputEncoding = Encoding.UTF8;
         Console.Clear();
-        Console.WriteLine("=== Сегментация клиентов ===");
+        Console.WriteLine("=== СЕГМЕНТАЦИЯ ПОЛЬЗОВАТЕЛЕЙ ===");
+        Console.WriteLine(new string('=', 30));
 
-        var segments = analysisService.GetUserSegmentation();
-        foreach (var segment in segments)
+        try
         {
-            Console.WriteLine($"Тип сегмента: {segment.Type}, количество клиентов: {segment.Amount}");
+            var segments = analysisService.GetUserSegmentation();
+
+            foreach (var segment in segments)
+            {
+                Console.WriteLine($"\n{segment.Type.ToUpper()}:");
+                Console.WriteLine($"Всего пользователей: {segment.Amount}");
+                Console.WriteLine(new string('-', 80));
+
+                Console.WriteLine("{0,-5} {1,-20} {2,-40}", "ID", "Роль", "Имя");
+                Console.WriteLine(new string('-', 80));
+
+                int counter = 1;
+                foreach (var user in segment.Users)
+                {
+                    string roleName = user.Role switch
+                    {
+                        UserType.Administrator => "Администратор",
+                        UserType.Seller => "Продавец",
+                        UserType.Storekeeper => "Кладовщик",
+                        _ => user.Role.ToString()
+                    };
+
+                    if (user.Password == "supplier_no_password")
+                    {
+                        roleName = "Поставщик";
+                    }
+
+                    Console.WriteLine("{0,-5} {1,-20} {2,-40}",
+                        user.Id,
+                        roleName,
+                        user.Name);
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine("\nОшибка при получении сегментации:");
+            Console.WriteLine(ex.Message);
         }
 
-        Console.WriteLine("Нажмите любую клавишу для продолжения...");
+        Console.WriteLine("\nНажмите любую клавишу для возврата в меню...");
         Console.ReadKey();
     }
 }

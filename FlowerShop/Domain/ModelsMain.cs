@@ -16,7 +16,7 @@ namespace Domain
         public int AmountInStock { get; }
         public string Type { get; }
         public string Country { get; }
-        public Product(int id_nomenclature, int amount, double price, int amount_in_stock, string type, string country)
+        public Product(int id_nomenclature, double price, int amount_in_stock, string type, string country)
         {
             IdNomenclature = id_nomenclature;
             Price = price;
@@ -62,11 +62,20 @@ namespace Domain
     {
 
         public int Id { get; }
+        public string Name { get; }
         public UserType Role { get; }
         public string Password { get; }
         public User(int id, UserType role, string password)
         {
             Id = id;
+            Name = "unknown";
+            Role = role;
+            Password = password;
+        }
+        public User(int id, string name, UserType role, string password)
+        {
+            Id = id;
+            Name = name;
             Role = role;
             Password = password;
         }

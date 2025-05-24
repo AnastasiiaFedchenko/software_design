@@ -61,7 +61,6 @@ namespace InventoryOfProducts
                 {
                     var product = new Product(
                         id_nomenclature: reader.GetInt32(0),
-                        amount: reader.GetInt32(3),    // available_amount
                         price: reader.GetDouble(2),   // price
                         amount_in_stock: reader.GetInt32(3), // available_amount
                         type: reader.GetString(1),     // nomenclature_name
@@ -126,7 +125,6 @@ namespace InventoryOfProducts
             {
                 var product = new Product(
                     id_nomenclature: reader.GetInt32(0),
-                    amount: 0,  // Default amount, can be set later
                     price: reader.GetDouble(2),
                     amount_in_stock: reader.GetInt32(3),
                     type: reader.GetString(1),

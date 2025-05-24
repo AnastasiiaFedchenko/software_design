@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Domain.InputPorts;
 using Domain.OutputPorts;
+using SegmentAnalysis;
 
 namespace Domain
 {
@@ -25,7 +26,7 @@ namespace Domain
         }
         public List<UserSegment> GetUserSegmentation()
         {
-            return _segment.create();
+            return _segment.Create();
         }
     }
 }
