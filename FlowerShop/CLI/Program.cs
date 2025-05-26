@@ -330,6 +330,7 @@ class Menu
                 case "6": // 6. Заказать
                     productService.MakePurchase(items, customerID);
                     items = new List<ReceiptLine>();
+                    Console.WriteLine("Заказ оформлен.");
                     break;
                 default:
                     Console.WriteLine("Неверный выбор. Попробуйте еще раз.");
