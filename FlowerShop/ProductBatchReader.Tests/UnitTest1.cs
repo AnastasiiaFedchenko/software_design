@@ -15,11 +15,21 @@ namespace ProductBatchReader_Tests
         {
             // Arrange
             var testData = string.Join(Environment.NewLine,
-                "3fa85f64-5717-4562-b3fc-2c963f66afa6",
-                "150",
-                "2",
-                "3fa85f64-5717-4562-b3fc-2c963f66afa6|50|12,99|100|Electronics|China|30",
-                "3fa85f64-5717-4562-b3fc-2c963f66afa7|30|8,50|75|Appliances|Germany|40");
+                "501",
+                "11",
+                "138",
+                "32",
+                "1000; 2025 - 05 - 18; 2025 - 05 - 25; 936.39; 20",
+                "658; 2025 - 05 - 18; 2025 - 06 - 01; 997.0; 53",
+                "66; 2025 - 05 - 18; 2025 - 11 - 14; 631.74; 84",
+                "884; 2025 - 05 - 18; 2025 - 11 - 14; 2808.1; 49",
+                "204; 2025 - 05 - 18; 2025 - 11 - 14; 4310.21; 88",
+                "368; 2025 - 05 - 18; 2025 - 06 - 01; 4886.39; 19",
+                "638; 2025 - 05 - 18; 2025 - 11 - 14; 4177.49; 15",
+                "173; 2025 - 05 - 18; 2026 - 05 - 18; 4881.49; 78",
+                "833; 2025 - 05 - 18; 2025 - 05 - 25; 146.15; 24",
+                "665; 2025 - 05 - 18; 2025 - 08 - 16; 1151.64; 93",
+                "451; 2025 - 05 - 18; 2025 - 11 - 14; 131.41; 81");
 
             using var memoryStream = new MemoryStream();
             using var writer = new StreamWriter(memoryStream);
@@ -33,9 +43,10 @@ namespace ProductBatchReader_Tests
             var result = reader.create(memoryStream);
 
             // Assert
-            Assert.NotNull(result);
-            Assert.Equal(2, result.Products.Count);
-            Assert.Equal(150, result.TotalAmount);
+            Assert.NotNull(result.ProductsInfo);
+            Assert.Equal(11, result.ProductsInfo.Count);
+            Assert.Equal(138, result.Supplier);
+            Assert.Equal(32, result.Responsible);
         }
 
         [Fact]

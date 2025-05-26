@@ -25,13 +25,13 @@ namespace ReceiptOfSale
                     try
                     {
                         // 1. Создаем новый заказ
-                        int newOrderId = CreateNewOrder(connection, transaction, receipt);
+                        receipt.Id = CreateNewOrder(connection, transaction, receipt);
 
                         // 2. Добавляем товары в заказ
-                        AddProductsToOrder(connection, transaction, newOrderId, receipt.Products);
+                        AddProductsToOrder(connection, transaction, receipt.Id, receipt.Products);
 
                         // 3. Создаем запись о продаже
-                        CreateSaleRecord(connection, transaction, newOrderId, receipt);
+                        CreateSaleRecord(connection, transaction, receipt.Id, receipt);
 
                         // 4. Обновляем количество товаров на складе (теперь последним шагом)
                         if (!UpdateAmount(connection, transaction, receipt))
