@@ -328,9 +328,12 @@ class Menu
                         Console.WriteLine("Корзина пуста.");
                     break;
                 case "6": // 6. Заказать
-                    productService.MakePurchase(items, customerID);
+                    Receipt receipt = productService.MakePurchase(items, customerID);
                     items = new List<ReceiptLine>();
-                    Console.WriteLine("Заказ оформлен.");
+                    if (receipt.Id == -1)
+                        Console.WriteLine($"Произошли проблемы при оформлении товара.");
+                    else
+                        Console.WriteLine($"Заказ оформлен. Номер чека {receipt.Id}");
                     break;
                 default:
                     Console.WriteLine("Неверный выбор. Попробуйте еще раз.");
@@ -376,7 +379,6 @@ class Menu
 
             Console.WriteLine($"\nОБЩАЯ СТАТИСТИКА:");
             Console.WriteLine($"• Прогноз заказов: {forecast.AmountOfOrders}");
-            Console.WriteLine($"• Товаров к заказу: {forecast.AmountOfProducts}");
 
             Console.WriteLine("\nПРОГНОЗ ПО ДНЯМ:");
             Console.WriteLine("{0,-15} {1,-10} {2,-10}", "Дата", "День недели", "Заказов");
@@ -392,7 +394,7 @@ class Menu
             }
 
             Console.WriteLine("\nТОП 10 ТОВАРОВ ДЛЯ ЗАКАЗА:");
-            Console.WriteLine("{0,-5} {1,-40} {2,-10}", "ID", "Название", "Кол-во");
+            Console.WriteLine("{0,-5} {1,-40} {2,-15} {3,-15}", "ID", "Название", "Кол-во в наличие", "Надо заказать");
             Console.WriteLine(new string('-', 60));
 
             var topProducts = forecast.Products
@@ -401,9 +403,10 @@ class Menu
 
             foreach (var product in topProducts)
             {
-                Console.WriteLine("{0,-5} {1,-40} {2,-10}",
+                Console.WriteLine("{0,-5} {1,-40} {2,-15} {3,-15}",
                     product.Product.IdNomenclature,
                     product.Product.Type,
+                    product.AmountInStock, 
                     product.Amount);
             }
         }

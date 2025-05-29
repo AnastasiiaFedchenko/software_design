@@ -43,10 +43,10 @@ public class InventoryRepoTests
         _output.WriteLine($"Доступное количество товара ID {productId}: {availableStock}");
 
         // Act & Assert
-        Assert.True(_inventoryRepo.CheckNewAmount(productId, 5),
+        Assert.True(_inventoryRepo.CheckNewAmount(productId, availableStock - 1),
             $"Должно хватить 5 единиц (есть {availableStock})");
 
-        Assert.False(_inventoryRepo.CheckNewAmount(productId, 15),
+        Assert.False(_inventoryRepo.CheckNewAmount(productId, availableStock + 5),
             $"Не должно хватить 15 единиц (есть {availableStock})");
     }
 

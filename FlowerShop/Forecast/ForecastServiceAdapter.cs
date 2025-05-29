@@ -6,6 +6,7 @@ using System.Diagnostics;
 using Newtonsoft.Json;
 using System.Text;
 using System.IO;
+using System.Linq;
 
 namespace ForecastAnalysis
 {
@@ -56,15 +57,10 @@ namespace ForecastAnalysis
                 }
             }
 
-            var settings = new JsonSerializerSettings
-            {
-                StringEscapeHandling = StringEscapeHandling.EscapeNonAscii,
-                Culture = System.Globalization.CultureInfo.InvariantCulture
-            };
-
             try
             {
-                dynamic pythonData = JsonConvert.DeserializeObject(jsonResult, settings);
+                // Динамическая десериализация JSON
+                dynamic pythonData = JsonConvert.DeserializeObject(jsonResult);
                 if (pythonData == null)
                 {
                     throw new ApplicationException("Не удалось десериализовать выходные данные скрипта");
@@ -72,42 +68,53 @@ namespace ForecastAnalysis
 
                 // Преобразование продуктов
                 var productLines = new List<ProductLine>();
-                foreach (var product in pythonData.products)
+                foreach (var productItem in pythonData.products)
                 {
-                    var domainProduct = new Product(
-                        id_nomenclature: (int)product.product_id,
-                        price: 0,
-                        amount_in_stock: 0,
-                        type: (string)product.product_name,
-                        country: "не указано"
-                    );
-                    productLines.Add(new ProductLine(domainProduct, (int)product.amount));
+                    if ((int)productItem.amount > 0)
+                    {
+                        var domainProduct = new Product(
+                            id_nomenclature: (int)productItem.product_id,
+                            price: 0,
+                            amount_in_stock: (int)productItem.current_stock,
+                            type: (string)productItem.product_name,
+                            country: "не указано"
+                        );
+
+                        productLines.Add(new ProductLine(
+                            product: domainProduct,
+                            amount: (int)productItem.amount,
+                            amount_in_stock: (int)productItem.current_stock
+                        ));
+                    }
+                    
                 }
 
                 // Преобразование ежедневного прогноза
                 var dailyForecasts = new List<DailyForecast>();
-                foreach (var forecast in pythonData.daily_forecast)
+                foreach (var dailyItem in pythonData.daily_forecast)
                 {
                     dailyForecasts.Add(new DailyForecast
                     {
-                        date = (string)forecast.date,
-                        day_of_week = (int)forecast.day_of_week,
-                        orders = (int)forecast.orders
+                        date = (string)dailyItem.date,
+                        day_of_week = (int)dailyItem.day_of_week,
+                        orders = (int)dailyItem.orders
                     });
                 }
 
-                return new ForecastOfOrders(
+                // Создание итогового объекта ForecastOfOrders
+                var resultForecast = new ForecastOfOrders(
                     amount_of_orders: (int)pythonData.total_orders,
-                    amount_of_products: (int)pythonData.total_products,
                     products: productLines
                 )
                 {
                     DailyForecast = dailyForecasts
                 };
+
+                return resultForecast;
             }
-            catch (JsonException ex)
+            catch (Exception ex) when (ex is JsonException || ex is ArgumentException)
             {
-                throw new ApplicationException($"Ошибка при обработке JSON: {ex.Message}");
+                throw new ApplicationException($"Ошибка при обработке данных: {ex.Message}\nДанные: {jsonResult}");
             }
         }
     }

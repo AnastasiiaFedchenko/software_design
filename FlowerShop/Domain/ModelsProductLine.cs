@@ -10,6 +10,7 @@ namespace Domain
     {
         public Product Product { get; }
         public int Amount { get; }
+        public int AmountInStock { get; }
         public ProductLine(Product product, int amount)
         {
             if (product == null)
@@ -20,6 +21,19 @@ namespace Domain
 
             Product = product;
             Amount = amount;
+            AmountInStock = 0;
+        }
+        public ProductLine(Product product, int amount, int amount_in_stock)
+        {
+            if (product == null)
+                throw new ArgumentException("Product cannot be null");
+
+            if (amount <= 0)
+                throw new ArgumentException("Amount must be greater than zero");
+
+            Product = product;
+            Amount = amount;
+            AmountInStock = amount_in_stock;
         }
     }
     public class Inventory
