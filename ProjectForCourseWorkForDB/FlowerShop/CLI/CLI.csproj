@@ -8,7 +8,6 @@
   </PropertyGroup>
   <ItemGroup>
     <ProjectReference Include="..\InventoryRepo\InventoryOfProducts.csproj" />
-    <ProjectReference Include="..\Forecast\ForecastAnalysis.csproj" />
     <ProjectReference Include="..\ProductBatchLoading\ProductBatchLoading.csproj" />
     <ProjectReference Include="..\ProductBatchReading\ProductBatchReading.csproj" />
     <ProjectReference Include="..\Segment\SegmentAnalysis.csproj" />

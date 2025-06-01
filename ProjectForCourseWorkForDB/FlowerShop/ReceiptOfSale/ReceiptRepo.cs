@@ -11,12 +11,12 @@ namespace ReceiptOfSale
     {
         private readonly string _connectionString;
 
-        public ReceiptRepo()
+        public ReceiptRepo(string connectionString)
         {
-            _connectionString = "Host=127.0.0.1;Port=5432;Database=FlowerShop;Username=postgres;Password=5432";
+            _connectionString = connectionString;
         }
 
-        public bool load(Receipt receipt)
+        public bool load(ref Receipt receipt)
         {
             using (var connection = new NpgsqlConnection(_connectionString))
             {
@@ -26,24 +26,40 @@ namespace ReceiptOfSale
                     try
                     {
                         // 1. Создаем новый заказ
-                        int newOrderId = CreateNewOrder(connection, transaction, receipt);
+                        receipt.Id = CreateNewOrder(connection, transaction, receipt);
                         //Console.WriteLine("Создали новый заказ в таблице order");
 
                         // 2. Добавляем товары в заказ
-                        AddProductsToOrder(connection, transaction, newOrderId, receipt.Products);
+                        AddProductsToOrder(connection, transaction, receipt.Id, receipt.Products);
                         //Console.WriteLine("Добавили товары в таблицу order_product_in_stock");
 
                         // 3. Создаем запись о продаже
-                        CreateSaleRecord(connection, transaction, newOrderId, receipt);
+                        CreateSaleRecord(connection, transaction, receipt.Id, receipt);
                         //Console.WriteLine("Создали запись о продаже в таблице sales");
 
                         transaction.Commit();
                         return true;
                     }
-                    catch (Exception ex)
+                    catch (PostgresException ex) when (ex.SqlState == "42501")
                     {
                         transaction.Rollback();
-                        Console.WriteLine($"Error loading receipt: {ex.Message}");
+
+                        // Получаем имя текущего пользователя и проверяем права
+                        using (var cmd = new NpgsqlCommand(
+                            "SELECT current_user, has_table_privilege(current_user, 'batch_of_products', 'SELECT')",
+                            connection))
+                        {
+                            using (var reader = cmd.ExecuteReader())
+                            {
+                                if (reader.Read())
+                                {
+                                    Console.WriteLine($"User: {reader.GetString(0)}, Has SELECT on batch_of_products: {reader.GetBoolean(1)}");
+                                }
+                            }
+                        }
+
+                        Console.WriteLine($"Detailed permission error: {ex.Message}");
+                        receipt.Id = -1;
                         return false;
                     }
                 }

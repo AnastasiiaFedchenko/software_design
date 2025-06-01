@@ -1,18 +1,39 @@
 \chapter{Исследовательский раздел}
-\section{Исследование характеристик программы}
-Технические характеристики устройства, на котором выполнялись замеры по времени, представлены далее:
+Было проведено исследование влияния индексов на скорость выполнения запросов при различных объемах данных. На тестовой таблице $batch\_of\_products\_copy$ (имеет такую же структуру как и $batch\_of\_products$) с количеством записей от 10 до 1 миллиона измерялось время выполнения типового запроса с фильтрацией и сортировкой. Замеры проводились в двух режимах: без использования индексов и с оптимизированными индексами (составным для условий фильтрации и отдельным для сортировки).
 
-\begin{itemize}
-	\item процессор 12th Gen Intel(R) Core(TM) i7-1260P 2.10 ГГц;
-	\item оперативная память: 16,0 ГБ;
-	\item операционная система: Windows 11.
-\end{itemize}
+В листинге~\ref{lst:research} представлен запрос, для которого проводилось исследование и использованные индексы.
+\begin{lstlisting}[label=lst:research, caption=Запрос и индексы, language=SQL]
+	select id_product_batch, id_nomenclature, production_date, expiration_date
+	from batch_of_products_copy
+	where 
+	production_date between '2023-01-01' and '2023-12-31'
+	and cost_price between 100.00 and 500.00
+	and amount > 50
+	order by expiration_date desc;
+	
+	create index idx_composite_filter on batch_of_products_copy(production_date, cost_price, amount);
+	create index idx_sorting on batch_of_products_copy(expiration_date desc);
+\end{lstlisting}
 
-На рисунке~\ref{plt:time_01} продемонстрировано сравнение времени работы алгоритма визуализации сцены от числа объектов для глубины рекурсии от 1 до 3. Можно заметить, что в среднем алгоритм обратной трассировки лучей для трёхмерной сцены с глубиной рекурсии 3 работает дольше остальных, но разница, незначительна, примерно 0.25 секунды. Также стоит отметить, что с возрастанием числа объектов на сцене также возрастает время работы алгоритма.
-\begin{figure}[h]
+\begin{table}[h]
 	\centering
-	\includegraphics[height=0.45\textheight]{pictures/time_graph.png}
-	\caption{Сравнение времени работы алгоритма визуализации сцены от числа объектов для глубины рекурсии от 1 до 3}
-	\label{plt:time_01}
-\end{figure}
-\clearpage
+	\caption{Сравнение времени выполнения запросов с индексами и без (в секундах)}
+	\label{tab:query_performance}
+	\begin{tabular}{|p{3cm}|p{3cm}|p{4cm}|}
+		\hline
+		\textbf{Количество записей} & \textbf{Без индекса} & \textbf{С индексом} \\
+		\hline
+		10 & 0.000040 & 0.000008 \\
+		\hline
+		100 & 0.000051 & 0.000014 \\
+		\hline
+		1,000 & 0.000146 & 0.000055 \\
+		\hline
+		10,000 & 0.002802 & 0.000699 \\
+		\hline
+		100,000 & 0.030805 & 0.017392 \\
+		\hline
+		1,000,000 & 0.129758 & 0.128987 \\
+		\hline
+	\end{tabular}
+\end{table}

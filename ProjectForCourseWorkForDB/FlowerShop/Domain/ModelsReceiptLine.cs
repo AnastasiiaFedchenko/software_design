@@ -24,7 +24,7 @@ namespace Domain
     }
     public class Receipt
     {
-        public int Id { get; }
+        public int Id { get; set; }
         public int CustomerID { get; }
         public double FinalPrice { get; }
         public DateTime Date { get; }

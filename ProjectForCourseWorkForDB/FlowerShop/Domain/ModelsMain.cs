@@ -12,16 +12,14 @@ namespace Domain
     public class Product
     {
         public int Nomenclature { get; }
-        public int Amount { get; }
         public double Price { get; }
         public int AmountInStock { get; }
 
         public string Type { get; }
         public string Country { get; }
-        public Product(int nomenclature, int amount, double price, int amount_in_stock, string type, string country)
+        public Product(int nomenclature, double price, int amount_in_stock, string type, string country)
         {
             Nomenclature = nomenclature;
-            Amount = amount;
             Price = price;
             AmountInStock = amount_in_stock;
             Type = type;
@@ -37,14 +35,14 @@ namespace Domain
         ответственный
         id_номенклатуры|production_date|expiration_date|cost_price|amount
          */
-        public int Nomenclature { get; }
+        public int IdNomenclature { get; }
         public DateTime ProductionDate { get; }
         public DateTime ExpirationDate { get; }
         public double CostPrice { get; }
         public int Amount { get; }
-        public ProductInfo(int nomenclature, DateTime production_date, DateTime expiration_date, int amount, double price)
+        public ProductInfo(int id_nomenclature, DateTime production_date, DateTime expiration_date, int amount, double price)
         {
-            Nomenclature = nomenclature;
+            IdNomenclature = id_nomenclature;
             ProductionDate = production_date;
             ExpirationDate = expiration_date;
             Amount = amount;

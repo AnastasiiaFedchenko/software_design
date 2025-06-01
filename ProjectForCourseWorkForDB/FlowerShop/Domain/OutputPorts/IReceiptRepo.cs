@@ -8,6 +8,6 @@ namespace Domain.OutputPorts
 {
     public interface IReceiptRepo
     {
-        bool load(Receipt receipt);
+        bool load(ref Receipt receipt);
     }
 }

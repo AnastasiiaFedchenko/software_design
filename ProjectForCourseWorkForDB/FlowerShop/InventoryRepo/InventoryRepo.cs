@@ -12,10 +12,17 @@ namespace InventoryOfProducts
 {
     public class InventoryRepo: IInventoryRepo
     {
+        private readonly string _connectionString;
+
+        public InventoryRepo(string connectionString)
+        {
+            _connectionString = connectionString;
+        }
+
         public Inventory GetAvailableProduct(int limit, int skip)
         {
             // Создаем подключение к базе данных
-            using var connection = new NpgsqlConnection("Host=127.0.0.1;Port=5432;Database=FlowerShop;Username=postgres;Password=5432");
+            using var connection = new NpgsqlConnection(_connectionString);
             connection.Open();
 
             // Запрос для получения доступных продуктов с их номенклатурой, ценами и странами
@@ -61,7 +68,6 @@ namespace InventoryOfProducts
                 {
                     var product = new Product(
                         nomenclature: reader.GetInt32(0),
-                        amount: reader.GetInt32(3),    // available_amount
                         price: reader.GetDouble(2),   // price
                         amount_in_stock: reader.GetInt32(3), // available_amount
                         type: reader.GetString(1),     // nomenclature_name
@@ -86,7 +92,7 @@ namespace InventoryOfProducts
             if (productID <= 0)
                 throw new ArgumentException("Id товара не может быть отрицательным или равным нулю.");
             // Create database connection
-            using var connection = new NpgsqlConnection("Host=127.0.0.1;Port=5432;Database=FlowerShop;Username=postgres;Password=5432");
+            using var connection = new NpgsqlConnection(_connectionString);
             connection.Open();
 
             var query = @"
@@ -126,7 +132,6 @@ namespace InventoryOfProducts
             {
                 var product = new Product(
                     nomenclature: reader.GetInt32(0),
-                    amount: 0,  // Default amount, can be set later
                     price: reader.GetDouble(2),
                     amount_in_stock: reader.GetInt32(3),
                     type: reader.GetString(1),

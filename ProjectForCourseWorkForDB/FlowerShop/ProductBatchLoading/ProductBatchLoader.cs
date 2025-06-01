@@ -12,6 +12,12 @@ namespace ProductBatchLoading
 {
     public class ProductBatchLoader: IProductBatchLoader
     {
+        private readonly string _connectionString;
+        public ProductBatchLoader(string connectionString) 
+        {
+            _connectionString = connectionString;
+        }
+
         public bool load(ProductBatch batch)
         {
             // Проверка входных данных
@@ -22,7 +28,7 @@ namespace ProductBatchLoading
 
             try
             {
-                using (var connection = new NpgsqlConnection("Host=127.0.0.1;Port=5432;Database=FlowerShop;Username=postgres;Password=5432"))
+                using (var connection = new NpgsqlConnection(_connectionString))
                 {
                     connection.Open();
 
@@ -34,7 +40,7 @@ namespace ProductBatchLoading
                             foreach (var product in batch.ProductsInfo)
                             {
                                 // Проверяем валидность данных перед вставкой
-                                if (product.Nomenclature <= 0 || product.Amount <= 0 || product.CostPrice <= 0)
+                                if (product.IdNomenclature <= 0 || product.Amount <= 0 || product.CostPrice <= 0)
                                 {
                                     transaction.Rollback();
                                     return false;
@@ -73,7 +79,7 @@ namespace ProductBatchLoading
                                 using (var command = new NpgsqlCommand(sql, connection, transaction))
                                 {
                                     command.Parameters.AddWithValue("@batchId", batch.Id);
-                                    command.Parameters.AddWithValue("@nomenclatureId", product.Nomenclature);
+                                    command.Parameters.AddWithValue("@nomenclatureId", product.IdNomenclature);
                                     command.Parameters.AddWithValue("@productionDate", product.ProductionDate);
                                     command.Parameters.AddWithValue("@expirationDate", product.ExpirationDate);
                                     command.Parameters.AddWithValue("@costPrice", (decimal)product.CostPrice);

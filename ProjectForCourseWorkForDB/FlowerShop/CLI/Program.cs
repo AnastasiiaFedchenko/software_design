@@ -1,13 +1,11 @@
 ﻿using Domain.InputPorts;
 using Domain.OutputPorts;
 using Domain;
-using ForecastAnalysis;
 using InventoryOfProducts;
 using Microsoft.Extensions.DependencyInjection;
 using ProductBatchReading;
 using ProductBatchLoading;
 using ReceiptOfSale;
-using SegmentAnalysis;
 using UserValidation;
 using System;
 using System.Runtime.InteropServices;
@@ -17,61 +15,63 @@ class Program
 {
     static void Main(string[] args)
     {
-
-        var menu = new Menu();
         int Id;
-        var type = Menu.WhatTypeOfUser(out Id);
+        var check_user = new CheckUsers();
+        var type = CheckUsers.WhatTypeOfUser(out Id);
+        string connectionString = null;
+
         switch (type)
         {
             case UserType.Administrator:
                 Console.WriteLine("Вы вошли как администратор.");
-                Menu.ShowAdminMenu(Id);
+                connectionString = "Host=127.0.0.1;Port=5432;Database=FlowerShop;Username=flower_admin;Password=admin_password";
                 break;
             case UserType.Seller:
                 Console.WriteLine("Вы вошли как продавец.");
-                Menu.ShowSellerMenu(Id);
+                connectionString = "Host=127.0.0.1;Port=5432;Database=FlowerShop;Username=flower_seller;Password=seller_password";
                 break;
             case UserType.Storekeeper:
                 Console.WriteLine("Вы вошли как кладовщик.");
-                Menu.ShowShopKeeperMenu(Id);
+                connectionString = "Host=127.0.0.1;Port=5432;Database=FlowerShop;Username=flower_storekeeper;Password=storekeeper_password";
                 break;
             case null:
                 Console.WriteLine("Ошибка: неверный ID или пароль.");
+                return; // Выходим из программы
+        }
+
+        // Создаем меню с передачей строки подключения
+        var menu = new Menu(connectionString);
+
+        // Показываем соответствующее меню
+        switch (type)
+        {
+            case UserType.Administrator:
+                menu.ShowAdminMenu(Id);
+                break;
+            case UserType.Seller:
+                menu.ShowSellerMenu(Id);
+                break;
+            case UserType.Storekeeper:
+                menu.ShowShopKeeperMenu(Id);
                 break;
         }
     }
 }
 
-class Menu
+class CheckUsers
 {
-    private static IServiceProvider serviceProvider;
+    private readonly IServiceProvider serviceProvider;
     private static IUserService userService;
-    private static IAnalysisService analysisService;
-    private static ILoadService loadService;
-    private static IProductService productService;
 
-    public Menu()
+    public CheckUsers()
     {
         serviceProvider = new ServiceCollection()
             .AddSingleton<IUserRepo, UserRepo>()
-            .AddSingleton<IInventoryRepo, InventoryRepo>()
-            .AddSingleton<IReceiptRepo, ReceiptRepo>()
-            .AddTransient<IForecastServiceAdapter, ForecastServiceAdapter>()
-            .AddTransient<IProductBatchLoader, ProductBatchLoader>()
-            .AddTransient<IProductBatchReader, ProductBatchReader>()
-            .AddTransient<IUserSegmentationServiceAdapter, UserSegmentationServiceAdapter>()
             .AddTransient<IUserService, UserService>()
-            .AddTransient<IAnalysisService, AnalysisService>()
-            .AddTransient<ILoadService, LoadService>()
-            .AddTransient<IProductService, ProductService>()
             .BuildServiceProvider();
 
         userService = serviceProvider.GetRequiredService<IUserService>();
-        analysisService = serviceProvider.GetRequiredService<IAnalysisService>();
-        loadService = serviceProvider.GetRequiredService<ILoadService>();
-        productService = serviceProvider.GetRequiredService<IProductService>();
     }
-
     public static UserType? WhatTypeOfUser(out int Id)
     {
         try
@@ -98,8 +98,33 @@ class Menu
             return null;
         }
     }
+}
 
-    public static void ShowAdminMenu(int Id)
+class Menu
+{
+    private readonly IServiceProvider serviceProvider;
+    private readonly string _connectionString;
+    private static ILoadService loadService;
+    private static IProductService productService;
+
+    public Menu(string connectionString)
+    {
+        _connectionString = connectionString;
+
+        serviceProvider = new ServiceCollection()
+            .AddSingleton<IInventoryRepo>(_ => new InventoryRepo(_connectionString))
+            .AddSingleton<IReceiptRepo>(_ => new ReceiptRepo(_connectionString))
+            .AddSingleton<IProductBatchLoader>(_ => new ProductBatchLoader(_connectionString))
+            .AddTransient<IProductBatchReader, ProductBatchReader>()
+            .AddTransient<ILoadService, LoadService>()
+            .AddTransient<IProductService, ProductService>()
+            .BuildServiceProvider();
+
+        loadService = serviceProvider.GetRequiredService<ILoadService>();
+        productService = serviceProvider.GetRequiredService<IProductService>();
+    }
+
+    public void ShowAdminMenu(int Id)
     {
         while (true)
         {
@@ -107,8 +132,6 @@ class Menu
             Console.WriteLine("=== ГЛАВНОЕ МЕНЮ ===");
             Console.WriteLine("1. Сделать заказ");
             Console.WriteLine("2. Загрузка информации о новой партии");
-            Console.WriteLine("3. Прогнозирование количества заказов");
-            Console.WriteLine("4. Сегментация клиентов");
             Console.WriteLine("0. Выход");
             Console.Write("Выберите пункт меню: ");
 
@@ -123,12 +146,6 @@ class Menu
                 case "2":
                     ShowLoadBatchMenu();
                     break;
-                case "3":
-                    ShowAmountOfOrdersForecast();
-                    break;
-                case "4":
-                    ShowUserSegmentation();
-                    break;
                 default:
                     Console.WriteLine("Неверный номер пункта меню. Попробуйте еще раз.");
                     Console.ReadKey();
@@ -136,7 +153,7 @@ class Menu
             }
         }
     }
-    public static void ShowSellerMenu(int Id)
+    public void ShowSellerMenu(int Id)
     {
         while (true)
         {
@@ -162,7 +179,7 @@ class Menu
         }
     }
 
-    public static void ShowShopKeeperMenu(int Id)
+    public void ShowShopKeeperMenu(int Id)
     {
         while (true)
         {
@@ -327,8 +344,12 @@ class Menu
                         Console.WriteLine("Корзина пуста.");
                     break;
                 case "6": // 6. Заказать
-                    productService.MakePurchase(items, customerID);
+                    var receipt = productService.MakePurchase(items, customerID);
                     items = new List<ReceiptLine>();
+                    if (receipt.Id == -1)
+                        Console.WriteLine($"Произошли проблемы при оформлении товара.");
+                    else
+                        Console.WriteLine($"Заказ оформлен. Номер чека {receipt.Id}");
                     break;
                 default:
                     Console.WriteLine("Неверный выбор. Попробуйте еще раз.");
@@ -358,33 +379,5 @@ class Menu
         {
             Console.WriteLine($"Ошибка: {ex.Message}");
         }
-    }
-
-    private static void ShowAmountOfOrdersForecast()
-    {
-        Console.Clear();
-        Console.WriteLine("=== Прогнозирование количества заказов ===");
-
-        var forecast = analysisService.GetForecastOfOrders();
-        Console.WriteLine($"Прогнозируемое количество заказов: {forecast.AmountOfOrders}");
-        Console.WriteLine($"Прогнозируемое количество товаров: {forecast.AmountOfProducts}");
-
-        Console.WriteLine("Нажмите любую клавишу для продолжения...");
-        Console.ReadKey();
-    }
-
-    private static void ShowUserSegmentation()
-    {
-        Console.Clear();
-        Console.WriteLine("=== Сегментация клиентов ===");
-
-        var segments = analysisService.GetUserSegmentation();
-        foreach (var segment in segments)
-        {
-            Console.WriteLine($"Тип сегмента: {segment.Type}, количество клиентов: {segment.Amount}");
-        }
-
-        Console.WriteLine("Нажмите любую клавишу для продолжения...");
-        Console.ReadKey();
     }
 }

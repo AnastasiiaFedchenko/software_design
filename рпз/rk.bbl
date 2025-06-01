@@ -1,0 +1,33 @@
+\begin{thebibliography}{1}
+\def\selectlanguageifdefined#1{
+\expandafter\ifx\csname date#1\endcsname\relax
+\else\language\csname l@#1\endcsname\fi}
+\ifx\undefined\url\def\url#1{{\small #1}}\else\fi
+\ifx\undefined\BibUrl\def\BibUrl#1{\url{#1}}\else\fi
+\ifx\undefined\BibAnnote\long\def\BibAnnote#1{(#1)}\else\fi
+\ifx\undefined\BibEmph\def\BibEmph#1{\emph{#1}}\else\fi
+
+\bibitem{c1}
+\selectlanguageifdefined{russian}
+"Полный список документации по программным
+  продуктам 1С [Электронный ресурс]".
+\newblock "Режим доступа:
+  \url{https://its.1c.ru/docs/program_documentation} (дата
+  обращения: 21.05.2025)".
+
+\bibitem{nosql}
+\selectlanguageifdefined{russian}
+А.О.~Фирсов. Исследование способов
+  применения NoSQL и реляционных баз данных.
+\newblock E-Scio, 2019.
+
+\bibitem{key_value}
+\selectlanguageifdefined{russian}
+ТКАЧЕНКО~А.В.~ВАСИЛЬЧИКОВА~А.В.~ГРИШУНОВ~С.С.
+  ОБЗОР КЛАССОВ НЕРЕЛЯЦИОННЫХ БАЗ ДАННЫХ.
+\newblock ЭЛЕКТРОННЫЙ ЖУРНАЛ: НАУКА, ТЕХНИКА И
+  ОБРАЗОВАНИЕ Издательство: Общество с
+  ограниченной ответственностью
+  "Манускрипт", 2016.
+
+\end{thebibliography}

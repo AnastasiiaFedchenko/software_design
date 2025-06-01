@@ -26,7 +26,17 @@ namespace Domain
             ProductBatch batch = _product_batch_reader.create(stream);
             Console.WriteLine("Needs to be loaded");
             for (int i = 0; i < batch.ProductsInfo.Count; i++)
-                Console.WriteLine($"{batch.ProductsInfo[i].Nomenclature} {batch.ProductsInfo[i].Amount}");
+            {
+                ProductInfo p = batch.ProductsInfo[i];
+                var sb = new StringBuilder();
+                sb.AppendLine("╔════════════════╦═════════════════════════╦════════════════╦══════════════╦════════════════╗");
+                sb.AppendLine("║ Номенклатура   ║ Даты (произв./годен)    ║ Количество     ║ Цена         ║ Срок годности  ║");
+                sb.AppendLine("╠════════════════╬═════════════════════════╬════════════════╬══════════════╬════════════════╣");
+                sb.AppendLine($"║ {p.IdNomenclature.ToString().PadRight(14)} ║ {p.ProductionDate:dd.MM.yyyy} / {p.ExpirationDate:dd.MM.yyyy} ║ {p.Amount.ToString().PadRight(14)} ║ {p.CostPrice:F2} руб. ║ {(p.ExpirationDate - DateTime.Today).Days} дней       ║");
+                sb.AppendLine("╚════════════════╩═════════════════════════╩════════════════╩══════════════╩════════════════╝");
+                Console.WriteLine(sb.ToString());
+            }
+
 
             return _product_batch_loader.load(batch);
         }

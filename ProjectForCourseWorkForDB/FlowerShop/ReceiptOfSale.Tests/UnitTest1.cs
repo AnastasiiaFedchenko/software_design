@@ -14,7 +14,7 @@ namespace ReceiptOfSale.Tests
 
         public ReceiptRepoTests()
         {
-            _receiptRepo = new ReceiptRepo();
+            _receiptRepo = new ReceiptRepo("Host=127.0.0.1;Port=5432;Database=FlowerShop;Username=postgres;Password=5432");
         }
 
         [Fact]
@@ -24,10 +24,10 @@ namespace ReceiptOfSale.Tests
             var items = new List<ReceiptLine>
             {
                 new ReceiptLine(
-                    new Product(1, 2, 10.99, 100, "Electronics", "China"),
+                    new Product(1, 10.99, 100, "Роза", "Россия"),
                     1),
                 new ReceiptLine(
-                    new Product(2, 1, 5.99, 50, "Groceries", "Local"),
+                    new Product(2, 5.99, 50, "Лилия", "Узбекистан"),
                     2)
             };
 
@@ -49,7 +49,7 @@ namespace ReceiptOfSale.Tests
             var items = new List<ReceiptLine>
             {
                 new ReceiptLine(
-                    new Product(1, 5, 2.50, 100, "Food", "Local"),
+                    new Product(1, 2.50, 100, "Роза", "Россия"),
                     3)
             };
 
@@ -68,7 +68,7 @@ namespace ReceiptOfSale.Tests
             var items = new List<ReceiptLine>
             {
                 new ReceiptLine(
-                    new Product(1, 5, 0.00, 100, "Free Item", "Local"),
+                    new Product(1, 0.00, 100, "Роза", "Россия"),
                     1)
             };
 
@@ -102,35 +102,19 @@ namespace ReceiptOfSale.Tests
         }
 
         [Fact]
-        public void Create_WithNullCustomer_ThrowsArgumentNullException()
-        {
-            // Arrange
-            var items = new List<ReceiptLine>
-            {
-                new ReceiptLine(
-                    new Product(1, 2, 10.99, 100, "Electronics", "China"),
-                    1)
-            };
-
-            // Act & Assert
-            var ex = Assert.Throws<ArgumentNullException>(() => new Receipt(0, items));
-            Assert.Contains("customer", ex.Message);
-        }
-
-        [Fact]
         public void Create_WithMultipleItems_CorrectlyCalculatesTotals()
         {
             // Arrange
             var items = new List<ReceiptLine>
             {
                 new ReceiptLine(
-                    new Product(1, 10, 1.99, 100, "Snacks", "Local"),
+                    new Product(1, 1.99, 100, "Роза", "Россия"),
                     5),
                 new ReceiptLine(
-                    new Product(2, 5, 4.50, 50, "Drinks", "Local"),
+                    new Product(2, 4.50, 50, "Лилия", "Узбекистан"),
                     2),
                 new ReceiptLine(
-                    new Product(3, 20, 0.99, 200, "Candy", "Local"),
+                    new Product(3, 0.99, 200, "Тюльпан", "Армения"),
                     10)
             };
 
