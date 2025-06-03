@@ -10,9 +10,9 @@ namespace ReceiptOfSale
     {
         private readonly string _connectionString;
 
-        public ReceiptRepo()
+        public ReceiptRepo(string connectionString)
         {
-            _connectionString = "Host=127.0.0.1;Port=5432;Database=FlowerShopPPO;Username=postgres;Password=5432";
+            _connectionString = connectionString;
         }
 
         public bool LoadReceiptItemsSale_UpdateAmount(ref Receipt receipt)

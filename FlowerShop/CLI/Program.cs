@@ -50,15 +50,16 @@ class Menu
     private static IAnalysisService analysisService;
     private static ILoadService loadService;
     private static IProductService productService;
+    private string _connectionString = "Host=127.0.0.1;Port=5432;Database=FlowerShopPPO;Username=postgres;Password=5432";
 
     public Menu()
     {
         serviceProvider = new ServiceCollection()
             .AddSingleton<IUserRepo, UserRepo>()
-            .AddSingleton<IInventoryRepo, InventoryRepo>()
-            .AddSingleton<IReceiptRepo, ReceiptRepo>()
+            .AddSingleton<IInventoryRepo>(_ => new InventoryRepo(_connectionString))
+            .AddSingleton<IReceiptRepo>(_ => new ReceiptRepo(_connectionString))
+            .AddSingleton<IProductBatchLoader>(_ => new ProductBatchLoader(_connectionString))
             .AddTransient<IForecastServiceAdapter, ForecastServiceAdapter>()
-            .AddTransient<IProductBatchLoader, ProductBatchLoader>()
             .AddTransient<IProductBatchReader, ProductBatchReader>()
             .AddTransient<IUserSegmentationServiceAdapter, UserSegmentationServiceAdapter>()
             .AddTransient<IUserService, UserService>()

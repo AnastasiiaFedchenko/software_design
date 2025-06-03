@@ -12,10 +12,17 @@ namespace InventoryOfProducts
 {
     public class InventoryRepo: IInventoryRepo
     {
+        private readonly string _connectionString;
+
+        public InventoryRepo(string connectionString)
+        {
+            _connectionString = connectionString;
+        }
+
         public Inventory GetAvailableProduct(int limit, int skip)
         {
             // Создаем подключение к базе данных
-            using var connection = new NpgsqlConnection("Host=127.0.0.1;Port=5432;Database=FlowerShopPPO;Username=postgres;Password=5432");
+            using var connection = new NpgsqlConnection(_connectionString);
             connection.Open();
 
             // Запрос для получения доступных продуктов с их номенклатурой, ценами и странами
@@ -85,7 +92,7 @@ namespace InventoryOfProducts
             if (productID <= 0)
                 throw new ArgumentException("Id товара не может быть отрицательным или равным нулю.");
             // Create database connection
-            using var connection = new NpgsqlConnection("Host=127.0.0.1;Port=5432;Database=FlowerShopPPO;Username=postgres;Password=5432");
+            using var connection = new NpgsqlConnection(_connectionString);
             connection.Open();
 
             var query = @"
@@ -144,7 +151,7 @@ namespace InventoryOfProducts
             if (product_id <= 0)
                 throw new ArgumentException("Id товара не может быть отрицательным или равным нулю.");
             // Создаем подключение к базе данных
-            using var connection = new NpgsqlConnection("Host=127.0.0.1;Port=5432;Database=FlowerShopPPO;Username=postgres;Password=5432");
+            using var connection = new NpgsqlConnection(_connectionString);
             connection.Open();
 
             // Запрос для получения суммы доступного количества товара в годных партиях

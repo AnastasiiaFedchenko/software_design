@@ -14,7 +14,7 @@ namespace ReceiptOfSale.Tests
 
         public ReceiptRepoTests()
         {
-            _receiptRepo = new ReceiptRepo();
+            _receiptRepo = new ReceiptRepo("Host=127.0.0.1;Port=5432;Database=FlowerShopPPO;Username=postgres;Password=5432");
         }
 
         [Fact]

@@ -1,5028 +1,2151 @@
 {
-  "total_orders": 66,
-  "total_products": 131724,
+  "total_orders": 59,
+  "forecast_start_date": "2025-05-29",
+  "forecast_end_date": "2025-06-04",
   "daily_forecast": [
-    {
-      "date": "2025-05-24",
-      "day_of_week": 5,
-      "orders": 9
-    },
-    {
-      "date": "2025-05-25",
-      "day_of_week": 6,
-      "orders": 9
-    },
-    {
-      "date": "2025-05-26",
-      "day_of_week": 0,
-      "orders": 11
-    },
-    {
-      "date": "2025-05-27",
-      "day_of_week": 1,
-      "orders": 9
-    },
-    {
-      "date": "2025-05-28",
-      "day_of_week": 2,
-      "orders": 9
-    },
     {
       "date": "2025-05-29",
       "day_of_week": 3,
-      "orders": 10
+      "orders": 6
     },
     {
       "date": "2025-05-30",
       "day_of_week": 4,
+      "orders": 6
+    },
+    {
+      "date": "2025-05-31",
+      "day_of_week": 5,
+      "orders": 10
+    },
+    {
+      "date": "2025-06-01",
+      "day_of_week": 6,
+      "orders": 11
+    },
+    {
+      "date": "2025-06-02",
+      "day_of_week": 0,
+      "orders": 10
+    },
+    {
+      "date": "2025-06-03",
+      "day_of_week": 1,
+      "orders": 9
+    },
+    {
+      "date": "2025-06-04",
+      "day_of_week": 2,
       "orders": 9
     }
   ],
   "products": [
     {
-      "product_id": 1,
-      "product_name": "Телопея",
-      "amount": 82
-    },
-    {
       "product_id": 2,
       "product_name": "Упаковочная бумага серебряная 1x100м",
-      "amount": 112
-    },
-    {
-      "product_id": 3,
-      "product_name": "Лента атласная сиреневая 100м",
-      "amount": 132
+      "predicted_demand": 51,
+      "current_stock": 0,
+      "amount": 8
     },
     {
       "product_id": 4,
       "product_name": "Сетария",
-      "amount": 150
-    },
-    {
-      "product_id": 5,
-      "product_name": "Амбрелла",
-      "amount": 96
-    },
-    {
-      "product_id": 6,
-      "product_name": "Упаковочная бумага золотая 1x100м",
-      "amount": 221
-    },
-    {
-      "product_id": 7,
-      "product_name": "Пихта",
-      "amount": 232
-    },
-    {
-      "product_id": 8,
-      "product_name": "Скиммия",
-      "amount": 192
-    },
-    {
-      "product_id": 9,
-      "product_name": "Антуриум",
-      "amount": 221
-    },
-    {
-      "product_id": 10,
-      "product_name": "Калла",
-      "amount": 234
-    },
-    {
-      "product_id": 11,
-      "product_name": "Ваза керамическая белая 25см",
-      "amount": 211
-    },
-    {
-      "product_id": 12,
-      "product_name": "Мискантус",
-      "amount": 237
-    },
-    {
-      "product_id": 13,
-      "product_name": "Книфофия",
-      "amount": 92
+      "predicted_demand": 98,
+      "current_stock": 2,
+      "amount": 14
     },
     {
       "product_id": 14,
       "product_name": "Кашпо керамическое 25см",
-      "amount": 214
-    },
-    {
-      "product_id": 15,
-      "product_name": "Сетка декоративная медовая 45смx100м",
-      "amount": 115
-    },
-    {
-      "product_id": 16,
-      "product_name": "Лента рафия натуральная 100м",
-      "amount": 50
-    },
-    {
-      "product_id": 17,
-      "product_name": "Хлопок",
-      "amount": 176
+      "predicted_demand": 94,
+      "current_stock": 0,
+      "amount": 15
     },
     {
       "product_id": 18,
       "product_name": "Упаковочная бумага крафт 1x100м",
-      "amount": 178
-    },
-    {
-      "product_id": 19,
-      "product_name": "Лента репсовая Пудра 100м",
-      "amount": 167
-    },
-    {
-      "product_id": 20,
-      "product_name": "Вероника",
-      "amount": 194
+      "predicted_demand": 41,
+      "current_stock": 0,
+      "amount": 6
     },
     {
       "product_id": 21,
       "product_name": "Эрика",
-      "amount": 259
-    },
-    {
-      "product_id": 22,
-      "product_name": "Лаванда",
-      "amount": 227
-    },
-    {
-      "product_id": 23,
-      "product_name": "Пион",
-      "amount": 106
-    },
-    {
-      "product_id": 24,
-      "product_name": "Гиппеаструм",
-      "amount": 173
-    },
-    {
-      "product_id": 25,
-      "product_name": "Телопея",
-      "amount": 159
-    },
-    {
-      "product_id": 26,
-      "product_name": "Ирис",
-      "amount": 141
-    },
-    {
-      "product_id": 27,
-      "product_name": "Ромашка",
-      "amount": 132
-    },
-    {
-      "product_id": 28,
-      "product_name": "Монстера",
-      "amount": 138
-    },
-    {
-      "product_id": 29,
-      "product_name": "Лента кружевная черная 100м",
-      "amount": 148
-    },
-    {
-      "product_id": 30,
-      "product_name": "Глориоза",
-      "amount": 122
+      "predicted_demand": 81,
+      "current_stock": 2,
+      "amount": 11
     },
     {
       "product_id": 31,
       "product_name": "Лента атласная золотая 100м",
-      "amount": 128
-    },
-    {
-      "product_id": 32,
-      "product_name": "Зверобой",
-      "amount": 118
-    },
-    {
-      "product_id": 33,
-      "product_name": "Молюцелла",
-      "amount": 115
-    },
-    {
-      "product_id": 34,
-      "product_name": "Проволока флористическая коричневая 1ммx100м",
-      "amount": 109
-    },
-    {
-      "product_id": 35,
-      "product_name": "Лента атласная белая 100м",
-      "amount": 135
-    },
-    {
-      "product_id": 36,
-      "product_name": "Пихта",
-      "amount": 122
-    },
-    {
-      "product_id": 37,
-      "product_name": "Хлопок",
-      "amount": 130
-    },
-    {
-      "product_id": 38,
-      "product_name": "Плёнка декоративная Золотые брызги 30смx100м",
-      "amount": 124
-    },
-    {
-      "product_id": 39,
-      "product_name": "Физалис",
-      "amount": 130
-    },
-    {
-      "product_id": 40,
-      "product_name": "Ваза напольная высокая 80см",
-      "amount": 123
-    },
-    {
-      "product_id": 41,
-      "product_name": "Лента джутовая натуральная 100м",
-      "amount": 145
-    },
-    {
-      "product_id": 42,
-      "product_name": "Блеск для листьев 300мл",
-      "amount": 112
+      "predicted_demand": 52,
+      "current_stock": 0,
+      "amount": 8
     },
     {
       "product_id": 43,
       "product_name": "Хлопок",
-      "amount": 194
-    },
-    {
-      "product_id": 44,
-      "product_name": "Вибурнум",
-      "amount": 214
+      "predicted_demand": 120,
+      "current_stock": 0,
+      "amount": 19
     },
     {
       "product_id": 45,
       "product_name": "Пион",
-      "amount": 182
-    },
-    {
-      "product_id": 46,
-      "product_name": "Ваза керамическая белая 25см",
-      "amount": 171
+      "predicted_demand": 112,
+      "current_stock": 6,
+      "amount": 12
     },
     {
       "product_id": 47,
       "product_name": "Флористическая плёнка прозрачная 50смx100м",
-      "amount": 164
+      "predicted_demand": 53,
+      "current_stock": 0,
+      "amount": 8
     },
     {
       "product_id": 48,
       "product_name": "Аллиум",
-      "amount": 145
-    },
-    {
-      "product_id": 49,
-      "product_name": "Филодендрон",
-      "amount": 86
-    },
-    {
-      "product_id": 50,
-      "product_name": "Хризантема",
-      "amount": 88
-    },
-    {
-      "product_id": 51,
-      "product_name": "Кипарисовик",
-      "amount": 81
+      "predicted_demand": 44,
+      "current_stock": 1,
+      "amount": 6
     },
     {
       "product_id": 52,
       "product_name": "Ваточник",
-      "amount": 118
-    },
-    {
-      "product_id": 53,
-      "product_name": "Проволока декоративная Под серебро 100мВаза стеклянная круглая 20см",
-      "amount": 154
-    },
-    {
-      "product_id": 54,
-      "product_name": "Галантус",
-      "amount": 127
+      "predicted_demand": 9,
+      "current_stock": 0,
+      "amount": 1
     },
     {
       "product_id": 55,
       "product_name": "Мускари",
-      "amount": 105
-    },
-    {
-      "product_id": 56,
-      "product_name": "Тилландсия",
-      "amount": 78
-    },
-    {
-      "product_id": 57,
-      "product_name": "Падуб",
-      "amount": 75
+      "predicted_demand": 13,
+      "current_stock": 0,
+      "amount": 2
     },
     {
       "product_id": 58,
       "product_name": "Георгина",
-      "amount": 70
-    },
-    {
-      "product_id": 59,
-      "product_name": "Ромашка",
-      "amount": 67
-    },
-    {
-      "product_id": 60,
-      "product_name": "Скабиоза",
-      "amount": 60
+      "predicted_demand": 12,
+      "current_stock": 0,
+      "amount": 2
     },
     {
       "product_id": 61,
       "product_name": "Лента атласная красная 100м",
-      "amount": 167
+      "predicted_demand": 70,
+      "current_stock": 6,
+      "amount": 5
     },
     {
       "product_id": 62,
       "product_name": "Геликония",
-      "amount": 158
+      "predicted_demand": 20,
+      "current_stock": 0,
+      "amount": 3
     },
     {
       "product_id": 63,
       "product_name": "Анигозантос",
-      "amount": 136
+      "predicted_demand": 28,
+      "current_stock": 0,
+      "amount": 4
     },
     {
       "product_id": 64,
       "product_name": "Лента рафия окрашенная (10 цветов) 100м",
-      "amount": 151
-    },
-    {
-      "product_id": 65,
-      "product_name": "Мускари",
-      "amount": 111
-    },
-    {
-      "product_id": 66,
-      "product_name": "Подставка для вазы 30см",
-      "amount": 50
-    },
-    {
-      "product_id": 67,
-      "product_name": "Лента атласная золотая 100м",
-      "amount": 116
-    },
-    {
-      "product_id": 68,
-      "product_name": "Ежевика",
-      "amount": 132
-    },
-    {
-      "product_id": 69,
-      "product_name": "Плёнка декоративная Мрамор 30смx100м",
-      "amount": 118
+      "predicted_demand": 24,
+      "current_stock": 1,
+      "amount": 3
     },
     {
       "product_id": 70,
       "product_name": "Астильба",
-      "amount": 87
-    },
-    {
-      "product_id": 71,
-      "product_name": "Капуста",
-      "amount": 46
-    },
-    {
-      "product_id": 72,
-      "product_name": "Удобрение для срезанных цветов 500мл",
-      "amount": 109
-    },
-    {
-      "product_id": 73,
-      "product_name": "Тюльпан",
-      "amount": 127
+      "predicted_demand": 50,
+      "current_stock": 3,
+      "amount": 5
     },
     {
       "product_id": 74,
       "product_name": "Фетр для упаковки бежевый 40смx100м",
-      "amount": 166
-    },
-    {
-      "product_id": 75,
-      "product_name": "Левкой",
-      "amount": 148
+      "predicted_demand": 62,
+      "current_stock": 0,
+      "amount": 10
     },
     {
       "product_id": 76,
       "product_name": "Глориоза",
-      "amount": 135
+      "predicted_demand": 6,
+      "current_stock": 0,
+      "amount": 1
     },
     {
       "product_id": 77,
       "product_name": "Упаковочная бумага черная 1x100м",
-      "amount": 125
-    },
-    {
-      "product_id": 78,
-      "product_name": "Кохия",
-      "amount": 135
-    },
-    {
-      "product_id": 79,
-      "product_name": "Анемона",
-      "amount": 129
+      "predicted_demand": 78,
+      "current_stock": 9,
+      "amount": 3
     },
     {
       "product_id": 80,
       "product_name": "Книфофия",
-      "amount": 151
-    },
-    {
-      "product_id": 81,
-      "product_name": "Блеск для листьев 300мл",
-      "amount": 132
-    },
-    {
-      "product_id": 82,
-      "product_name": "Роза",
-      "amount": 146
-    },
-    {
-      "product_id": 83,
-      "product_name": "Гортензия",
-      "amount": 121
+      "predicted_demand": 50,
+      "current_stock": 1,
+      "amount": 7
     },
     {
       "product_id": 84,
       "product_name": "Туя",
-      "amount": 128
-    },
-    {
-      "product_id": 85,
-      "product_name": "Ваза керамическая белая 25см",
-      "amount": 153
-    },
-    {
-      "product_id": 86,
-      "product_name": "Мимоза",
-      "amount": 183
+      "predicted_demand": 49,
+      "current_stock": 0,
+      "amount": 8
     },
     {
       "product_id": 87,
       "product_name": "Лента репсовая Мятная 100м",
-      "amount": 162
+      "predicted_demand": 13,
+      "current_stock": 0,
+      "amount": 2
     },
     {
       "product_id": 88,
       "product_name": "Сирень",
-      "amount": 250
-    },
-    {
-      "product_id": 89,
-      "product_name": "Лютик",
-      "amount": 242
-    },
-    {
-      "product_id": 90,
-      "product_name": "Тыква",
-      "amount": 230
-    },
-    {
-      "product_id": 91,
-      "product_name": "Лента атласная черная 100м",
-      "amount": 206
-    },
-    {
-      "product_id": 92,
-      "product_name": "Магнолия",
-      "amount": 191
-    },
-    {
-      "product_id": 93,
-      "product_name": "Органза для упаковки белая 50смx100м",
-      "amount": 164
-    },
-    {
-      "product_id": 94,
-      "product_name": "Лента рафия окрашенная (10 цветов) 100м",
-      "amount": 165
-    },
-    {
-      "product_id": 95,
-      "product_name": "Георгина",
-      "amount": 146
-    },
-    {
-      "product_id": 96,
-      "product_name": "Флебодиум",
-      "amount": 134
-    },
-    {
-      "product_id": 97,
-      "product_name": "Пихта",
-      "amount": 132
-    },
-    {
-      "product_id": 98,
-      "product_name": "Роза",
-      "amount": 144
-    },
-    {
-      "product_id": 99,
-      "product_name": "Калина",
-      "amount": 158
+      "predicted_demand": 54,
+      "current_stock": 0,
+      "amount": 9
     },
     {
       "product_id": 100,
       "product_name": "Фетр для упаковки бордовый 40смx100м",
-      "amount": 152
-    },
-    {
-      "product_id": 101,
-      "product_name": "Упаковочная бумага серебряная 1x100м",
-      "amount": 95
-    },
-    {
-      "product_id": 102,
-      "product_name": "Гортензия",
-      "amount": 113
-    },
-    {
-      "product_id": 103,
-      "product_name": "Лента атласная белая 100м",
-      "amount": 114
-    },
-    {
-      "product_id": 104,
-      "product_name": "Лента атласная золотая 100м",
-      "amount": 106
+      "predicted_demand": 8,
+      "current_stock": 0,
+      "amount": 1
     },
     {
       "product_id": 105,
       "product_name": "Сциндапсус",
-      "amount": 94
-    },
-    {
-      "product_id": 106,
-      "product_name": "Кипарисовик",
-      "amount": 110
-    },
-    {
-      "product_id": 107,
-      "product_name": "Сетария",
-      "amount": 109
-    },
-    {
-      "product_id": 108,
-      "product_name": "Лента атласная серебряная 100м",
-      "amount": 130
+      "predicted_demand": 60,
+      "current_stock": 2,
+      "amount": 8
     },
     {
       "product_id": 109,
       "product_name": "Краспедия",
-      "amount": 129
+      "predicted_demand": 15,
+      "current_stock": 0,
+      "amount": 2
     },
     {
       "product_id": 110,
       "product_name": "Дендробиум",
-      "amount": 148
-    },
-    {
-      "product_id": 111,
-      "product_name": "Пион",
-      "amount": 177
+      "predicted_demand": 19,
+      "current_stock": 0,
+      "amount": 3
     },
     {
       "product_id": 112,
       "product_name": "Лента джутовая цветная 100м",
-      "amount": 139
-    },
-    {
-      "product_id": 113,
-      "product_name": "Гениста",
-      "amount": 122
-    },
-    {
-      "product_id": 114,
-      "product_name": "Упаковочная бумага розовая 1x100м",
-      "amount": 72
-    },
-    {
-      "product_id": 115,
-      "product_name": "Ваза напольная высокая 80см",
-      "amount": 176
+      "predicted_demand": 30,
+      "current_stock": 0,
+      "amount": 5
     },
     {
       "product_id": 116,
       "product_name": "Фетр для упаковки оливковый 40смx100м",
-      "amount": 223
+      "predicted_demand": 65,
+      "current_stock": 0,
+      "amount": 10
     },
     {
       "product_id": 117,
       "product_name": "Органза для упаковки золотая 50смx100м",
-      "amount": 266
+      "predicted_demand": 45,
+      "current_stock": 0,
+      "amount": 7
     },
     {
       "product_id": 118,
       "product_name": "Мимоза",
-      "amount": 217
+      "predicted_demand": 109,
+      "current_stock": 12,
+      "amount": 6
     },
     {
       "product_id": 119,
       "product_name": "Аллиум",
-      "amount": 179
-    },
-    {
-      "product_id": 120,
-      "product_name": "Астра",
-      "amount": 159
-    },
-    {
-      "product_id": 121,
-      "product_name": "Лента кружевная белая 100м",
-      "amount": 172
-    },
-    {
-      "product_id": 122,
-      "product_name": "Гладиолус",
-      "amount": 153
-    },
-    {
-      "product_id": 123,
-      "product_name": "Серрурия",
-      "amount": 155
-    },
-    {
-      "product_id": 124,
-      "product_name": "Грин белл",
-      "amount": 144
+      "predicted_demand": 15,
+      "current_stock": 0,
+      "amount": 2
     },
     {
       "product_id": 125,
       "product_name": "Стрелиция",
-      "amount": 145
-    },
-    {
-      "product_id": 126,
-      "product_name": "Лента атласная черная 100м",
-      "amount": 113
-    },
-    {
-      "product_id": 127,
-      "product_name": "Дельфиниум",
-      "amount": 136
-    },
-    {
-      "product_id": 128,
-      "product_name": "Грин белл",
-      "amount": 137
-    },
-    {
-      "product_id": 129,
-      "product_name": "Гиппеаструм",
-      "amount": 171
-    },
-    {
-      "product_id": 130,
-      "product_name": "Нерине",
-      "amount": 137
+      "predicted_demand": 87,
+      "current_stock": 0,
+      "amount": 14
     },
     {
       "product_id": 131,
       "product_name": "Целозия",
-      "amount": 110
-    },
-    {
-      "product_id": 132,
-      "product_name": "Проволока флористическая зеленая 1ммx100м",
-      "amount": 125
+      "predicted_demand": 14,
+      "current_stock": 0,
+      "amount": 2
     },
     {
       "product_id": 133,
       "product_name": "Белосемянник",
-      "amount": 155
-    },
-    {
-      "product_id": 134,
-      "product_name": "Колба для цветов 15см",
-      "amount": 180
+      "predicted_demand": 40,
+      "current_stock": 0,
+      "amount": 6
     },
     {
       "product_id": 135,
       "product_name": "Удобрение для срезанных цветов 500мл",
-      "amount": 195
-    },
-    {
-      "product_id": 136,
-      "product_name": "Проволока декоративная Под серебро 100мВаза стеклянная круглая 20см",
-      "amount": 133
-    },
-    {
-      "product_id": 137,
-      "product_name": "Дельфиниум",
-      "amount": 146
-    },
-    {
-      "product_id": 138,
-      "product_name": "Лента джутовая натуральная 100м",
-      "amount": 128
-    },
-    {
-      "product_id": 139,
-      "product_name": "Сциндапсус",
-      "amount": 126
-    },
-    {
-      "product_id": 140,
-      "product_name": "Упаковочная бумага белая 1x100м",
-      "amount": 88
-    },
-    {
-      "product_id": 141,
-      "product_name": "Гортензия",
-      "amount": 140
+      "predicted_demand": 10,
+      "current_stock": 0,
+      "amount": 1
     },
     {
       "product_id": 142,
       "product_name": "Капуста",
-      "amount": 155
+      "predicted_demand": 7,
+      "current_stock": 0,
+      "amount": 1
     },
     {
       "product_id": 143,
       "product_name": "Анигозантос",
-      "amount": 169
+      "predicted_demand": 16,
+      "current_stock": 0,
+      "amount": 2
     },
     {
       "product_id": 144,
       "product_name": "Галантус",
-      "amount": 130
+      "predicted_demand": 61,
+      "current_stock": 8,
+      "amount": 2
     },
     {
       "product_id": 145,
       "product_name": "Удобрение для срезанных цветов 500мл",
-      "amount": 172
+      "predicted_demand": 16,
+      "current_stock": 0,
+      "amount": 2
     },
     {
       "product_id": 146,
       "product_name": "Ваза керамическая белая 25см",
-      "amount": 123
+      "predicted_demand": 29,
+      "current_stock": 0,
+      "amount": 4
     },
     {
       "product_id": 147,
       "product_name": "Кипарисовик",
-      "amount": 115
-    },
-    {
-      "product_id": 148,
-      "product_name": "Лента атласная зеленая 100м",
-      "amount": 140
-    },
-    {
-      "product_id": 149,
-      "product_name": "Аспарагус",
-      "amount": 139
+      "predicted_demand": 57,
+      "current_stock": 2,
+      "amount": 7
     },
     {
       "product_id": 150,
       "product_name": "Аспарагус",
-      "amount": 144
-    },
-    {
-      "product_id": 151,
-      "product_name": "Морозник",
-      "amount": 167
+      "predicted_demand": 141,
+      "current_stock": 0,
+      "amount": 23
     },
     {
       "product_id": 152,
       "product_name": "Лента джутовая натуральная 100м",
-      "amount": 167
+      "predicted_demand": 13,
+      "current_stock": 0,
+      "amount": 2
     },
     {
       "product_id": 153,
       "product_name": "Консервант для цветов 250г",
-      "amount": 110
-    },
-    {
-      "product_id": 154,
-      "product_name": "Геликония",
-      "amount": 33
+      "predicted_demand": 13,
+      "current_stock": 0,
+      "amount": 2
     },
     {
       "product_id": 155,
       "product_name": "Сирень",
-      "amount": 137
+      "predicted_demand": 23,
+      "current_stock": 0,
+      "amount": 3
     },
     {
       "product_id": 156,
       "product_name": "Нарцисс",
-      "amount": 161
-    },
-    {
-      "product_id": 157,
-      "product_name": "Лента рафия натуральная 100м",
-      "amount": 152
+      "predicted_demand": 8,
+      "current_stock": 0,
+      "amount": 1
     },
     {
       "product_id": 158,
       "product_name": "Астра",
-      "amount": 112
-    },
-    {
-      "product_id": 159,
-      "product_name": "Калла",
-      "amount": 168
-    },
-    {
-      "product_id": 160,
-      "product_name": "Хлопок",
-      "amount": 179
-    },
-    {
-      "product_id": 161,
-      "product_name": "Лента джутовая цветная 100м",
-      "amount": 248
+      "predicted_demand": 101,
+      "current_stock": 8,
+      "amount": 8
     },
     {
       "product_id": 162,
       "product_name": "Ирис",
-      "amount": 249
-    },
-    {
-      "product_id": 163,
-      "product_name": "Яблоки",
-      "amount": 309
-    },
-    {
-      "product_id": 164,
-      "product_name": "Вибурнум",
-      "amount": 176
-    },
-    {
-      "product_id": 165,
-      "product_name": "Флористическая плёнка зеленая 50смx100м",
-      "amount": 169
-    },
-    {
-      "product_id": 166,
-      "product_name": "Форзиция",
-      "amount": 166
-    },
-    {
-      "product_id": 167,
-      "product_name": "Калина",
-      "amount": 168
-    },
-    {
-      "product_id": 168,
-      "product_name": "Упаковочная бумага черная 1x100м",
-      "amount": 107
-    },
-    {
-      "product_id": 169,
-      "product_name": "Серрурия",
-      "amount": 168
+      "predicted_demand": 36,
+      "current_stock": 0,
+      "amount": 6
     },
     {
       "product_id": 170,
       "product_name": "Роза",
-      "amount": 137
-    },
-    {
-      "product_id": 171,
-      "product_name": "Зверобой",
-      "amount": 109
+      "predicted_demand": 88,
+      "current_stock": 3,
+      "amount": 11
     },
     {
       "product_id": 172,
       "product_name": "Плёнка декоративная Хром 30смx100м",
-      "amount": 116
-    },
-    {
-      "product_id": 173,
-      "product_name": "Грин белл",
-      "amount": 50
-    },
-    {
-      "product_id": 174,
-      "product_name": "Белосемянник",
-      "amount": 78
-    },
-    {
-      "product_id": 175,
-      "product_name": "Левкой",
-      "amount": 130
-    },
-    {
-      "product_id": 176,
-      "product_name": "Проволока флористическая коричневая 1ммx100м",
-      "amount": 104
-    },
-    {
-      "product_id": 177,
-      "product_name": "Лимониум",
-      "amount": 124
+      "predicted_demand": 17,
+      "current_stock": 0,
+      "amount": 2
     },
     {
       "product_id": 178,
       "product_name": "Антуриум",
-      "amount": 127
+      "predicted_demand": 39,
+      "current_stock": 0,
+      "amount": 6
     },
     {
       "product_id": 179,
       "product_name": "Леукадендрон",
-      "amount": 139
-    },
-    {
-      "product_id": 180,
-      "product_name": "Ирис",
-      "amount": 134
-    },
-    {
-      "product_id": 181,
-      "product_name": "Калла",
-      "amount": 143
-    },
-    {
-      "product_id": 182,
-      "product_name": "Дельфиниум",
-      "amount": 149
-    },
-    {
-      "product_id": 183,
-      "product_name": "Пион",
-      "amount": 117
+      "predicted_demand": 136,
+      "current_stock": 1,
+      "amount": 21
     },
     {
       "product_id": 184,
       "product_name": "Зверобой",
-      "amount": 201
-    },
-    {
-      "product_id": 185,
-      "product_name": "Ромашка",
-      "amount": 204
-    },
-    {
-      "product_id": 186,
-      "product_name": "Астра",
-      "amount": 161
-    },
-    {
-      "product_id": 187,
-      "product_name": "Амарант",
-      "amount": 179
-    },
-    {
-      "product_id": 188,
-      "product_name": "Амбрелла",
-      "amount": 108
+      "predicted_demand": 12,
+      "current_stock": 0,
+      "amount": 2
     },
     {
       "product_id": 189,
       "product_name": "Амми",
-      "amount": 60
+      "predicted_demand": 21,
+      "current_stock": 1,
+      "amount": 2
     },
     {
       "product_id": 190,
       "product_name": "Тилландсия",
-      "amount": 83
-    },
-    {
-      "product_id": 191,
-      "product_name": "Тилландсия",
-      "amount": 84
-    },
-    {
-      "product_id": 192,
-      "product_name": "Калла",
-      "amount": 99
-    },
-    {
-      "product_id": 193,
-      "product_name": "Мимоза",
-      "amount": 104
+      "predicted_demand": 39,
+      "current_stock": 0,
+      "amount": 6
     },
     {
       "product_id": 194,
       "product_name": "Фаленопсис",
-      "amount": 89
-    },
-    {
-      "product_id": 195,
-      "product_name": "Лента атласная белая 100м",
-      "amount": 99
-    },
-    {
-      "product_id": 196,
-      "product_name": "Лютик",
-      "amount": 106
-    },
-    {
-      "product_id": 197,
-      "product_name": "Упаковочная бумага золотая 1x100м",
-      "amount": 141
-    },
-    {
-      "product_id": 198,
-      "product_name": "Калла",
-      "amount": 159
-    },
-    {
-      "product_id": 199,
-      "product_name": "Фетр для упаковки бордовый 40смx100м",
-      "amount": 158
-    },
-    {
-      "product_id": 200,
-      "product_name": "Мимоза",
-      "amount": 177
-    },
-    {
-      "product_id": 201,
-      "product_name": "Упаковочная бумага золотая 1x100м",
-      "amount": 217
-    },
-    {
-      "product_id": 202,
-      "product_name": "Василек",
-      "amount": 242
-    },
-    {
-      "product_id": 203,
-      "product_name": "Белосемянник",
-      "amount": 233
-    },
-    {
-      "product_id": 205,
-      "product_name": "Лента кружевная черная 100м",
-      "amount": 112
-    },
-    {
-      "product_id": 206,
-      "product_name": "Цинерария",
-      "amount": 109
+      "predicted_demand": 46,
+      "current_stock": 4,
+      "amount": 3
     },
     {
       "product_id": 207,
       "product_name": "Подсолнух",
-      "amount": 116
+      "predicted_demand": 38,
+      "current_stock": 0,
+      "amount": 6
     },
     {
       "product_id": 208,
       "product_name": "Ванда",
-      "amount": 136
-    },
-    {
-      "product_id": 209,
-      "product_name": "Пион",
-      "amount": 121
+      "predicted_demand": 82,
+      "current_stock": 0,
+      "amount": 13
     },
     {
       "product_id": 210,
       "product_name": "Плёнка декоративная Золотые брызги 30смx100м",
-      "amount": 143
+      "predicted_demand": 50,
+      "current_stock": 0,
+      "amount": 8
     },
     {
       "product_id": 211,
       "product_name": "Тюльпан",
-      "amount": 112
-    },
-    {
-      "product_id": 212,
-      "product_name": "Мимоза",
-      "amount": 73
-    },
-    {
-      "product_id": 213,
-      "product_name": "Слива",
-      "amount": 94
-    },
-    {
-      "product_id": 214,
-      "product_name": "Спирея",
-      "amount": 82
-    },
-    {
-      "product_id": 215,
-      "product_name": "Дендробиум",
-      "amount": 88
-    },
-    {
-      "product_id": 216,
-      "product_name": "Пион",
-      "amount": 168
-    },
-    {
-      "product_id": 217,
-      "product_name": "Скиммия",
-      "amount": 184
+      "predicted_demand": 18,
+      "current_stock": 0,
+      "amount": 3
     },
     {
       "product_id": 218,
       "product_name": "Леукадендрон",
-      "amount": 152
-    },
-    {
-      "product_id": 219,
-      "product_name": "Лента атласная черная 100м",
-      "amount": 101
-    },
-    {
-      "product_id": 220,
-      "product_name": "Гортензия",
-      "amount": 120
+      "predicted_demand": 42,
+      "current_stock": 0,
+      "amount": 7
     },
     {
       "product_id": 221,
       "product_name": "Анемона",
-      "amount": 125
+      "predicted_demand": 12,
+      "current_stock": 0,
+      "amount": 2
     },
     {
       "product_id": 222,
       "product_name": "Монстера",
-      "amount": 129
-    },
-    {
-      "product_id": 223,
-      "product_name": "Нигелла",
-      "amount": 92
+      "predicted_demand": 72,
+      "current_stock": 0,
+      "amount": 12
     },
     {
       "product_id": 224,
       "product_name": "Филодендрон",
-      "amount": 103
+      "predicted_demand": 73,
+      "current_stock": 5,
+      "amount": 7
     },
     {
       "product_id": 225,
       "product_name": "Зверобой",
-      "amount": 129
-    },
-    {
-      "product_id": 226,
-      "product_name": "Паникум",
-      "amount": 155
-    },
-    {
-      "product_id": 227,
-      "product_name": "Астильба",
-      "amount": 117
-    },
-    {
-      "product_id": 228,
-      "product_name": "Гладиолус",
-      "amount": 112
+      "predicted_demand": 18,
+      "current_stock": 2,
+      "amount": 1
     },
     {
       "product_id": 229,
       "product_name": "Мускари",
-      "amount": 120
-    },
-    {
-      "product_id": 230,
-      "product_name": "Телопея",
-      "amount": 157
-    },
-    {
-      "product_id": 231,
-      "product_name": "Ромашка",
-      "amount": 154
-    },
-    {
-      "product_id": 232,
-      "product_name": "Упаковочная бумага розовая 1x100м",
-      "amount": 149
-    },
-    {
-      "product_id": 233,
-      "product_name": "Хлопок",
-      "amount": 128
-    },
-    {
-      "product_id": 234,
-      "product_name": "Лента рафия окрашенная (10 цветов) 100м",
-      "amount": 129
+      "predicted_demand": 6,
+      "current_stock": 0,
+      "amount": 1
     },
     {
       "product_id": 235,
       "product_name": "Эрика",
-      "amount": 119
-    },
-    {
-      "product_id": 236,
-      "product_name": "Флористическая плёнка зеленая 50смx100м",
-      "amount": 161
-    },
-    {
-      "product_id": 237,
-      "product_name": "Книфофия",
-      "amount": 140
-    },
-    {
-      "product_id": 238,
-      "product_name": "Лента репсовая Мятная 100м",
-      "amount": 130
+      "predicted_demand": 40,
+      "current_stock": 0,
+      "amount": 6
     },
     {
       "product_id": 239,
       "product_name": "Сетария",
-      "amount": 131
-    },
-    {
-      "product_id": 240,
-      "product_name": "Бруния",
-      "amount": 170
-    },
-    {
-      "product_id": 241,
-      "product_name": "Книфофия",
-      "amount": 188
+      "predicted_demand": 53,
+      "current_stock": 0,
+      "amount": 8
     },
     {
       "product_id": 242,
       "product_name": "Лента атласная сиреневая 100м",
-      "amount": 205
+      "predicted_demand": 83,
+      "current_stock": 0,
+      "amount": 13
     },
     {
       "product_id": 243,
       "product_name": "Туя",
-      "amount": 188
-    },
-    {
-      "product_id": 244,
-      "product_name": "Сциндапсус",
-      "amount": 176
-    },
-    {
-      "product_id": 245,
-      "product_name": "Анемона",
-      "amount": 175
-    },
-    {
-      "product_id": 246,
-      "product_name": "Белосемянник",
-      "amount": 159
-    },
-    {
-      "product_id": 247,
-      "product_name": "Лента репсовая Шампань 100м",
-      "amount": 149
-    },
-    {
-      "product_id": 248,
-      "product_name": "Ирис",
-      "amount": 128
+      "predicted_demand": 22,
+      "current_stock": 0,
+      "amount": 3
     },
     {
       "product_id": 249,
       "product_name": "Сциндапсус",
-      "amount": 126
-    },
-    {
-      "product_id": 250,
-      "product_name": "Проволока декоративная Под серебро 100мВаза стеклянная круглая 20см",
-      "amount": 126
-    },
-    {
-      "product_id": 251,
-      "product_name": "Лента джутовая натуральная 100м",
-      "amount": 110
-    },
-    {
-      "product_id": 252,
-      "product_name": "Ваза напольная высокая 80см",
-      "amount": 98
-    },
-    {
-      "product_id": 253,
-      "product_name": "Упаковочная бумага крафт 1x100м",
-      "amount": 158
-    },
-    {
-      "product_id": 254,
-      "product_name": "Проволока декоративная Под серебро 100мВаза стеклянная круглая 20см",
-      "amount": 151
-    },
-    {
-      "product_id": 255,
-      "product_name": "Консервант для цветов 250г",
-      "amount": 153
-    },
-    {
-      "product_id": 256,
-      "product_name": "Упаковочная бумага розовая 1x100м",
-      "amount": 170
-    },
-    {
-      "product_id": 257,
-      "product_name": "Туя",
-      "amount": 183
-    },
-    {
-      "product_id": 258,
-      "product_name": "Тыква",
-      "amount": 179
+      "predicted_demand": 41,
+      "current_stock": 0,
+      "amount": 6
     },
     {
       "product_id": 259,
       "product_name": "Левкой",
-      "amount": 142
-    },
-    {
-      "product_id": 260,
-      "product_name": "Упаковочная бумага белая 1x100м",
-      "amount": 158
-    },
-    {
-      "product_id": 261,
-      "product_name": "Упаковочная бумага золотая 1x100м",
-      "amount": 142
-    },
-    {
-      "product_id": 262,
-      "product_name": "Скабиоза",
-      "amount": 172
+      "predicted_demand": 69,
+      "current_stock": 8,
+      "amount": 3
     },
     {
       "product_id": 263,
       "product_name": "Мискантус",
-      "amount": 216
-    },
-    {
-      "product_id": 264,
-      "product_name": "Фаленопсис",
-      "amount": 235
+      "predicted_demand": 63,
+      "current_stock": 5,
+      "amount": 5
     },
     {
       "product_id": 265,
       "product_name": "Морозник",
-      "amount": 219
-    },
-    {
-      "product_id": 266,
-      "product_name": "Зверобой",
-      "amount": 201
+      "predicted_demand": 55,
+      "current_stock": 0,
+      "amount": 9
     },
     {
       "product_id": 267,
       "product_name": "Грин белл",
-      "amount": 174
+      "predicted_demand": 6,
+      "current_stock": 0,
+      "amount": 1
     },
     {
       "product_id": 268,
       "product_name": "Книфофия",
-      "amount": 183
-    },
-    {
-      "product_id": 269,
-      "product_name": "Калина",
-      "amount": 161
-    },
-    {
-      "product_id": 270,
-      "product_name": "Овес",
-      "amount": 169
-    },
-    {
-      "product_id": 271,
-      "product_name": "Целозия",
-      "amount": 76
-    },
-    {
-      "product_id": 272,
-      "product_name": "Тюльпан",
-      "amount": 263
-    },
-    {
-      "product_id": 273,
-      "product_name": "Телопея",
-      "amount": 223
+      "predicted_demand": 50,
+      "current_stock": 0,
+      "amount": 8
     },
     {
       "product_id": 274,
       "product_name": "Леукадендрон",
-      "amount": 181
-    },
-    {
-      "product_id": 275,
-      "product_name": "Плёнка декоративная Мрамор 30смx100м",
-      "amount": 184
-    },
-    {
-      "product_id": 276,
-      "product_name": "Сциндапсус",
-      "amount": 156
-    },
-    {
-      "product_id": 277,
-      "product_name": "Глориоза",
-      "amount": 134
+      "predicted_demand": 22,
+      "current_stock": 0,
+      "amount": 3
     },
     {
       "product_id": 278,
       "product_name": "Хлопок",
-      "amount": 117
-    },
-    {
-      "product_id": 279,
-      "product_name": "Грин белл",
-      "amount": 103
-    },
-    {
-      "product_id": 280,
-      "product_name": "Лента атласная красная 100м",
-      "amount": 100
+      "predicted_demand": 20,
+      "current_stock": 0,
+      "amount": 3
     },
     {
       "product_id": 281,
       "product_name": "Эрика",
-      "amount": 150
-    },
-    {
-      "product_id": 282,
-      "product_name": "Левкой",
-      "amount": 145
-    },
-    {
-      "product_id": 283,
-      "product_name": "Удобрение для срезанных цветов 500мл",
-      "amount": 170
-    },
-    {
-      "product_id": 284,
-      "product_name": "Лимониум",
-      "amount": 147
+      "predicted_demand": 11,
+      "current_stock": 0,
+      "amount": 1
     },
     {
       "product_id": 285,
       "product_name": "Фетр для упаковки бежевый 40смx100м",
-      "amount": 183
-    },
-    {
-      "product_id": 286,
-      "product_name": "Лютик",
-      "amount": 173
-    },
-    {
-      "product_id": 287,
-      "product_name": "Целозия",
-      "amount": 149
-    },
-    {
-      "product_id": 288,
-      "product_name": "Вибурнум",
-      "amount": 137
-    },
-    {
-      "product_id": 289,
-      "product_name": "Ромашка",
-      "amount": 141
-    },
-    {
-      "product_id": 290,
-      "product_name": "Вибурнум",
-      "amount": 172
-    },
-    {
-      "product_id": 291,
-      "product_name": "Лента атласная бордовая 100м",
-      "amount": 205
-    },
-    {
-      "product_id": 292,
-      "product_name": "Перец",
-      "amount": 225
+      "predicted_demand": 16,
+      "current_stock": 0,
+      "amount": 2
     },
     {
       "product_id": 293,
       "product_name": "Филодендрон",
-      "amount": 240
+      "predicted_demand": 26,
+      "current_stock": 0,
+      "amount": 4
     },
     {
       "product_id": 294,
       "product_name": "Латирус",
-      "amount": 185
-    },
-    {
-      "product_id": 295,
-      "product_name": "Астильба",
-      "amount": 184
-    },
-    {
-      "product_id": 296,
-      "product_name": "Незабудка",
-      "amount": 79
-    },
-    {
-      "product_id": 297,
-      "product_name": "Слива",
-      "amount": 73
-    },
-    {
-      "product_id": 298,
-      "product_name": "Лента репсовая Мятная 100м",
-      "amount": 149
+      "predicted_demand": 10,
+      "current_stock": 0,
+      "amount": 1
     },
     {
       "product_id": 299,
       "product_name": "Латирус",
-      "amount": 149
+      "predicted_demand": 101,
+      "current_stock": 0,
+      "amount": 16
     },
     {
       "product_id": 300,
       "product_name": "Проволока декоративная Под золото 100м",
-      "amount": 52
-    },
-    {
-      "product_id": 301,
-      "product_name": "Кипарисовик",
-      "amount": 48
-    },
-    {
-      "product_id": 302,
-      "product_name": "Упаковочная бумага голубая 1x100м",
-      "amount": 22
+      "predicted_demand": 21,
+      "current_stock": 0,
+      "amount": 3
     },
     {
       "product_id": 303,
       "product_name": "Лента репсовая Пудра 100м",
-      "amount": 53
+      "predicted_demand": 11,
+      "current_stock": 0,
+      "amount": 1
     },
     {
       "product_id": 304,
       "product_name": "Телопея",
-      "amount": 53
+      "predicted_demand": 17,
+      "current_stock": 0,
+      "amount": 2
     },
     {
       "product_id": 305,
       "product_name": "Фетр для упаковки бордовый 40смx100м",
-      "amount": 48
+      "predicted_demand": 22,
+      "current_stock": 0,
+      "amount": 3
     },
     {
       "product_id": 306,
       "product_name": "Геликония",
-      "amount": 48
-    },
-    {
-      "product_id": 307,
-      "product_name": "Колба для цветов 15см",
-      "amount": 50
-    },
-    {
-      "product_id": 308,
-      "product_name": "Монстера",
-      "amount": 62
+      "predicted_demand": 18,
+      "current_stock": 0,
+      "amount": 3
     },
     {
       "product_id": 309,
       "product_name": "Лента атласная золотая 100м",
-      "amount": 74
-    },
-    {
-      "product_id": 310,
-      "product_name": "Лента атласная красная 100м",
-      "amount": 57
+      "predicted_demand": 40,
+      "current_stock": 0,
+      "amount": 6
     },
     {
       "product_id": 311,
       "product_name": "Паникум",
-      "amount": 111
-    },
-    {
-      "product_id": 312,
-      "product_name": "Аспарагус",
-      "amount": 114
-    },
-    {
-      "product_id": 313,
-      "product_name": "Сциндапсус",
-      "amount": 13
+      "predicted_demand": 93,
+      "current_stock": 0,
+      "amount": 15
     },
     {
       "product_id": 314,
       "product_name": "Флористическая плёнка прозрачная 50смx100м",
-      "amount": 103
-    },
-    {
-      "product_id": 315,
-      "product_name": "Подсолнух",
-      "amount": 124
+      "predicted_demand": 50,
+      "current_stock": 5,
+      "amount": 3
     },
     {
       "product_id": 316,
       "product_name": "Сциндапсус",
-      "amount": 146
-    },
-    {
-      "product_id": 317,
-      "product_name": "Амарант",
-      "amount": 140
-    },
-    {
-      "product_id": 318,
-      "product_name": "Монстера",
-      "amount": 128
+      "predicted_demand": 58,
+      "current_stock": 2,
+      "amount": 7
     },
     {
       "product_id": 319,
       "product_name": "Гиацинт",
-      "amount": 126
+      "predicted_demand": 104,
+      "current_stock": 2,
+      "amount": 15
     },
     {
       "product_id": 320,
       "product_name": "Сетка декоративная медовая 45смx100м",
-      "amount": 115
-    },
-    {
-      "product_id": 321,
-      "product_name": "Дендробиум",
-      "amount": 80
-    },
-    {
-      "product_id": 322,
-      "product_name": "Блеск для листьев 300мл",
-      "amount": 59
+      "predicted_demand": 41,
+      "current_stock": 0,
+      "amount": 6
     },
     {
       "product_id": 323,
       "product_name": "Упаковочная бумага черная 1x100м",
-      "amount": 83
-    },
-    {
-      "product_id": 324,
-      "product_name": "Латирус",
-      "amount": 128
+      "predicted_demand": 21,
+      "current_stock": 0,
+      "amount": 3
     },
     {
       "product_id": 325,
       "product_name": "Слива",
-      "amount": 107
+      "predicted_demand": 60,
+      "current_stock": 0,
+      "amount": 10
     },
     {
       "product_id": 326,
       "product_name": "Лента атласная золотая 100м",
-      "amount": 112
+      "predicted_demand": 90,
+      "current_stock": 0,
+      "amount": 15
     },
     {
       "product_id": 327,
       "product_name": "Плёнка декоративная Мрамор 30смx100м",
-      "amount": 79
-    },
-    {
-      "product_id": 328,
-      "product_name": "Физалис",
-      "amount": 98
+      "predicted_demand": 34,
+      "current_stock": 2,
+      "amount": 3
     },
     {
       "product_id": 329,
       "product_name": "Лента атласная бордовая 100м",
-      "amount": 107
+      "predicted_demand": 34,
+      "current_stock": 0,
+      "amount": 5
     },
     {
       "product_id": 330,
       "product_name": "Тилландсия",
-      "amount": 145
-    },
-    {
-      "product_id": 331,
-      "product_name": "Ванда",
-      "amount": 136
-    },
-    {
-      "product_id": 332,
-      "product_name": "Калина",
-      "amount": 147
-    },
-    {
-      "product_id": 333,
-      "product_name": "Гениста",
-      "amount": 119
+      "predicted_demand": 48,
+      "current_stock": 1,
+      "amount": 7
     },
     {
       "product_id": 334,
       "product_name": "Капуста",
-      "amount": 144
+      "predicted_demand": 68,
+      "current_stock": 0,
+      "amount": 11
     },
     {
       "product_id": 335,
       "product_name": "Упаковочная бумага голубая 1x100м",
-      "amount": 144
-    },
-    {
-      "product_id": 336,
-      "product_name": "Глориоза",
-      "amount": 122
-    },
-    {
-      "product_id": 337,
-      "product_name": "Гортензия",
-      "amount": 126
+      "predicted_demand": 33,
+      "current_stock": 0,
+      "amount": 5
     },
     {
       "product_id": 338,
       "product_name": "Латирус",
-      "amount": 70
+      "predicted_demand": 18,
+      "current_stock": 0,
+      "amount": 2
     },
     {
       "product_id": 339,
       "product_name": "Подставка для вазы 30см",
-      "amount": 71
+      "predicted_demand": 19,
+      "current_stock": 0,
+      "amount": 3
     },
     {
       "product_id": 340,
       "product_name": "Амми",
-      "amount": 64
-    },
-    {
-      "product_id": 341,
-      "product_name": "Монстера",
-      "amount": 52
-    },
-    {
-      "product_id": 342,
-      "product_name": "Ежевика",
-      "amount": 55
-    },
-    {
-      "product_id": 343,
-      "product_name": "Кохия",
-      "amount": 58
+      "predicted_demand": 6,
+      "current_stock": 0,
+      "amount": 1
     },
     {
       "product_id": 344,
       "product_name": "Лента репсовая Мятная 100м",
-      "amount": 83
-    },
-    {
-      "product_id": 345,
-      "product_name": "Слива",
-      "amount": 104
-    },
-    {
-      "product_id": 346,
-      "product_name": "Гортензия",
-      "amount": 165
-    },
-    {
-      "product_id": 347,
-      "product_name": "Подсолнух",
-      "amount": 187
-    },
-    {
-      "product_id": 348,
-      "product_name": "Проволока флористическая коричневая 1ммx100м",
-      "amount": 165
-    },
-    {
-      "product_id": 349,
-      "product_name": "Лента атласная голубая 100м",
-      "amount": 163
-    },
-    {
-      "product_id": 350,
-      "product_name": "Сетка декоративная медовая 45смx100м",
-      "amount": 120
-    },
-    {
-      "product_id": 351,
-      "product_name": "Сетка декоративная серебряная 45смx100м",
-      "amount": 108
-    },
-    {
-      "product_id": 352,
-      "product_name": "Ромашка",
-      "amount": 81
-    },
-    {
-      "product_id": 353,
-      "product_name": "Лента атласная розовая 100м",
-      "amount": 79
-    },
-    {
-      "product_id": 354,
-      "product_name": "Подсолнух",
-      "amount": 66
-    },
-    {
-      "product_id": 355,
-      "product_name": "Овес",
-      "amount": 75
-    },
-    {
-      "product_id": 356,
-      "product_name": "Цикас",
-      "amount": 74
+      "predicted_demand": 14,
+      "current_stock": 0,
+      "amount": 2
     },
     {
       "product_id": 357,
       "product_name": "Ваза керамическая белая 25см",
-      "amount": 71
-    },
-    {
-      "product_id": 358,
-      "product_name": "Глориоза",
-      "amount": 58
+      "predicted_demand": 25,
+      "current_stock": 0,
+      "amount": 4
     },
     {
       "product_id": 359,
       "product_name": "Кашпо пластиковое 30см",
-      "amount": 68
-    },
-    {
-      "product_id": 360,
-      "product_name": "Тилландсия",
-      "amount": 64
-    },
-    {
-      "product_id": 361,
-      "product_name": "Скабиоза",
-      "amount": 97
-    },
-    {
-      "product_id": 362,
-      "product_name": "Георгина",
-      "amount": 119
-    },
-    {
-      "product_id": 363,
-      "product_name": "Слива",
-      "amount": 116
-    },
-    {
-      "product_id": 364,
-      "product_name": "Телопея",
-      "amount": 136
-    },
-    {
-      "product_id": 365,
-      "product_name": "Роза",
-      "amount": 120
+      "predicted_demand": 50,
+      "current_stock": 1,
+      "amount": 7
     },
     {
       "product_id": 366,
       "product_name": "Антуриум",
-      "amount": 79
-    },
-    {
-      "product_id": 367,
-      "product_name": "Филодендрон",
-      "amount": 77
-    },
-    {
-      "product_id": 368,
-      "product_name": "Мимоза",
-      "amount": 55
-    },
-    {
-      "product_id": 369,
-      "product_name": "Яблоки",
-      "amount": 72
-    },
-    {
-      "product_id": 370,
-      "product_name": "Проволока флористическая зеленая 1ммx100м",
-      "amount": 72
-    },
-    {
-      "product_id": 371,
-      "product_name": "Целозия",
-      "amount": 43
+      "predicted_demand": 55,
+      "current_stock": 0,
+      "amount": 9
     },
     {
       "product_id": 372,
       "product_name": "Лента репсовая Пудра 100м",
-      "amount": 98
-    },
-    {
-      "product_id": 373,
-      "product_name": "Лента джутовая цветная 100м",
-      "amount": 113
-    },
-    {
-      "product_id": 374,
-      "product_name": "Аллиум",
-      "amount": 95
-    },
-    {
-      "product_id": 375,
-      "product_name": "Лента атласная черная 100м",
-      "amount": 85
-    },
-    {
-      "product_id": 376,
-      "product_name": "Паникум",
-      "amount": 99
-    },
-    {
-      "product_id": 377,
-      "product_name": "Капуста",
-      "amount": 121
+      "predicted_demand": 61,
+      "current_stock": 9,
+      "amount": 1
     },
     {
       "product_id": 378,
       "product_name": "Блеск для листьев 300мл",
-      "amount": 115
-    },
-    {
-      "product_id": 379,
-      "product_name": "Сетка декоративная серебряная 45смx100м",
-      "amount": 104
+      "predicted_demand": 8,
+      "current_stock": 0,
+      "amount": 1
     },
     {
       "product_id": 380,
       "product_name": "Гиацинт",
-      "amount": 115
-    },
-    {
-      "product_id": 381,
-      "product_name": "Морозник",
-      "amount": 123
-    },
-    {
-      "product_id": 382,
-      "product_name": "Пион",
-      "amount": 111
-    },
-    {
-      "product_id": 383,
-      "product_name": "Василек",
-      "amount": 56
-    },
-    {
-      "product_id": 384,
-      "product_name": "Гениста",
-      "amount": 96
+      "predicted_demand": 30,
+      "current_stock": 0,
+      "amount": 5
     },
     {
       "product_id": 385,
       "product_name": "Дуб",
-      "amount": 128
+      "predicted_demand": 50,
+      "current_stock": 0,
+      "amount": 8
     },
     {
       "product_id": 386,
       "product_name": "Мискантус",
-      "amount": 104
+      "predicted_demand": 126,
+      "current_stock": 2,
+      "amount": 18
     },
     {
       "product_id": 387,
       "product_name": "Тилландсия",
-      "amount": 136
+      "predicted_demand": 45,
+      "current_stock": 1,
+      "amount": 6
     },
     {
       "product_id": 388,
       "product_name": "Лента кружевная черная 100м",
-      "amount": 93
+      "predicted_demand": 50,
+      "current_stock": 0,
+      "amount": 8
     },
     {
       "product_id": 389,
       "product_name": "Гиацинт",
-      "amount": 121
+      "predicted_demand": 7,
+      "current_stock": 0,
+      "amount": 1
     },
     {
       "product_id": 390,
       "product_name": "Геликония",
-      "amount": 103
+      "predicted_demand": 10,
+      "current_stock": 0,
+      "amount": 1
     },
     {
       "product_id": 391,
       "product_name": "Лента атласная серебряная 100м",
-      "amount": 102
-    },
-    {
-      "product_id": 392,
-      "product_name": "Физалис",
-      "amount": 122
-    },
-    {
-      "product_id": 393,
-      "product_name": "Магнолия",
-      "amount": 109
-    },
-    {
-      "product_id": 394,
-      "product_name": "Фетр для упаковки оливковый 40смx100м",
-      "amount": 108
-    },
-    {
-      "product_id": 395,
-      "product_name": "Серрурия",
-      "amount": 120
-    },
-    {
-      "product_id": 396,
-      "product_name": "Лента атласная красная 100м",
-      "amount": 126
-    },
-    {
-      "product_id": 397,
-      "product_name": "Скабиоза",
-      "amount": 129
-    },
-    {
-      "product_id": 398,
-      "product_name": "Хлопок",
-      "amount": 118
-    },
-    {
-      "product_id": 399,
-      "product_name": "Магнолия",
-      "amount": 144
-    },
-    {
-      "product_id": 400,
-      "product_name": "Калла",
-      "amount": 148
-    },
-    {
-      "product_id": 401,
-      "product_name": "Органза для упаковки перламутровая 50смx100м",
-      "amount": 55
+      "predicted_demand": 33,
+      "current_stock": 0,
+      "amount": 5
     },
     {
       "product_id": 402,
       "product_name": "Подставка для вазы 30см",
-      "amount": 155
-    },
-    {
-      "product_id": 403,
-      "product_name": "Сетка декоративная медовая 45смx100м",
-      "amount": 55
-    },
-    {
-      "product_id": 404,
-      "product_name": "Спирея",
-      "amount": 82
-    },
-    {
-      "product_id": 405,
-      "product_name": "Эрика",
-      "amount": 80
-    },
-    {
-      "product_id": 406,
-      "product_name": "Сетка декоративная серебряная 45смx100м",
-      "amount": 96
-    },
-    {
-      "product_id": 407,
-      "product_name": "Подсолнух",
-      "amount": 109
-    },
-    {
-      "product_id": 408,
-      "product_name": "Дуб",
-      "amount": 58
-    },
-    {
-      "product_id": 409,
-      "product_name": "Лимониум",
-      "amount": 107
-    },
-    {
-      "product_id": 410,
-      "product_name": "Левкой",
-      "amount": 102
+      "predicted_demand": 34,
+      "current_stock": 0,
+      "amount": 5
     },
     {
       "product_id": 411,
       "product_name": "Фетр для упаковки бежевый 40смx100м",
-      "amount": 105
-    },
-    {
-      "product_id": 412,
-      "product_name": "Хлопок",
-      "amount": 79
+      "predicted_demand": 58,
+      "current_stock": 8,
+      "amount": 1
     },
     {
       "product_id": 413,
       "product_name": "Удобрение для срезанных цветов 500мл",
-      "amount": 78
-    },
-    {
-      "product_id": 414,
-      "product_name": "Овес",
-      "amount": 55
-    },
-    {
-      "product_id": 415,
-      "product_name": "Лента кружевная белая 100м",
-      "amount": 84
-    },
-    {
-      "product_id": 416,
-      "product_name": "Хлопок",
-      "amount": 86
-    },
-    {
-      "product_id": 417,
-      "product_name": "Лента атласная белая 100м",
-      "amount": 117
-    },
-    {
-      "product_id": 418,
-      "product_name": "Спирея",
-      "amount": 127
-    },
-    {
-      "product_id": 419,
-      "product_name": "Гортензия",
-      "amount": 129
+      "predicted_demand": 10,
+      "current_stock": 0,
+      "amount": 1
     },
     {
       "product_id": 420,
       "product_name": "Упаковочная бумага серебряная 1x100м",
-      "amount": 130
-    },
-    {
-      "product_id": 421,
-      "product_name": "Лента кружевная белая 100м",
-      "amount": 133
-    },
-    {
-      "product_id": 422,
-      "product_name": "Флористическая плёнка зеленая 50смx100м",
-      "amount": 144
-    },
-    {
-      "product_id": 423,
-      "product_name": "Мускари",
-      "amount": 153
-    },
-    {
-      "product_id": 424,
-      "product_name": "Упаковочная бумага черная 1x100м",
-      "amount": 153
-    },
-    {
-      "product_id": 425,
-      "product_name": "Глориоза",
-      "amount": 140
-    },
-    {
-      "product_id": 426,
-      "product_name": "Лента репсовая Мятная 100м",
-      "amount": 149
+      "predicted_demand": 87,
+      "current_stock": 0,
+      "amount": 14
     },
     {
       "product_id": 427,
       "product_name": "Лента джутовая цветная 100м",
-      "amount": 170
+      "predicted_demand": 40,
+      "current_stock": 0,
+      "amount": 6
     },
     {
       "product_id": 428,
       "product_name": "Эрика",
-      "amount": 167
+      "predicted_demand": 35,
+      "current_stock": 0,
+      "amount": 5
     },
     {
       "product_id": 429,
       "product_name": "Бруния",
-      "amount": 142
+      "predicted_demand": 131,
+      "current_stock": 0,
+      "amount": 21
     },
     {
       "product_id": 430,
       "product_name": "Гиацинт",
-      "amount": 123
-    },
-    {
-      "product_id": 431,
-      "product_name": "Лента рафия натуральная 100м",
-      "amount": 119
-    },
-    {
-      "product_id": 432,
-      "product_name": "Краспедия",
-      "amount": 115
-    },
-    {
-      "product_id": 433,
-      "product_name": "Тюльпан",
-      "amount": 117
-    },
-    {
-      "product_id": 434,
-      "product_name": "Проволока декоративная Под серебро 100мВаза стеклянная круглая 20см",
-      "amount": 62
-    },
-    {
-      "product_id": 435,
-      "product_name": "Филодендрон",
-      "amount": 126
-    },
-    {
-      "product_id": 436,
-      "product_name": "Глориоза",
-      "amount": 129
+      "predicted_demand": 17,
+      "current_stock": 0,
+      "amount": 2
     },
     {
       "product_id": 437,
       "product_name": "Ванда",
-      "amount": 140
+      "predicted_demand": 20,
+      "current_stock": 0,
+      "amount": 3
     },
     {
       "product_id": 438,
       "product_name": "Кашпо пластиковое 30см",
-      "amount": 161
-    },
-    {
-      "product_id": 439,
-      "product_name": "Цикас",
-      "amount": 165
-    },
-    {
-      "product_id": 440,
-      "product_name": "Глориоза",
-      "amount": 81
-    },
-    {
-      "product_id": 441,
-      "product_name": "Цимбидиум",
-      "amount": 171
-    },
-    {
-      "product_id": 442,
-      "product_name": "Упаковочная бумага крафт 1x100м",
-      "amount": 167
+      "predicted_demand": 26,
+      "current_stock": 0,
+      "amount": 4
     },
     {
       "product_id": 443,
       "product_name": "Лента репсовая Мятная 100м",
-      "amount": 170
+      "predicted_demand": 24,
+      "current_stock": 3,
+      "amount": 1
     },
     {
       "product_id": 444,
       "product_name": "Скиммия",
-      "amount": 145
-    },
-    {
-      "product_id": 445,
-      "product_name": "Незабудка",
-      "amount": 82
+      "predicted_demand": 40,
+      "current_stock": 0,
+      "amount": 6
     },
     {
       "product_id": 446,
       "product_name": "Амми",
-      "amount": 84
-    },
-    {
-      "product_id": 447,
-      "product_name": "Ирис",
-      "amount": 135
-    },
-    {
-      "product_id": 448,
-      "product_name": "Перец",
-      "amount": 109
-    },
-    {
-      "product_id": 449,
-      "product_name": "Кашпо керамическое 25см",
-      "amount": 133
+      "predicted_demand": 42,
+      "current_stock": 0,
+      "amount": 7
     },
     {
       "product_id": 450,
       "product_name": "Упаковочная бумага черная 1x100м",
-      "amount": 169
-    },
-    {
-      "product_id": 451,
-      "product_name": "Нерине",
-      "amount": 44
+      "predicted_demand": 98,
+      "current_stock": 0,
+      "amount": 16
     },
     {
       "product_id": 452,
       "product_name": "Анемона",
-      "amount": 104
-    },
-    {
-      "product_id": 453,
-      "product_name": "Незабудка",
-      "amount": 110
-    },
-    {
-      "product_id": 454,
-      "product_name": "Лента репсовая Пудра 100м",
-      "amount": 110
-    },
-    {
-      "product_id": 455,
-      "product_name": "Лента атласная розовая 100м",
-      "amount": 127
-    },
-    {
-      "product_id": 456,
-      "product_name": "Лента репсовая Пудра 100м",
-      "amount": 117
-    },
-    {
-      "product_id": 457,
-      "product_name": "Лента кружевная белая 100м",
-      "amount": 161
-    },
-    {
-      "product_id": 458,
-      "product_name": "Проволока флористическая зеленая 1ммx100м",
-      "amount": 164
-    },
-    {
-      "product_id": 459,
-      "product_name": "Антуриум",
-      "amount": 171
-    },
-    {
-      "product_id": 460,
-      "product_name": "Монстера",
-      "amount": 166
-    },
-    {
-      "product_id": 461,
-      "product_name": "Астильба",
-      "amount": 186
-    },
-    {
-      "product_id": 462,
-      "product_name": "Вибурнум",
-      "amount": 115
-    },
-    {
-      "product_id": 463,
-      "product_name": "Лента атласная зеленая 100м",
-      "amount": 111
-    },
-    {
-      "product_id": 464,
-      "product_name": "Проволока флористическая коричневая 1ммx100м",
-      "amount": 98
-    },
-    {
-      "product_id": 465,
-      "product_name": "Вероника",
-      "amount": 73
+      "predicted_demand": 43,
+      "current_stock": 0,
+      "amount": 7
     },
     {
       "product_id": 466,
       "product_name": "Анемона",
-      "amount": 94
+      "predicted_demand": 18,
+      "current_stock": 1,
+      "amount": 2
     },
     {
       "product_id": 467,
       "product_name": "Упаковочная бумага голубая 1x100м",
-      "amount": 108
-    },
-    {
-      "product_id": 468,
-      "product_name": "Статица",
-      "amount": 100
+      "predicted_demand": 57,
+      "current_stock": 0,
+      "amount": 9
     },
     {
       "product_id": 469,
       "product_name": "Астра",
-      "amount": 149
-    },
-    {
-      "product_id": 470,
-      "product_name": "Аспарагус",
-      "amount": 115
-    },
-    {
-      "product_id": 471,
-      "product_name": "Галантус",
-      "amount": 67
-    },
-    {
-      "product_id": 472,
-      "product_name": "Лента репсовая Шампань 100м",
-      "amount": 98
-    },
-    {
-      "product_id": 473,
-      "product_name": "Цимбидиум",
-      "amount": 88
+      "predicted_demand": 69,
+      "current_stock": 0,
+      "amount": 11
     },
     {
       "product_id": 474,
       "product_name": "Гортензия",
-      "amount": 107
+      "predicted_demand": 34,
+      "current_stock": 1,
+      "amount": 4
     },
     {
       "product_id": 475,
       "product_name": "Плёнка декоративная Золотые брызги 30смx100м",
-      "amount": 195
+      "predicted_demand": 63,
+      "current_stock": 0,
+      "amount": 10
     },
     {
       "product_id": 476,
       "product_name": "Тюльпан",
-      "amount": 211
+      "predicted_demand": 52,
+      "current_stock": 0,
+      "amount": 8
     },
     {
       "product_id": 477,
       "product_name": "Физалис",
-      "amount": 228
-    },
-    {
-      "product_id": 478,
-      "product_name": "Глориоза",
-      "amount": 198
-    },
-    {
-      "product_id": 479,
-      "product_name": "Лента атласная сиреневая 100м",
-      "amount": 145
+      "predicted_demand": 116,
+      "current_stock": 0,
+      "amount": 19
     },
     {
       "product_id": 480,
       "product_name": "Белосемянник",
-      "amount": 154
-    },
-    {
-      "product_id": 481,
-      "product_name": "Лента рафия окрашенная (10 цветов) 100м",
-      "amount": 65
-    },
-    {
-      "product_id": 482,
-      "product_name": "Паникум",
-      "amount": 64
-    },
-    {
-      "product_id": 483,
-      "product_name": "Филодендрон",
-      "amount": 149
+      "predicted_demand": 54,
+      "current_stock": 0,
+      "amount": 9
     },
     {
       "product_id": 484,
       "product_name": "Морозник",
-      "amount": 127
-    },
-    {
-      "product_id": 485,
-      "product_name": "Сетка декоративная серебряная 45смx100м",
-      "amount": 124
-    },
-    {
-      "product_id": 486,
-      "product_name": "Мимоза",
-      "amount": 86
-    },
-    {
-      "product_id": 487,
-      "product_name": "Сетка декоративная серебряная 45смx100м",
-      "amount": 89
+      "predicted_demand": 67,
+      "current_stock": 0,
+      "amount": 11
     },
     {
       "product_id": 488,
       "product_name": "Молюцелла",
-      "amount": 141
-    },
-    {
-      "product_id": 489,
-      "product_name": "Флебодиум",
-      "amount": 125
-    },
-    {
-      "product_id": 490,
-      "product_name": "Плёнка декоративная Хром 30смx100м",
-      "amount": 108
-    },
-    {
-      "product_id": 491,
-      "product_name": "Пихта",
-      "amount": 107
+      "predicted_demand": 52,
+      "current_stock": 0,
+      "amount": 8
     },
     {
       "product_id": 492,
       "product_name": "Фетр для упаковки оливковый 40смx100м",
-      "amount": 105
+      "predicted_demand": 21,
+      "current_stock": 0,
+      "amount": 3
     },
     {
       "product_id": 493,
       "product_name": "Лента атласная сиреневая 100м",
-      "amount": 108
-    },
-    {
-      "product_id": 494,
-      "product_name": "Латирус",
-      "amount": 135
-    },
-    {
-      "product_id": 495,
-      "product_name": "Органза для упаковки белая 50смx100м",
-      "amount": 127
+      "predicted_demand": 6,
+      "current_stock": 0,
+      "amount": 1
     },
     {
       "product_id": 496,
       "product_name": "Хлопок",
-      "amount": 98
-    },
-    {
-      "product_id": 497,
-      "product_name": "Паникум",
-      "amount": 75
-    },
-    {
-      "product_id": 498,
-      "product_name": "Зверобой",
-      "amount": 39
+      "predicted_demand": 7,
+      "current_stock": 0,
+      "amount": 1
     },
     {
       "product_id": 499,
       "product_name": "Органза для упаковки золотая 50смx100м",
-      "amount": 86
-    },
-    {
-      "product_id": 500,
-      "product_name": "Гладиолус",
-      "amount": 88
+      "predicted_demand": 22,
+      "current_stock": 2,
+      "amount": 1
     },
     {
       "product_id": 501,
       "product_name": "Цинерария",
-      "amount": 85
+      "predicted_demand": 68,
+      "current_stock": 7,
+      "amount": 4
     },
     {
       "product_id": 502,
       "product_name": "Книфофия",
-      "amount": 85
+      "predicted_demand": 14,
+      "current_stock": 0,
+      "amount": 2
     },
     {
       "product_id": 503,
       "product_name": "Незабудка",
-      "amount": 85
-    },
-    {
-      "product_id": 504,
-      "product_name": "Лента атласная розовая 100м",
-      "amount": 100
-    },
-    {
-      "product_id": 505,
-      "product_name": "Дендробиум",
-      "amount": 38
-    },
-    {
-      "product_id": 506,
-      "product_name": "Леукадендрон",
-      "amount": 155
+      "predicted_demand": 38,
+      "current_stock": 5,
+      "amount": 1
     },
     {
       "product_id": 507,
       "product_name": "Органза для упаковки золотая 50смx100м",
-      "amount": 164
-    },
-    {
-      "product_id": 508,
-      "product_name": "Лента атласная белая 100м",
-      "amount": 201
+      "predicted_demand": 66,
+      "current_stock": 0,
+      "amount": 11
     },
     {
       "product_id": 509,
       "product_name": "Морозник",
-      "amount": 110
-    },
-    {
-      "product_id": 510,
-      "product_name": "Фаленопсис",
-      "amount": 102
-    },
-    {
-      "product_id": 511,
-      "product_name": "Лента атласная розовая 100м",
-      "amount": 113
+      "predicted_demand": 10,
+      "current_stock": 0,
+      "amount": 1
     },
     {
       "product_id": 512,
       "product_name": "Сетария",
-      "amount": 83
-    },
-    {
-      "product_id": 513,
-      "product_name": "Дельфиниум",
-      "amount": 106
-    },
-    {
-      "product_id": 514,
-      "product_name": "Падуб",
-      "amount": 115
-    },
-    {
-      "product_id": 515,
-      "product_name": "Проволока флористическая коричневая 1ммx100м",
-      "amount": 112
-    },
-    {
-      "product_id": 516,
-      "product_name": "Слива",
-      "amount": 105
-    },
-    {
-      "product_id": 517,
-      "product_name": "Лента атласная белая 100м",
-      "amount": 103
+      "predicted_demand": 26,
+      "current_stock": 0,
+      "amount": 4
     },
     {
       "product_id": 518,
       "product_name": "Скиммия",
-      "amount": 106
-    },
-    {
-      "product_id": 519,
-      "product_name": "Магнолия",
-      "amount": 145
+      "predicted_demand": 21,
+      "current_stock": 0,
+      "amount": 3
     },
     {
       "product_id": 520,
       "product_name": "Книфофия",
-      "amount": 97
-    },
-    {
-      "product_id": 521,
-      "product_name": "Кохия",
-      "amount": 100
-    },
-    {
-      "product_id": 522,
-      "product_name": "Книфофия",
-      "amount": 195
-    },
-    {
-      "product_id": 523,
-      "product_name": "Упаковочная бумага крафт 1x100м",
-      "amount": 222
-    },
-    {
-      "product_id": 524,
-      "product_name": "Флористическая плёнка прозрачная 50смx100м",
-      "amount": 107
-    },
-    {
-      "product_id": 525,
-      "product_name": "Лента атласная белая 100м",
-      "amount": 168
-    },
-    {
-      "product_id": 526,
-      "product_name": "Лента атласная серебряная 100м",
-      "amount": 86
+      "predicted_demand": 28,
+      "current_stock": 0,
+      "amount": 4
     },
     {
       "product_id": 527,
       "product_name": "Телопея",
-      "amount": 147
-    },
-    {
-      "product_id": 528,
-      "product_name": "Краспедия",
-      "amount": 126
-    },
-    {
-      "product_id": 529,
-      "product_name": "Монстера",
-      "amount": 95
-    },
-    {
-      "product_id": 530,
-      "product_name": "Лента рафия окрашенная (10 цветов) 100м",
-      "amount": 143
+      "predicted_demand": 99,
+      "current_stock": 1,
+      "amount": 15
     },
     {
       "product_id": 531,
       "product_name": "Тилландсия",
-      "amount": 155
-    },
-    {
-      "product_id": 532,
-      "product_name": "Мискантус",
-      "amount": 70
+      "predicted_demand": 33,
+      "current_stock": 0,
+      "amount": 5
     },
     {
       "product_id": 533,
       "product_name": "Протея",
-      "amount": 89
-    },
-    {
-      "product_id": 534,
-      "product_name": "Лента джутовая цветная 100м",
-      "amount": 83
+      "predicted_demand": 40,
+      "current_stock": 5,
+      "amount": 1
     },
     {
       "product_id": 535,
       "product_name": "Лента атласная золотая 100м",
-      "amount": 62
+      "predicted_demand": 13,
+      "current_stock": 0,
+      "amount": 2
     },
     {
       "product_id": 536,
       "product_name": "Мискантус",
-      "amount": 60
-    },
-    {
-      "product_id": 537,
-      "product_name": "Упаковочная бумага золотая 1x100м",
-      "amount": 51
-    },
-    {
-      "product_id": 538,
-      "product_name": "Белосемянник",
-      "amount": 63
-    },
-    {
-      "product_id": 539,
-      "product_name": "Консервант для цветов 250г",
-      "amount": 89
+      "predicted_demand": 50,
+      "current_stock": 0,
+      "amount": 8
     },
     {
       "product_id": 540,
       "product_name": "Амми",
-      "amount": 103
-    },
-    {
-      "product_id": 541,
-      "product_name": "Слива",
-      "amount": 98
+      "predicted_demand": 25,
+      "current_stock": 1,
+      "amount": 3
     },
     {
       "product_id": 542,
       "product_name": "Кашпо керамическое 25см",
-      "amount": 120
-    },
-    {
-      "product_id": 543,
-      "product_name": "Лента атласная бордовая 100м",
-      "amount": 114
-    },
-    {
-      "product_id": 544,
-      "product_name": "Фетр для упаковки оливковый 40смx100м",
-      "amount": 167
-    },
-    {
-      "product_id": 545,
-      "product_name": "Белосемянник",
-      "amount": 166
-    },
-    {
-      "product_id": 546,
-      "product_name": "Вероника",
-      "amount": 178
-    },
-    {
-      "product_id": 547,
-      "product_name": "Лента атласная бордовая 100м",
-      "amount": 149
-    },
-    {
-      "product_id": 548,
-      "product_name": "Фетр для упаковки оливковый 40смx100м",
-      "amount": 156
-    },
-    {
-      "product_id": 549,
-      "product_name": "Цинерария",
-      "amount": 148
-    },
-    {
-      "product_id": 550,
-      "product_name": "Проволока флористическая коричневая 1ммx100м",
-      "amount": 98
-    },
-    {
-      "product_id": 551,
-      "product_name": "Упаковочная бумага серебряная 1x100м",
-      "amount": 102
-    },
-    {
-      "product_id": 552,
-      "product_name": "Яблоки",
-      "amount": 120
-    },
-    {
-      "product_id": 553,
-      "product_name": "Плёнка декоративная Хром 30смx100м",
-      "amount": 119
-    },
-    {
-      "product_id": 554,
-      "product_name": "Латирус",
-      "amount": 148
-    },
-    {
-      "product_id": 555,
-      "product_name": "Пион",
-      "amount": 171
-    },
-    {
-      "product_id": 556,
-      "product_name": "Анемона",
-      "amount": 162
+      "predicted_demand": 61,
+      "current_stock": 0,
+      "amount": 10
     },
     {
       "product_id": 557,
       "product_name": "Магнолия",
-      "amount": 167
-    },
-    {
-      "product_id": 558,
-      "product_name": "Скиммия",
-      "amount": 89
+      "predicted_demand": 54,
+      "current_stock": 0,
+      "amount": 8
     },
     {
       "product_id": 559,
       "product_name": "Лента рафия натуральная 100м",
-      "amount": 92
-    },
-    {
-      "product_id": 560,
-      "product_name": "Лента рафия натуральная 100м",
-      "amount": 82
+      "predicted_demand": 25,
+      "current_stock": 0,
+      "amount": 4
     },
     {
       "product_id": 561,
       "product_name": "Аспарагус",
-      "amount": 106
-    },
-    {
-      "product_id": 562,
-      "product_name": "Гладиолус",
-      "amount": 85
+      "predicted_demand": 11,
+      "current_stock": 0,
+      "amount": 1
     },
     {
       "product_id": 563,
       "product_name": "Кашпо пластиковое 30см",
-      "amount": 88
-    },
-    {
-      "product_id": 564,
-      "product_name": "Сетария",
-      "amount": 158
-    },
-    {
-      "product_id": 565,
-      "product_name": "Спирея",
-      "amount": 123
-    },
-    {
-      "product_id": 566,
-      "product_name": "Упаковочная бумага розовая 1x100м",
-      "amount": 157
-    },
-    {
-      "product_id": 567,
-      "product_name": "Мимоза",
-      "amount": 212
+      "predicted_demand": 23,
+      "current_stock": 0,
+      "amount": 3
     },
     {
       "product_id": 568,
       "product_name": "Флористическая плёнка прозрачная 50смx100м",
-      "amount": 216
-    },
-    {
-      "product_id": 569,
-      "product_name": "Ромашка",
-      "amount": 160
-    },
-    {
-      "product_id": 570,
-      "product_name": "Фетр для упаковки оливковый 40смx100м",
-      "amount": 101
+      "predicted_demand": 43,
+      "current_stock": 0,
+      "amount": 7
     },
     {
       "product_id": 571,
       "product_name": "Сетка декоративная медовая 45смx100м",
-      "amount": 86
-    },
-    {
-      "product_id": 572,
-      "product_name": "Гортензия",
-      "amount": 98
+      "predicted_demand": 21,
+      "current_stock": 0,
+      "amount": 3
     },
     {
       "product_id": 573,
       "product_name": "Спирея",
-      "amount": 87
-    },
-    {
-      "product_id": 574,
-      "product_name": "Лимониум",
-      "amount": 88
-    },
-    {
-      "product_id": 575,
-      "product_name": "Лента репсовая Мятная 100м",
-      "amount": 53
-    },
-    {
-      "product_id": 576,
-      "product_name": "Эрика",
-      "amount": 95
-    },
-    {
-      "product_id": 577,
-      "product_name": "Лента репсовая Шампань 100м",
-      "amount": 114
+      "predicted_demand": 7,
+      "current_stock": 0,
+      "amount": 1
     },
     {
       "product_id": 578,
       "product_name": "Сетка декоративная медовая 45смx100м",
-      "amount": 101
+      "predicted_demand": 7,
+      "current_stock": 0,
+      "amount": 1
     },
     {
       "product_id": 579,
       "product_name": "Лента атласная сиреневая 100м",
-      "amount": 88
-    },
-    {
-      "product_id": 580,
-      "product_name": "Бруния",
-      "amount": 116
-    },
-    {
-      "product_id": 581,
-      "product_name": "Кохия",
-      "amount": 139
-    },
-    {
-      "product_id": 582,
-      "product_name": "Статица",
-      "amount": 117
+      "predicted_demand": 35,
+      "current_stock": 2,
+      "amount": 3
     },
     {
       "product_id": 583,
       "product_name": "Органза для упаковки белая 50смx100м",
-      "amount": 124
-    },
-    {
-      "product_id": 584,
-      "product_name": "Протея",
-      "amount": 107
-    },
-    {
-      "product_id": 585,
-      "product_name": "Геликония",
-      "amount": 13
+      "predicted_demand": 38,
+      "current_stock": 0,
+      "amount": 6
     },
     {
       "product_id": 586,
       "product_name": "Скабиоза",
-      "amount": 87
+      "predicted_demand": 144,
+      "current_stock": 23,
+      "amount": 1
     },
     {
       "product_id": 587,
       "product_name": "Колба для цветов 15см",
-      "amount": 88
-    },
-    {
-      "product_id": 588,
-      "product_name": "Подставка для вазы 30см",
-      "amount": 87
-    },
-    {
-      "product_id": 589,
-      "product_name": "Лента джутовая натуральная 100м",
-      "amount": 92
-    },
-    {
-      "product_id": 590,
-      "product_name": "Лента атласная красная 100м",
-      "amount": 27
-    },
-    {
-      "product_id": 591,
-      "product_name": "Ваточник",
-      "amount": 106
-    },
-    {
-      "product_id": 592,
-      "product_name": "Скиммия",
-      "amount": 157
-    },
-    {
-      "product_id": 593,
-      "product_name": "Сетария",
-      "amount": 143
-    },
-    {
-      "product_id": 594,
-      "product_name": "Фетр для упаковки бежевый 40смx100м",
-      "amount": 89
-    },
-    {
-      "product_id": 595,
-      "product_name": "Глориоза",
-      "amount": 147
-    },
-    {
-      "product_id": 596,
-      "product_name": "Фетр для упаковки оливковый 40смx100м",
-      "amount": 139
-    },
-    {
-      "product_id": 597,
-      "product_name": "Кохия",
-      "amount": 156
-    },
-    {
-      "product_id": 598,
-      "product_name": "Грин белл",
-      "amount": 139
-    },
-    {
-      "product_id": 599,
-      "product_name": "Амарант",
-      "amount": 139
+      "predicted_demand": 10,
+      "current_stock": 0,
+      "amount": 1
     },
     {
       "product_id": 600,
       "product_name": "Целозия",
-      "amount": 138
+      "predicted_demand": 77,
+      "current_stock": 0,
+      "amount": 12
     },
     {
       "product_id": 601,
       "product_name": "Лента атласная голубая 100м",
-      "amount": 133
+      "predicted_demand": 18,
+      "current_stock": 0,
+      "amount": 3
     },
     {
       "product_id": 602,
       "product_name": "Лента кружевная черная 100м",
-      "amount": 98
+      "predicted_demand": 8,
+      "current_stock": 0,
+      "amount": 1
     },
     {
       "product_id": 603,
       "product_name": "Протея",
-      "amount": 146
-    },
-    {
-      "product_id": 604,
-      "product_name": "Упаковочная бумага розовая 1x100м",
-      "amount": 115
+      "predicted_demand": 27,
+      "current_stock": 0,
+      "amount": 4
     },
     {
       "product_id": 605,
       "product_name": "Упаковочная бумага черная 1x100м",
-      "amount": 111
+      "predicted_demand": 65,
+      "current_stock": 2,
+      "amount": 8
     },
     {
       "product_id": 606,
       "product_name": "Слива",
-      "amount": 144
+      "predicted_demand": 95,
+      "current_stock": 0,
+      "amount": 15
     },
     {
       "product_id": 607,
       "product_name": "Ежевика",
-      "amount": 143
-    },
-    {
-      "product_id": 608,
-      "product_name": "Галантус",
-      "amount": 137
+      "predicted_demand": 16,
+      "current_stock": 1,
+      "amount": 1
     },
     {
       "product_id": 609,
       "product_name": "Цикас",
-      "amount": 124
-    },
-    {
-      "product_id": 610,
-      "product_name": "Аспарагус",
-      "amount": 121
-    },
-    {
-      "product_id": 611,
-      "product_name": "Туя",
-      "amount": 132
-    },
-    {
-      "product_id": 612,
-      "product_name": "Телопея",
-      "amount": 109
-    },
-    {
-      "product_id": 613,
-      "product_name": "Краспедия",
-      "amount": 134
-    },
-    {
-      "product_id": 614,
-      "product_name": "Лента рафия окрашенная (10 цветов) 100м",
-      "amount": 107
-    },
-    {
-      "product_id": 615,
-      "product_name": "Упаковочная бумага белая 1x100м",
-      "amount": 135
-    },
-    {
-      "product_id": 616,
-      "product_name": "Ваточник",
-      "amount": 110
+      "predicted_demand": 66,
+      "current_stock": 0,
+      "amount": 11
     },
     {
       "product_id": 617,
       "product_name": "Блеск для листьев 300мл",
-      "amount": 117
-    },
-    {
-      "product_id": 618,
-      "product_name": "Паникум",
-      "amount": 177
-    },
-    {
-      "product_id": 619,
-      "product_name": "Книфофия",
-      "amount": 155
-    },
-    {
-      "product_id": 620,
-      "product_name": "Падуб",
-      "amount": 161
-    },
-    {
-      "product_id": 621,
-      "product_name": "Скабиоза",
-      "amount": 164
-    },
-    {
-      "product_id": 622,
-      "product_name": "Флористическая плёнка зеленая 50смx100м",
-      "amount": 135
-    },
-    {
-      "product_id": 623,
-      "product_name": "Зверобой",
-      "amount": 105
-    },
-    {
-      "product_id": 624,
-      "product_name": "Упаковочная бумага розовая 1x100м",
-      "amount": 95
-    },
-    {
-      "product_id": 625,
-      "product_name": "Амми",
-      "amount": 99
-    },
-    {
-      "product_id": 626,
-      "product_name": "Тыква",
-      "amount": 87
-    },
-    {
-      "product_id": 627,
-      "product_name": "Лимониум",
-      "amount": 87
-    },
-    {
-      "product_id": 628,
-      "product_name": "Паникум",
-      "amount": 92
+      "predicted_demand": 86,
+      "current_stock": 0,
+      "amount": 14
     },
     {
       "product_id": 629,
       "product_name": "Амми",
-      "amount": 93
-    },
-    {
-      "product_id": 630,
-      "product_name": "Лента рафия натуральная 100м",
-      "amount": 34
+      "predicted_demand": 13,
+      "current_stock": 0,
+      "amount": 2
     },
     {
       "product_id": 631,
       "product_name": "Кашпо керамическое 25см",
-      "amount": 162
+      "predicted_demand": 78,
+      "current_stock": 0,
+      "amount": 13
     },
     {
       "product_id": 632,
       "product_name": "Упаковочная бумага золотая 1x100м",
-      "amount": 158
+      "predicted_demand": 38,
+      "current_stock": 0,
+      "amount": 6
     },
     {
       "product_id": 633,
       "product_name": "Сетка декоративная медовая 45смx100м",
-      "amount": 166
-    },
-    {
-      "product_id": 634,
-      "product_name": "Яблоки",
-      "amount": 186
-    },
-    {
-      "product_id": 635,
-      "product_name": "Лента репсовая Шампань 100м",
-      "amount": 194
-    },
-    {
-      "product_id": 636,
-      "product_name": "Лента рафия окрашенная (10 цветов) 100м",
-      "amount": 187
-    },
-    {
-      "product_id": 637,
-      "product_name": "Хризантема",
-      "amount": 161
-    },
-    {
-      "product_id": 638,
-      "product_name": "Подсолнух",
-      "amount": 159
-    },
-    {
-      "product_id": 639,
-      "product_name": "Амми",
-      "amount": 205
-    },
-    {
-      "product_id": 640,
-      "product_name": "Белосемянник",
-      "amount": 163
+      "predicted_demand": 34,
+      "current_stock": 0,
+      "amount": 5
     },
     {
       "product_id": 641,
       "product_name": "Морозник",
-      "amount": 91
+      "predicted_demand": 35,
+      "current_stock": 0,
+      "amount": 5
     },
     {
       "product_id": 642,
       "product_name": "Молюцелла",
-      "amount": 111
-    },
-    {
-      "product_id": 643,
-      "product_name": "Монстера",
-      "amount": 113
-    },
-    {
-      "product_id": 644,
-      "product_name": "Сетка декоративная серебряная 45смx100м",
-      "amount": 107
-    },
-    {
-      "product_id": 645,
-      "product_name": "Гиацинт",
-      "amount": 131
-    },
-    {
-      "product_id": 646,
-      "product_name": "Перец",
-      "amount": 137
-    },
-    {
-      "product_id": 647,
-      "product_name": "Упаковочная бумага серебряная 1x100м",
-      "amount": 132
-    },
-    {
-      "product_id": 648,
-      "product_name": "Упаковочная бумага черная 1x100м",
-      "amount": 105
-    },
-    {
-      "product_id": 649,
-      "product_name": "Дендробиум",
-      "amount": 112
-    },
-    {
-      "product_id": 650,
-      "product_name": "Лента атласная бордовая 100м",
-      "amount": 111
-    },
-    {
-      "product_id": 651,
-      "product_name": "Ваза напольная высокая 80см",
-      "amount": 183
+      "predicted_demand": 56,
+      "current_stock": 0,
+      "amount": 9
     },
     {
       "product_id": 652,
       "product_name": "Лента атласная черная 100м",
-      "amount": 123
+      "predicted_demand": 36,
+      "current_stock": 1,
+      "amount": 5
     },
     {
       "product_id": 653,
       "product_name": "Упаковочная бумага белая 1x100м",
-      "amount": 114
-    },
-    {
-      "product_id": 654,
-      "product_name": "Скиммия",
-      "amount": 96
-    },
-    {
-      "product_id": 655,
-      "product_name": "Зверобой",
-      "amount": 90
+      "predicted_demand": 71,
+      "current_stock": 0,
+      "amount": 11
     },
     {
       "product_id": 656,
       "product_name": "Лента атласная сиреневая 100м",
-      "amount": 84
-    },
-    {
-      "product_id": 658,
-      "product_name": "Фетр для упаковки бежевый 40смx100м",
-      "amount": 97
-    },
-    {
-      "product_id": 659,
-      "product_name": "Тюльпан",
-      "amount": 202
-    },
-    {
-      "product_id": 660,
-      "product_name": "Лента атласная бордовая 100м",
-      "amount": 104
-    },
-    {
-      "product_id": 661,
-      "product_name": "Гиацинт",
-      "amount": 83
-    },
-    {
-      "product_id": 662,
-      "product_name": "Яблоки",
-      "amount": 84
-    },
-    {
-      "product_id": 663,
-      "product_name": "Амарант",
-      "amount": 108
-    },
-    {
-      "product_id": 664,
-      "product_name": "Хризантема",
-      "amount": 111
-    },
-    {
-      "product_id": 665,
-      "product_name": "Лента атласная сиреневая 100м",
-      "amount": 25
+      "predicted_demand": 64,
+      "current_stock": 0,
+      "amount": 10
     },
     {
       "product_id": 666,
       "product_name": "Проволока декоративная Под серебро 100мВаза стеклянная круглая 20см",
-      "amount": 180
-    },
-    {
-      "product_id": 667,
-      "product_name": "Проволока флористическая зеленая 1ммx100м",
-      "amount": 158
-    },
-    {
-      "product_id": 668,
-      "product_name": "Мускари",
-      "amount": 118
+      "predicted_demand": 83,
+      "current_stock": 0,
+      "amount": 13
     },
     {
       "product_id": 669,
       "product_name": "Вероника",
-      "amount": 137
+      "predicted_demand": 93,
+      "current_stock": 4,
+      "amount": 11
     },
     {
       "product_id": 670,
       "product_name": "Амарант",
-      "amount": 136
-    },
-    {
-      "product_id": 671,
-      "product_name": "Проволока декоративная Под золото 100м",
-      "amount": 145
-    },
-    {
-      "product_id": 672,
-      "product_name": "Книфофия",
-      "amount": 98
-    },
-    {
-      "product_id": 673,
-      "product_name": "Анемона",
-      "amount": 218
+      "predicted_demand": 19,
+      "current_stock": 0,
+      "amount": 3
     },
     {
       "product_id": 674,
       "product_name": "Цикас",
-      "amount": 254
-    },
-    {
-      "product_id": 675,
-      "product_name": "Анигозантос",
-      "amount": 214
+      "predicted_demand": 52,
+      "current_stock": 0,
+      "amount": 8
     },
     {
       "product_id": 676,
       "product_name": "Дельфиниум",
-      "amount": 201
-    },
-    {
-      "product_id": 677,
-      "product_name": "Левкой",
-      "amount": 219
+      "predicted_demand": 59,
+      "current_stock": 0,
+      "amount": 9
     },
     {
       "product_id": 678,
       "product_name": "Лютик",
-      "amount": 175
-    },
-    {
-      "product_id": 679,
-      "product_name": "Гиацинт",
-      "amount": 140
-    },
-    {
-      "product_id": 680,
-      "product_name": "Овес",
-      "amount": 69
+      "predicted_demand": 68,
+      "current_stock": 10,
+      "amount": 1
     },
     {
       "product_id": 681,
       "product_name": "Консервант для цветов 250г",
-      "amount": 98
-    },
-    {
-      "product_id": 682,
-      "product_name": "Колба для цветов 15см",
-      "amount": 70
+      "predicted_demand": 11,
+      "current_stock": 0,
+      "amount": 1
     },
     {
       "product_id": 683,
       "product_name": "Фетр для упаковки бежевый 40смx100м",
-      "amount": 73
+      "predicted_demand": 18,
+      "current_stock": 0,
+      "amount": 3
     },
     {
       "product_id": 684,
       "product_name": "Кашпо керамическое 25см",
-      "amount": 73
-    },
-    {
-      "product_id": 685,
-      "product_name": "Сирень",
-      "amount": 80
+      "predicted_demand": 55,
+      "current_stock": 0,
+      "amount": 9
     },
     {
       "product_id": 686,
       "product_name": "Филодендрон",
-      "amount": 154
-    },
-    {
-      "product_id": 687,
-      "product_name": "Латирус",
-      "amount": 138
+      "predicted_demand": 6,
+      "current_stock": 0,
+      "amount": 1
     },
     {
       "product_id": 688,
       "product_name": "Гортензия",
-      "amount": 195
-    },
-    {
-      "product_id": 689,
-      "product_name": "Лента рафия натуральная 100м",
-      "amount": 177
+      "predicted_demand": 30,
+      "current_stock": 0,
+      "amount": 5
     },
     {
       "product_id": 690,
       "product_name": "Аллиум",
-      "amount": 209
+      "predicted_demand": 107,
+      "current_stock": 2,
+      "amount": 15
     },
     {
       "product_id": 691,
       "product_name": "Антирринум",
-      "amount": 191
-    },
-    {
-      "product_id": 692,
-      "product_name": "Грин белл",
-      "amount": 189
-    },
-    {
-      "product_id": 693,
-      "product_name": "Мускари",
-      "amount": 155
-    },
-    {
-      "product_id": 695,
-      "product_name": "Ежевика",
-      "amount": 131
-    },
-    {
-      "product_id": 696,
-      "product_name": "Ирис",
-      "amount": 177
-    },
-    {
-      "product_id": 697,
-      "product_name": "Аспарагус",
-      "amount": 164
+      "predicted_demand": 8,
+      "current_stock": 0,
+      "amount": 1
     },
     {
       "product_id": 698,
       "product_name": "Сетария",
-      "amount": 149
-    },
-    {
-      "product_id": 699,
-      "product_name": "Сирень",
-      "amount": 135
-    },
-    {
-      "product_id": 700,
-      "product_name": "Лента кружевная белая 100м",
-      "amount": 99
-    },
-    {
-      "product_id": 701,
-      "product_name": "Блеск для листьев 300мл",
-      "amount": 132
-    },
-    {
-      "product_id": 702,
-      "product_name": "Лента кружевная белая 100м",
-      "amount": 172
-    },
-    {
-      "product_id": 703,
-      "product_name": "Анемона",
-      "amount": 286
+      "predicted_demand": 23,
+      "current_stock": 0,
+      "amount": 3
     },
     {
       "product_id": 704,
       "product_name": "Упаковочная бумага крафт 1x100м",
-      "amount": 289
-    },
-    {
-      "product_id": 705,
-      "product_name": "Дельфиниум",
-      "amount": 268
-    },
-    {
-      "product_id": 706,
-      "product_name": "Астильба",
-      "amount": 145
+      "predicted_demand": 7,
+      "current_stock": 0,
+      "amount": 1
     },
     {
       "product_id": 707,
       "product_name": "Блеск для листьев 300мл",
-      "amount": 115
-    },
-    {
-      "product_id": 708,
-      "product_name": "Латирус",
-      "amount": 118
-    },
-    {
-      "product_id": 709,
-      "product_name": "Упаковочная бумага крафт 1x100м",
-      "amount": 115
+      "predicted_demand": 13,
+      "current_stock": 0,
+      "amount": 2
     },
     {
       "product_id": 710,
       "product_name": "Калина",
-      "amount": 154
+      "predicted_demand": 128,
+      "current_stock": 18,
+      "amount": 3
     },
     {
       "product_id": 711,
       "product_name": "Аллиум",
-      "amount": 117
-    },
-    {
-      "product_id": 712,
-      "product_name": "Скиммия",
-      "amount": 120
-    },
-    {
-      "product_id": 713,
-      "product_name": "Лимониум",
-      "amount": 119
+      "predicted_demand": 6,
+      "current_stock": 0,
+      "amount": 1
     },
     {
       "product_id": 714,
       "product_name": "Вибурнум",
-      "amount": 164
-    },
-    {
-      "product_id": 715,
-      "product_name": "Гортензия",
-      "amount": 154
-    },
-    {
-      "product_id": 716,
-      "product_name": "Калина",
-      "amount": 149
-    },
-    {
-      "product_id": 717,
-      "product_name": "Спирея",
-      "amount": 184
-    },
-    {
-      "product_id": 718,
-      "product_name": "Дендробиум",
-      "amount": 113
-    },
-    {
-      "product_id": 719,
-      "product_name": "Кашпо пластиковое 30см",
-      "amount": 144
-    },
-    {
-      "product_id": 720,
-      "product_name": "Тыква",
-      "amount": 156
+      "predicted_demand": 58,
+      "current_stock": 0,
+      "amount": 9
     },
     {
       "product_id": 721,
       "product_name": "Лента атласная голубая 100м",
-      "amount": 172
-    },
-    {
-      "product_id": 722,
-      "product_name": "Аспарагус",
-      "amount": 197
-    },
-    {
-      "product_id": 723,
-      "product_name": "Упаковочная бумага розовая 1x100м",
-      "amount": 201
+      "predicted_demand": 68,
+      "current_stock": 0,
+      "amount": 11
     },
     {
       "product_id": 724,
       "product_name": "Упаковочная бумага белая 1x100м",
-      "amount": 204
-    },
-    {
-      "product_id": 725,
-      "product_name": "Проволока флористическая зеленая 1ммx100м",
-      "amount": 210
-    },
-    {
-      "product_id": 726,
-      "product_name": "Астра",
-      "amount": 227
-    },
-    {
-      "product_id": 727,
-      "product_name": "Плёнка декоративная Хром 30смx100м",
-      "amount": 209
-    },
-    {
-      "product_id": 728,
-      "product_name": "Астра",
-      "amount": 127
-    },
-    {
-      "product_id": 729,
-      "product_name": "Проволока декоративная Под серебро 100мВаза стеклянная круглая 20см",
-      "amount": 122
-    },
-    {
-      "product_id": 730,
-      "product_name": "Лютик",
-      "amount": 188
-    },
-    {
-      "product_id": 731,
-      "product_name": "Эрика",
-      "amount": 194
-    },
-    {
-      "product_id": 732,
-      "product_name": "Цинерария",
-      "amount": 222
-    },
-    {
-      "product_id": 733,
-      "product_name": "Филодендрон",
-      "amount": 217
-    },
-    {
-      "product_id": 734,
-      "product_name": "Роза",
-      "amount": 146
-    },
-    {
-      "product_id": 735,
-      "product_name": "Плёнка декоративная Мрамор 30смx100м",
-      "amount": 206
+      "predicted_demand": 48,
+      "current_stock": 2,
+      "amount": 6
     },
     {
       "product_id": 736,
       "product_name": "Статица",
-      "amount": 170
-    },
-    {
-      "product_id": 737,
-      "product_name": "Паникум",
-      "amount": 159
+      "predicted_demand": 16,
+      "current_stock": 0,
+      "amount": 2
     },
     {
       "product_id": 738,
       "product_name": "Антирринум",
-      "amount": 144
-    },
-    {
-      "product_id": 739,
-      "product_name": "Скабиоза",
-      "amount": 151
-    },
-    {
-      "product_id": 740,
-      "product_name": "Физалис",
-      "amount": 164
-    },
-    {
-      "product_id": 741,
-      "product_name": "Упаковочная бумага черная 1x100м",
-      "amount": 171
-    },
-    {
-      "product_id": 742,
-      "product_name": "Сциндапсус",
-      "amount": 183
+      "predicted_demand": 38,
+      "current_stock": 4,
+      "amount": 2
     },
     {
       "product_id": 743,
       "product_name": "Пион",
-      "amount": 181
-    },
-    {
-      "product_id": 744,
-      "product_name": "Анемона",
-      "amount": 192
+      "predicted_demand": 87,
+      "current_stock": 0,
+      "amount": 14
     },
     {
       "product_id": 745,
       "product_name": "Гладиолус",
-      "amount": 198
+      "predicted_demand": 21,
+      "current_stock": 0,
+      "amount": 3
     },
     {
       "product_id": 746,
       "product_name": "Ванда",
-      "amount": 158
-    },
-    {
-      "product_id": 747,
-      "product_name": "Кашпо пластиковое 30см",
-      "amount": 146
-    },
-    {
-      "product_id": 748,
-      "product_name": "Магнолия",
-      "amount": 188
+      "predicted_demand": 74,
+      "current_stock": 1,
+      "amount": 11
     },
     {
       "product_id": 749,
       "product_name": "Сетка декоративная золотая 45смx100м",
-      "amount": 196
+      "predicted_demand": 7,
+      "current_stock": 0,
+      "amount": 1
     },
     {
       "product_id": 750,
       "product_name": "Аспарагус",
-      "amount": 167
+      "predicted_demand": 85,
+      "current_stock": 0,
+      "amount": 14
     },
     {
       "product_id": 751,
       "product_name": "Лента репсовая Пудра 100м",
-      "amount": 81
-    },
-    {
-      "product_id": 752,
-      "product_name": "Консервант для цветов 250г",
-      "amount": 85
-    },
-    {
-      "product_id": 753,
-      "product_name": "Ваточник",
-      "amount": 65
-    },
-    {
-      "product_id": 754,
-      "product_name": "Органза для упаковки перламутровая 50смx100м",
-      "amount": 75
-    },
-    {
-      "product_id": 755,
-      "product_name": "Ваточник",
-      "amount": 87
-    },
-    {
-      "product_id": 756,
-      "product_name": "Упаковочная бумага белая 1x100м",
-      "amount": 93
-    },
-    {
-      "product_id": 757,
-      "product_name": "Сетка декоративная золотая 45смx100м",
-      "amount": 96
-    },
-    {
-      "product_id": 758,
-      "product_name": "Скиммия",
-      "amount": 142
-    },
-    {
-      "product_id": 759,
-      "product_name": "Проволока флористическая зеленая 1ммx100м",
-      "amount": 102
+      "predicted_demand": 11,
+      "current_stock": 0,
+      "amount": 1
     },
     {
       "product_id": 760,
       "product_name": "Лента кружевная белая 100м",
-      "amount": 113
-    },
-    {
-      "product_id": 761,
-      "product_name": "Флористическая плёнка зеленая 50смx100м",
-      "amount": 96
-    },
-    {
-      "product_id": 762,
-      "product_name": "Мимоза",
-      "amount": 99
-    },
-    {
-      "product_id": 763,
-      "product_name": "Лента репсовая Мятная 100м",
-      "amount": 131
-    },
-    {
-      "product_id": 764,
-      "product_name": "Лента кружевная белая 100м",
-      "amount": 95
-    },
-    {
-      "product_id": 765,
-      "product_name": "Проволока декоративная Под серебро 100мВаза стеклянная круглая 20см",
-      "amount": 156
+      "predicted_demand": 56,
+      "current_stock": 0,
+      "amount": 9
     },
     {
       "product_id": 766,
       "product_name": "Кашпо керамическое 25см",
-      "amount": 179
-    },
-    {
-      "product_id": 767,
-      "product_name": "Пихта",
-      "amount": 179
-    },
-    {
-      "product_id": 768,
-      "product_name": "Плёнка декоративная Мрамор 30смx100м",
-      "amount": 158
-    },
-    {
-      "product_id": 769,
-      "product_name": "Гортензия",
-      "amount": 147
-    },
-    {
-      "product_id": 770,
-      "product_name": "Колба для цветов 15см",
-      "amount": 144
-    },
-    {
-      "product_id": 771,
-      "product_name": "Сетка декоративная золотая 45смx100м",
-      "amount": 101
-    },
-    {
-      "product_id": 772,
-      "product_name": "Кашпо пластиковое 30см",
-      "amount": 104
-    },
-    {
-      "product_id": 773,
-      "product_name": "Форзиция",
-      "amount": 126
+      "predicted_demand": 80,
+      "current_stock": 0,
+      "amount": 13
     },
     {
       "product_id": 774,
       "product_name": "Ваточник",
-      "amount": 136
-    },
-    {
-      "product_id": 775,
-      "product_name": "Цимбидиум",
-      "amount": 150
-    },
-    {
-      "product_id": 776,
-      "product_name": "Хризантема",
-      "amount": 107
+      "predicted_demand": 42,
+      "current_stock": 0,
+      "amount": 7
     },
     {
       "product_id": 777,
       "product_name": "Вероника",
-      "amount": 189
+      "predicted_demand": 42,
+      "current_stock": 1,
+      "amount": 6
     },
     {
       "product_id": 778,
       "product_name": "Филодендрон",
-      "amount": 200
+      "predicted_demand": 22,
+      "current_stock": 0,
+      "amount": 3
     },
     {
       "product_id": 779,
       "product_name": "Слива",
-      "amount": 243
-    },
-    {
-      "product_id": 780,
-      "product_name": "Бруния",
-      "amount": 160
-    },
-    {
-      "product_id": 781,
-      "product_name": "Лента джутовая натуральная 100м",
-      "amount": 151
-    },
-    {
-      "product_id": 782,
-      "product_name": "Телопея",
-      "amount": 176
+      "predicted_demand": 54,
+      "current_stock": 0,
+      "amount": 9
     },
     {
       "product_id": 783,
       "product_name": "Упаковочная бумага серебряная 1x100м",
-      "amount": 170
-    },
-    {
-      "product_id": 784,
-      "product_name": "Хризантема",
-      "amount": 168
-    },
-    {
-      "product_id": 785,
-      "product_name": "Тюльпан",
-      "amount": 151
-    },
-    {
-      "product_id": 786,
-      "product_name": "Серрурия",
-      "amount": 165
-    },
-    {
-      "product_id": 787,
-      "product_name": "Падуб",
-      "amount": 150
-    },
-    {
-      "product_id": 788,
-      "product_name": "Органза для упаковки золотая 50смx100м",
-      "amount": 148
+      "predicted_demand": 64,
+      "current_stock": 0,
+      "amount": 10
     },
     {
       "product_id": 789,
       "product_name": "Серрурия",
-      "amount": 162
-    },
-    {
-      "product_id": 790,
-      "product_name": "Проволока флористическая коричневая 1ммx100м",
-      "amount": 115
-    },
-    {
-      "product_id": 791,
-      "product_name": "Упаковочная бумага белая 1x100м",
-      "amount": 157
+      "predicted_demand": 44,
+      "current_stock": 0,
+      "amount": 7
     },
     {
       "product_id": 792,
       "product_name": "Эрика",
-      "amount": 184
-    },
-    {
-      "product_id": 793,
-      "product_name": "Лента кружевная с золотой нитью 100м",
-      "amount": 81
+      "predicted_demand": 43,
+      "current_stock": 0,
+      "amount": 7
     },
     {
       "product_id": 794,
       "product_name": "Гениста",
-      "amount": 94
-    },
-    {
-      "product_id": 795,
-      "product_name": "Упаковочная бумага розовая 1x100м",
-      "amount": 166
-    },
-    {
-      "product_id": 796,
-      "product_name": "Мимоза",
-      "amount": 164
-    },
-    {
-      "product_id": 797,
-      "product_name": "Проволока флористическая коричневая 1ммx100м",
-      "amount": 95
-    },
-    {
-      "product_id": 798,
-      "product_name": "Яблоки",
-      "amount": 196
-    },
-    {
-      "product_id": 799,
-      "product_name": "Ежевика",
-      "amount": 152
-    },
-    {
-      "product_id": 800,
-      "product_name": "Фетр для упаковки оливковый 40смx100м",
-      "amount": 110
-    },
-    {
-      "product_id": 801,
-      "product_name": "Мискантус",
-      "amount": 103
+      "predicted_demand": 34,
+      "current_stock": 1,
+      "amount": 4
     },
     {
       "product_id": 802,
       "product_name": "Стрелиция",
-      "amount": 121
+      "predicted_demand": 40,
+      "current_stock": 1,
+      "amount": 5
     },
     {
       "product_id": 803,
       "product_name": "Лента репсовая Мятная 100м",
-      "amount": 104
-    },
-    {
-      "product_id": 804,
-      "product_name": "Леукадендрон",
-      "amount": 115
+      "predicted_demand": 74,
+      "current_stock": 5,
+      "amount": 7
     },
     {
       "product_id": 805,
       "product_name": "Фетр для упаковки оливковый 40смx100м",
-      "amount": 83
-    },
-    {
-      "product_id": 806,
-      "product_name": "Лента атласная красная 100м",
-      "amount": 84
-    },
-    {
-      "product_id": 807,
-      "product_name": "Аллиум",
-      "amount": 82
-    },
-    {
-      "product_id": 808,
-      "product_name": "Стрелиция",
-      "amount": 114
-    },
-    {
-      "product_id": 809,
-      "product_name": "Сетария",
-      "amount": 135
-    },
-    {
-      "product_id": 810,
-      "product_name": "Форзиция",
-      "amount": 2
+      "predicted_demand": 55,
+      "current_stock": 0,
+      "amount": 9
     },
     {
       "product_id": 811,
       "product_name": "Лента атласная белая 100м",
-      "amount": 125
+      "predicted_demand": 14,
+      "current_stock": 0,
+      "amount": 2
     },
     {
       "product_id": 812,
       "product_name": "Гениста",
-      "amount": 140
-    },
-    {
-      "product_id": 813,
-      "product_name": "Вероника",
-      "amount": 128
+      "predicted_demand": 12,
+      "current_stock": 0,
+      "amount": 2
     },
     {
       "product_id": 814,
       "product_name": "Лента репсовая Пудра 100м",
-      "amount": 81
+      "predicted_demand": 28,
+      "current_stock": 0,
+      "amount": 4
     },
     {
       "product_id": 815,
       "product_name": "Лента репсовая Мятная 100м",
-      "amount": 118
-    },
-    {
-      "product_id": 816,
-      "product_name": "Вероника",
-      "amount": 103
-    },
-    {
-      "product_id": 817,
-      "product_name": "Тилландсия",
-      "amount": 125
-    },
-    {
-      "product_id": 818,
-      "product_name": "Цинерария",
-      "amount": 131
-    },
-    {
-      "product_id": 819,
-      "product_name": "Лента кружевная черная 100м",
-      "amount": 98
-    },
-    {
-      "product_id": 820,
-      "product_name": "Пион",
-      "amount": 91
+      "predicted_demand": 31,
+      "current_stock": 0,
+      "amount": 5
     },
     {
       "product_id": 821,
       "product_name": "Нигелла",
-      "amount": 99
-    },
-    {
-      "product_id": 822,
-      "product_name": "Лютик",
-      "amount": 107
+      "predicted_demand": 22,
+      "current_stock": 0,
+      "amount": 3
     },
     {
       "product_id": 823,
       "product_name": "Органза для упаковки белая 50смx100м",
-      "amount": 141
-    },
-    {
-      "product_id": 824,
-      "product_name": "Удобрение для срезанных цветов 500мл",
-      "amount": 144
+      "predicted_demand": 35,
+      "current_stock": 0,
+      "amount": 5
     },
     {
       "product_id": 825,
       "product_name": "Мускари",
-      "amount": 80
+      "predicted_demand": 14,
+      "current_stock": 0,
+      "amount": 2
     },
     {
       "product_id": 826,
       "product_name": "Лента репсовая Мятная 100м",
-      "amount": 79
+      "predicted_demand": 33,
+      "current_stock": 0,
+      "amount": 5
     },
     {
       "product_id": 827,
       "product_name": "Мимоза",
-      "amount": 113
+      "predicted_demand": 80,
+      "current_stock": 0,
+      "amount": 13
     },
     {
       "product_id": 828,
       "product_name": "Магнолия",
-      "amount": 134
+      "predicted_demand": 6,
+      "current_stock": 0,
+      "amount": 1
     },
     {
       "product_id": 829,
       "product_name": "Лента атласная черная 100м",
-      "amount": 182
+      "predicted_demand": 70,
+      "current_stock": 4,
+      "amount": 7
     },
     {
       "product_id": 830,
       "product_name": "Ваза керамическая белая 25см",
-      "amount": 157
-    },
-    {
-      "product_id": 831,
-      "product_name": "Проволока декоративная Под серебро 100мВаза стеклянная круглая 20см",
-      "amount": 166
-    },
-    {
-      "product_id": 832,
-      "product_name": "Сетка декоративная золотая 45смx100м",
-      "amount": 125
-    },
-    {
-      "product_id": 833,
-      "product_name": "Флебодиум",
-      "amount": 95
-    },
-    {
-      "product_id": 834,
-      "product_name": "Колба для цветов 15см",
-      "amount": 112
+      "predicted_demand": 38,
+      "current_stock": 3,
+      "amount": 3
     },
     {
       "product_id": 835,
       "product_name": "Проволока декоративная Под серебро 100мВаза стеклянная круглая 20см",
-      "amount": 96
-    },
-    {
-      "product_id": 836,
-      "product_name": "Перец",
-      "amount": 11
-    },
-    {
-      "product_id": 837,
-      "product_name": "Серрурия",
-      "amount": 111
-    },
-    {
-      "product_id": 838,
-      "product_name": "Лента атласная сиреневая 100м",
-      "amount": 117
-    },
-    {
-      "product_id": 839,
-      "product_name": "Лента рафия натуральная 100м",
-      "amount": 177
+      "predicted_demand": 34,
+      "current_stock": 0,
+      "amount": 5
     },
     {
       "product_id": 840,
       "product_name": "Ваза напольная высокая 80см",
-      "amount": 193
-    },
-    {
-      "product_id": 841,
-      "product_name": "Проволока флористическая коричневая 1ммx100м",
-      "amount": 135
-    },
-    {
-      "product_id": 842,
-      "product_name": "Упаковочная бумага белая 1x100м",
-      "amount": 111
-    },
-    {
-      "product_id": 843,
-      "product_name": "Лента кружевная белая 100м",
-      "amount": 140
-    },
-    {
-      "product_id": 844,
-      "product_name": "Фетр для упаковки бордовый 40смx100м",
-      "amount": 173
-    },
-    {
-      "product_id": 845,
-      "product_name": "Слива",
-      "amount": 185
-    },
-    {
-      "product_id": 846,
-      "product_name": "Роза",
-      "amount": 189
-    },
-    {
-      "product_id": 847,
-      "product_name": "Дендробиум",
-      "amount": 141
-    },
-    {
-      "product_id": 848,
-      "product_name": "Средство для продления жизни цветов 200мл",
-      "amount": 148
-    },
-    {
-      "product_id": 849,
-      "product_name": "Грин белл",
-      "amount": 148
+      "predicted_demand": 93,
+      "current_stock": 0,
+      "amount": 15
     },
     {
       "product_id": 850,
       "product_name": "Магнолия",
-      "amount": 151
+      "predicted_demand": 26,
+      "current_stock": 0,
+      "amount": 4
     },
     {
       "product_id": 851,
       "product_name": "Эрика",
-      "amount": 106
-    },
-    {
-      "product_id": 852,
-      "product_name": "Зверобой",
-      "amount": 113
-    },
-    {
-      "product_id": 853,
-      "product_name": "Дендробиум",
-      "amount": 114
-    },
-    {
-      "product_id": 854,
-      "product_name": "Упаковочная бумага золотая 1x100м",
-      "amount": 160
+      "predicted_demand": 16,
+      "current_stock": 0,
+      "amount": 2
     },
     {
       "product_id": 855,
       "product_name": "Упаковочная бумага крафт 1x100м",
-      "amount": 157
+      "predicted_demand": 66,
+      "current_stock": 0,
+      "amount": 11
     },
     {
       "product_id": 856,
       "product_name": "Хлопок",
-      "amount": 104
+      "predicted_demand": 17,
+      "current_stock": 0,
+      "amount": 2
     },
     {
       "product_id": 857,
       "product_name": "Упаковочная бумага белая 1x100м",
-      "amount": 134
-    },
-    {
-      "product_id": 858,
-      "product_name": "Фетр для упаковки оливковый 40смx100м",
-      "amount": 134
-    },
-    {
-      "product_id": 859,
-      "product_name": "Лента кружевная с золотой нитью 100м",
-      "amount": 179
-    },
-    {
-      "product_id": 860,
-      "product_name": "Ирис",
-      "amount": 142
+      "predicted_demand": 32,
+      "current_stock": 4,
+      "amount": 1
     },
     {
       "product_id": 861,
       "product_name": "Гиппеаструм",
-      "amount": 97
+      "predicted_demand": 38,
+      "current_stock": 0,
+      "amount": 6
     },
     {
       "product_id": 862,
       "product_name": "Форзиция",
-      "amount": 98
+      "predicted_demand": 42,
+      "current_stock": 5,
+      "amount": 2
     },
     {
       "product_id": 863,
       "product_name": "Сетка декоративная серебряная 45смx100м",
-      "amount": 112
-    },
-    {
-      "product_id": 864,
-      "product_name": "Статица",
-      "amount": 114
-    },
-    {
-      "product_id": 865,
-      "product_name": "Лента атласная розовая 100м",
-      "amount": 164
+      "predicted_demand": 29,
+      "current_stock": 0,
+      "amount": 4
     },
     {
       "product_id": 866,
       "product_name": "Аллиум",
-      "amount": 157
-    },
-    {
-      "product_id": 867,
-      "product_name": "Органза для упаковки белая 50смx100м",
-      "amount": 168
-    },
-    {
-      "product_id": 868,
-      "product_name": "Гиппеаструм",
-      "amount": 177
-    },
-    {
-      "product_id": 869,
-      "product_name": "Калина",
-      "amount": 173
+      "predicted_demand": 31,
+      "current_stock": 0,
+      "amount": 5
     },
     {
       "product_id": 870,
       "product_name": "Анигозантос",
-      "amount": 175
-    },
-    {
-      "product_id": 871,
-      "product_name": "Магнолия",
-      "amount": 128
+      "predicted_demand": 74,
+      "current_stock": 0,
+      "amount": 12
     },
     {
       "product_id": 872,
       "product_name": "Геликония",
-      "amount": 132
-    },
-    {
-      "product_id": 873,
-      "product_name": "Глориоза",
-      "amount": 136
+      "predicted_demand": 56,
+      "current_stock": 1,
+      "amount": 8
     },
     {
       "product_id": 874,
       "product_name": "Магнолия",
-      "amount": 159
+      "predicted_demand": 42,
+      "current_stock": 0,
+      "amount": 7
     },
     {
       "product_id": 875,
       "product_name": "Лента атласная голубая 100м",
-      "amount": 181
-    },
-    {
-      "product_id": 876,
-      "product_name": "Кашпо керамическое 25см",
-      "amount": 176
+      "predicted_demand": 14,
+      "current_stock": 0,
+      "amount": 2
     },
     {
       "product_id": 877,
       "product_name": "Цимбидиум",
-      "amount": 159
-    },
-    {
-      "product_id": 878,
-      "product_name": "Сетка декоративная серебряная 45смx100м",
-      "amount": 171
+      "predicted_demand": 108,
+      "current_stock": 15,
+      "amount": 2
     },
     {
       "product_id": 879,
       "product_name": "Нарцисс",
-      "amount": 146
+      "predicted_demand": 6,
+      "current_stock": 0,
+      "amount": 1
     },
     {
       "product_id": 880,
       "product_name": "Лента джутовая цветная 100м",
-      "amount": 126
-    },
-    {
-      "product_id": 881,
-      "product_name": "Лента атласная голубая 100м",
-      "amount": 109
-    },
-    {
-      "product_id": 882,
-      "product_name": "Подсолнух",
-      "amount": 51
-    },
-    {
-      "product_id": 883,
-      "product_name": "Фетр для упаковки бордовый 40смx100м",
-      "amount": 97
-    },
-    {
-      "product_id": 884,
-      "product_name": "Незабудка",
-      "amount": 44
+      "predicted_demand": 11,
+      "current_stock": 0,
+      "amount": 1
     },
     {
       "product_id": 885,
       "product_name": "Ромашка",
-      "amount": 100
-    },
-    {
-      "product_id": 886,
-      "product_name": "Капуста",
-      "amount": 189
-    },
-    {
-      "product_id": 887,
-      "product_name": "Калла",
-      "amount": 146
+      "predicted_demand": 76,
+      "current_stock": 0,
+      "amount": 12
     },
     {
       "product_id": 888,
       "product_name": "Тюльпан",
-      "amount": 116
-    },
-    {
-      "product_id": 889,
-      "product_name": "Филодендрон",
-      "amount": 109
-    },
-    {
-      "product_id": 890,
-      "product_name": "Анемона",
-      "amount": 117
+      "predicted_demand": 13,
+      "current_stock": 0,
+      "amount": 2
     },
     {
       "product_id": 891,
       "product_name": "Блеск для листьев 300мл",
-      "amount": 104
-    },
-    {
-      "product_id": 892,
-      "product_name": "Упаковочная бумага розовая 1x100м",
-      "amount": 98
+      "predicted_demand": 8,
+      "current_stock": 0,
+      "amount": 1
     },
     {
       "product_id": 893,
       "product_name": "Лента атласная голубая 100м",
-      "amount": 133
-    },
-    {
-      "product_id": 894,
-      "product_name": "Бруния",
-      "amount": 117
-    },
-    {
-      "product_id": 895,
-      "product_name": "Ваточник",
-      "amount": 163
-    },
-    {
-      "product_id": 896,
-      "product_name": "Незабудка",
-      "amount": 220
-    },
-    {
-      "product_id": 897,
-      "product_name": "Лента атласная золотая 100м",
-      "amount": 163
-    },
-    {
-      "product_id": 898,
-      "product_name": "Средство для продления жизни цветов 200мл",
-      "amount": 114
+      "predicted_demand": 16,
+      "current_stock": 0,
+      "amount": 2
     },
     {
       "product_id": 899,
       "product_name": "Сциндапсус",
-      "amount": 122
-    },
-    {
-      "product_id": 900,
-      "product_name": "Дендробиум",
-      "amount": 155
-    },
-    {
-      "product_id": 901,
-      "product_name": "Лента атласная красная 100м",
-      "amount": 148
+      "predicted_demand": 50,
+      "current_stock": 0,
+      "amount": 8
     },
     {
       "product_id": 902,
       "product_name": "Лента атласная черная 100м",
-      "amount": 122
-    },
-    {
-      "product_id": 903,
-      "product_name": "Овес",
-      "amount": 67
-    },
-    {
-      "product_id": 904,
-      "product_name": "Дендробиум",
-      "amount": 113
-    },
-    {
-      "product_id": 905,
-      "product_name": "Падуб",
-      "amount": 130
-    },
-    {
-      "product_id": 906,
-      "product_name": "Кашпо керамическое 25см",
-      "amount": 122
+      "predicted_demand": 28,
+      "current_stock": 0,
+      "amount": 4
     },
     {
       "product_id": 907,
       "product_name": "Аллиум",
-      "amount": 112
+      "predicted_demand": 31,
+      "current_stock": 0,
+      "amount": 5
     },
     {
       "product_id": 908,
       "product_name": "Ирис",
-      "amount": 120
-    },
-    {
-      "product_id": 909,
-      "product_name": "Флористическая плёнка зеленая 50смx100м",
-      "amount": 137
-    },
-    {
-      "product_id": 910,
-      "product_name": "Дуб",
-      "amount": 131
+      "predicted_demand": 125,
+      "current_stock": 15,
+      "amount": 5
     },
     {
       "product_id": 911,
       "product_name": "Мускари",
-      "amount": 129
+      "predicted_demand": 37,
+      "current_stock": 0,
+      "amount": 6
     },
     {
       "product_id": 912,
       "product_name": "Паникум",
-      "amount": 168
-    },
-    {
-      "product_id": 913,
-      "product_name": "Хризантема",
-      "amount": 152
+      "predicted_demand": 64,
+      "current_stock": 0,
+      "amount": 10
     },
     {
       "product_id": 914,
       "product_name": "Лента джутовая цветная 100м",
-      "amount": 146
+      "predicted_demand": 27,
+      "current_stock": 0,
+      "amount": 4
     },
     {
       "product_id": 915,
       "product_name": "Туя",
-      "amount": 108
+      "predicted_demand": 40,
+      "current_stock": 0,
+      "amount": 6
     },
     {
       "product_id": 916,
       "product_name": "Дуб",
-      "amount": 137
-    },
-    {
-      "product_id": 917,
-      "product_name": "Сетария",
-      "amount": 218
+      "predicted_demand": 32,
+      "current_stock": 0,
+      "amount": 5
     },
     {
       "product_id": 918,
       "product_name": "Плёнка декоративная Хром 30смx100м",
-      "amount": 155
-    },
-    {
-      "product_id": 919,
-      "product_name": "Вибурнум",
-      "amount": 137
+      "predicted_demand": 73,
+      "current_stock": 0,
+      "amount": 12
     },
     {
       "product_id": 920,
       "product_name": "Лента атласная черная 100м",
-      "amount": 137
-    },
-    {
-      "product_id": 921,
-      "product_name": "Флористическая плёнка прозрачная 50смx100м",
-      "amount": 148
-    },
-    {
-      "product_id": 922,
-      "product_name": "Нерине",
-      "amount": 156
-    },
-    {
-      "product_id": 923,
-      "product_name": "Лента рафия натуральная 100м",
-      "amount": 140
-    },
-    {
-      "product_id": 924,
-      "product_name": "Ваза керамическая белая 25см",
-      "amount": 149
-    },
-    {
-      "product_id": 925,
-      "product_name": "Лента репсовая Мятная 100м",
-      "amount": 168
-    },
-    {
-      "product_id": 926,
-      "product_name": "Нигелла",
-      "amount": 169
-    },
-    {
-      "product_id": 927,
-      "product_name": "Паникум",
-      "amount": 185
+      "predicted_demand": 57,
+      "current_stock": 2,
+      "amount": 7
     },
     {
       "product_id": 928,
       "product_name": "Проволока декоративная Под золото 100м",
-      "amount": 200
-    },
-    {
-      "product_id": 929,
-      "product_name": "Белосемянник",
-      "amount": 168
+      "predicted_demand": 77,
+      "current_stock": 0,
+      "amount": 12
     },
     {
       "product_id": 930,
       "product_name": "Плёнка декоративная Золотые брызги 30смx100м",
-      "amount": 170
+      "predicted_demand": 59,
+      "current_stock": 2,
+      "amount": 7
     },
     {
       "product_id": 931,
       "product_name": "Нигелла",
-      "amount": 146
-    },
-    {
-      "product_id": 932,
-      "product_name": "Пион",
-      "amount": 98
-    },
-    {
-      "product_id": 933,
-      "product_name": "Цинерария",
-      "amount": 156
+      "predicted_demand": 90,
+      "current_stock": 0,
+      "amount": 15
     },
     {
       "product_id": 934,
       "product_name": "Краспедия",
-      "amount": 136
-    },
-    {
-      "product_id": 935,
-      "product_name": "Глориоза",
-      "amount": 121
-    },
-    {
-      "product_id": 936,
-      "product_name": "Цинерария",
-      "amount": 120
-    },
-    {
-      "product_id": 937,
-      "product_name": "Лента атласная черная 100м",
-      "amount": 95
-    },
-    {
-      "product_id": 938,
-      "product_name": "Протея",
-      "amount": 68
+      "predicted_demand": 95,
+      "current_stock": 0,
+      "amount": 15
     },
     {
       "product_id": 939,
       "product_name": "Пихта",
-      "amount": 60
-    },
-    {
-      "product_id": 940,
-      "product_name": "Блеск для листьев 300мл",
-      "amount": 50
-    },
-    {
-      "product_id": 941,
-      "product_name": "Ежевика",
-      "amount": 86
-    },
-    {
-      "product_id": 942,
-      "product_name": "Ванда",
-      "amount": 92
-    },
-    {
-      "product_id": 943,
-      "product_name": "Органза для упаковки белая 50смx100м",
-      "amount": 95
+      "predicted_demand": 11,
+      "current_stock": 0,
+      "amount": 1
     },
     {
       "product_id": 944,
       "product_name": "Флористическая плёнка зеленая 50смx100м",
-      "amount": 121
-    },
-    {
-      "product_id": 945,
-      "product_name": "Проволока флористическая зеленая 1ммx100м",
-      "amount": 59
-    },
-    {
-      "product_id": 946,
-      "product_name": "Незабудка",
-      "amount": 116
-    },
-    {
-      "product_id": 947,
-      "product_name": "Стрелиция",
-      "amount": 103
-    },
-    {
-      "product_id": 948,
-      "product_name": "Кипарисовик",
-      "amount": 115
-    },
-    {
-      "product_id": 949,
-      "product_name": "Подставка для вазы 30см",
-      "amount": 121
-    },
-    {
-      "product_id": 950,
-      "product_name": "Телопея",
-      "amount": 131
-    },
-    {
-      "product_id": 951,
-      "product_name": "Овес",
-      "amount": 137
-    },
-    {
-      "product_id": 952,
-      "product_name": "Филодендрон",
-      "amount": 137
-    },
-    {
-      "product_id": 953,
-      "product_name": "Морозник",
-      "amount": 138
-    },
-    {
-      "product_id": 954,
-      "product_name": "Магнолия",
-      "amount": 140
-    },
-    {
-      "product_id": 955,
-      "product_name": "Серрурия",
-      "amount": 149
-    },
-    {
-      "product_id": 956,
-      "product_name": "Спирея",
-      "amount": 162
-    },
-    {
-      "product_id": 957,
-      "product_name": "Морозник",
-      "amount": 156
+      "predicted_demand": 153,
+      "current_stock": 2,
+      "amount": 23
     },
     {
       "product_id": 958,
       "product_name": "Лента кружевная белая 100м",
-      "amount": 133
-    },
-    {
-      "product_id": 959,
-      "product_name": "Флористическая плёнка зеленая 50смx100м",
-      "amount": 155
-    },
-    {
-      "product_id": 960,
-      "product_name": "Амми",
-      "amount": 161
-    },
-    {
-      "product_id": 961,
-      "product_name": "Пион",
-      "amount": 158
+      "predicted_demand": 7,
+      "current_stock": 0,
+      "amount": 1
     },
     {
       "product_id": 962,
       "product_name": "Фетр для упаковки оливковый 40смx100м",
-      "amount": 194
-    },
-    {
-      "product_id": 963,
-      "product_name": "Перец",
-      "amount": 140
-    },
-    {
-      "product_id": 964,
-      "product_name": "Ванда",
-      "amount": 109
-    },
-    {
-      "product_id": 965,
-      "product_name": "Нигелла",
-      "amount": 177
+      "predicted_demand": 48,
+      "current_stock": 1,
+      "amount": 7
     },
     {
       "product_id": 966,
       "product_name": "Скиммия",
-      "amount": 168
-    },
-    {
-      "product_id": 967,
-      "product_name": "Упаковочная бумага белая 1x100м",
-      "amount": 166
-    },
-    {
-      "product_id": 968,
-      "product_name": "Плёнка декоративная Мрамор 30смx100м",
-      "amount": 125
+      "predicted_demand": 90,
+      "current_stock": 0,
+      "amount": 15
     },
     {
       "product_id": 969,
       "product_name": "Хлопок",
-      "amount": 117
-    },
-    {
-      "product_id": 970,
-      "product_name": "Монстера",
-      "amount": 128
-    },
-    {
-      "product_id": 971,
-      "product_name": "Глориоза",
-      "amount": 131
+      "predicted_demand": 6,
+      "current_stock": 0,
+      "amount": 1
     },
     {
       "product_id": 972,
       "product_name": "Ванда",
-      "amount": 164
+      "predicted_demand": 15,
+      "current_stock": 0,
+      "amount": 2
     },
     {
       "product_id": 973,
       "product_name": "Органза для упаковки золотая 50смx100м",
-      "amount": 133
+      "predicted_demand": 14,
+      "current_stock": 0,
+      "amount": 2
     },
     {
       "product_id": 974,
       "product_name": "Лента кружевная черная 100м",
-      "amount": 105
-    },
-    {
-      "product_id": 975,
-      "product_name": "Василек",
-      "amount": 112
-    },
-    {
-      "product_id": 976,
-      "product_name": "Лента атласная белая 100м",
-      "amount": 170
-    },
-    {
-      "product_id": 977,
-      "product_name": "Плёнка декоративная Мрамор 30смx100м",
-      "amount": 190
+      "predicted_demand": 37,
+      "current_stock": 1,
+      "amount": 5
     },
     {
       "product_id": 978,
       "product_name": "Зверобой",
-      "amount": 139
-    },
-    {
-      "product_id": 979,
-      "product_name": "Лаванда",
-      "amount": 112
+      "predicted_demand": 32,
+      "current_stock": 2,
+      "amount": 3
     },
     {
       "product_id": 980,
       "product_name": "Галантус",
-      "amount": 177
-    },
-    {
-      "product_id": 981,
-      "product_name": "Спирея",
-      "amount": 203
-    },
-    {
-      "product_id": 982,
-      "product_name": "Туя",
-      "amount": 222
-    },
-    {
-      "product_id": 983,
-      "product_name": "Книфофия",
-      "amount": 131
-    },
-    {
-      "product_id": 984,
-      "product_name": "Сетка декоративная серебряная 45смx100м",
-      "amount": 131
-    },
-    {
-      "product_id": 985,
-      "product_name": "Мискантус",
-      "amount": 126
-    },
-    {
-      "product_id": 986,
-      "product_name": "Статица",
-      "amount": 137
-    },
-    {
-      "product_id": 987,
-      "product_name": "Гениста",
-      "amount": 137
-    },
-    {
-      "product_id": 988,
-      "product_name": "Стрелиция",
-      "amount": 129
-    },
-    {
-      "product_id": 989,
-      "product_name": "Ваза керамическая белая 25см",
-      "amount": 121
-    },
-    {
-      "product_id": 990,
-      "product_name": "Анигозантос",
-      "amount": 100
-    },
-    {
-      "product_id": 991,
-      "product_name": "Лента атласная сиреневая 100м",
-      "amount": 76
+      "predicted_demand": 36,
+      "current_stock": 2,
+      "amount": 4
     },
     {
       "product_id": 992,
       "product_name": "Астильба",
-      "amount": 89
+      "predicted_demand": 78,
+      "current_stock": 0,
+      "amount": 13
     },
     {
       "product_id": 993,
       "product_name": "Хризантема",
-      "amount": 74
-    },
-    {
-      "product_id": 994,
-      "product_name": "Лютик",
-      "amount": 105
-    },
-    {
-      "product_id": 995,
-      "product_name": "Калина",
-      "amount": 116
-    },
-    {
-      "product_id": 996,
-      "product_name": "Галантус",
-      "amount": 145
+      "predicted_demand": 36,
+      "current_stock": 0,
+      "amount": 6
     },
     {
       "product_id": 997,
       "product_name": "Василек",
-      "amount": 178
-    },
-    {
-      "product_id": 998,
-      "product_name": "Незабудка",
-      "amount": 157
-    },
-    {
-      "product_id": 999,
-      "product_name": "Упаковочная бумага голубая 1x100м",
-      "amount": 163
-    },
-    {
-      "product_id": 1000,
-      "product_name": "Фетр для упаковки бордовый 40смx100м",
-      "amount": 119
+      "predicted_demand": 15,
+      "current_stock": 0,
+      "amount": 2
     }
   ]
 }

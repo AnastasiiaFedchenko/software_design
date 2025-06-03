@@ -6,8 +6,14 @@ using Domain;
 
 namespace ProductBatchLoading
 {
+
     public class ProductBatchLoader : IProductBatchLoader
     {
+        private readonly string _connectionString;
+        public ProductBatchLoader(string connectionString)
+        {
+            _connectionString = connectionString;
+        }
         public bool Load(ProductBatch batch)
         {
             if (batch == null || batch.ProductsInfo == null || batch.ProductsInfo.Count == 0)
@@ -17,7 +23,7 @@ namespace ProductBatchLoading
 
             try
             {
-                using (var connection = new NpgsqlConnection("Host=127.0.0.1;Port=5432;Database=FlowerShopPPO;Username=postgres;Password=5432"))
+                using (var connection = new NpgsqlConnection(_connectionString))
                 {
                     connection.Open();
 
@@ -41,6 +47,14 @@ namespace ProductBatchLoading
                             }
                             Console.WriteLine("загружено в product_in_stock");
 
+                            // 3. Загружаем информацию о прайсе
+                            if (!InsertIntoPrice(connection, transaction, batch))
+                            {
+                                transaction.Rollback();
+                                return false;
+                            }
+                            Console.WriteLine("загружено в price");
+
                             transaction.Commit();
                             return true;
                         }
@@ -59,7 +73,6 @@ namespace ProductBatchLoading
                 return false;
             }
         }
-
         private bool InsertIntoBatchOfProducts(NpgsqlConnection connection, NpgsqlTransaction transaction, ProductBatch batch)
         {
             foreach (var product in batch.ProductsInfo)
@@ -170,6 +183,60 @@ namespace ProductBatchLoading
             }
         }
 
+        private bool InsertIntoPrice(NpgsqlConnection connection, NpgsqlTransaction transaction, ProductBatch batch)
+        {
+            try
+            {
+                foreach (var product in batch.ProductsInfo)
+                {
+                    var sql = @"
+                        WITH avg_cost_by_year AS (
+                            SELECT 
+                                id_nomenclature,
+                                EXTRACT(YEAR FROM production_date) AS production_year,
+                                AVG(cost_price) * 1.55 AS calculated_price
+                            FROM 
+                                batch_of_products
+                            WHERE 
+                                id_nomenclature = @nomenclatureId
+                            GROUP BY 
+                                id_nomenclature, 
+                                EXTRACT(YEAR FROM production_date)
+                        )
+                        INSERT INTO price (id, id_nomenclature, selling_price, id_product_batch)
+                        SELECT 
+                        ROW_NUMBER() OVER () + COALESCE((SELECT MAX(id) FROM price), 0),
+		                    bop.id_nomenclature,
+		                    ac.calculated_price,
+		                    bop.id_product_batch
+		                FROM 
+		                    batch_of_products bop 
+		                JOIN 
+		                    avg_cost_by_year ac ON bop.id_nomenclature = ac.id_nomenclature 
+		                    AND EXTRACT(YEAR FROM bop.production_date) = ac.production_year
+		                where bop.id_nomenclature = @nomenclatureId and bop.id_product_batch = @batchId";
+
+                    using (var command = new NpgsqlCommand(sql, connection, transaction))
+                    {
+                        command.Parameters.AddWithValue("@nomenclatureId", product.IdNomenclature);
+                        command.Parameters.AddWithValue("@batchId", batch.Id);
+
+                        int affectedRows = command.ExecuteNonQuery();
+                        if (affectedRows != 1)
+                        {
+                            Console.WriteLine($"Не удалось вставить запись в price для номенклатуры {product.IdNomenclature}");
+                            return false;
+                        }
+                    }
+                }
+                return true;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Ошибка при добавлении в price: {ex.Message}");
+                return false;
+            }
+        }
         private int GetNextProductInStockId(NpgsqlConnection connection, NpgsqlTransaction transaction)
         {
             var sql = "SELECT COALESCE(MAX(id), 0) FROM product_in_stock";
