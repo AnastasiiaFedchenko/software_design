@@ -19,36 +19,50 @@ namespace ProductBatchReading
 
         public ProductBatch create(Stream stream)
         {
+            /*
+             Формат файла:
+                id_поставки
+                количество позиций в поставке
+                поставщик
+                ответственный
+                id_номенклатуры|production_date|expiration_date|cost_price|amount
+             */
             if (stream == null)
                 throw new ArgumentNullException(nameof(stream));
 
             using (var reader = _streamReaderFactory(stream))
             {
-                // Чтение и валидация заголовка
                 var batchIdLine = reader.ReadLine();
                 if (string.IsNullOrEmpty(batchIdLine))
                     throw new InvalidDataException("Batch ID line is missing");
 
-                var totalAmountLine = reader.ReadLine();
-                if (string.IsNullOrEmpty(totalAmountLine))
-                    throw new InvalidDataException("Total amount line is missing");
-
                 var productsCountLine = reader.ReadLine();
                 if (string.IsNullOrEmpty(productsCountLine))
                     throw new InvalidDataException("Products count line is missing");
+                
+                var supplierLine = reader.ReadLine();
+                if (string.IsNullOrEmpty(supplierLine))
+                    throw new InvalidDataException("Supplier line is missing");
 
-                // Парсинг с обработкой ошибок
-                if (!Guid.TryParse(batchIdLine, out var batchId))
+                var responsibleLine = reader.ReadLine();
+                if (string.IsNullOrEmpty(responsibleLine))
+                    throw new InvalidDataException("Responsible line is missing");
+
+
+                if (!int.TryParse(batchIdLine, out var batchId))
                     throw new InvalidDataException("Invalid Batch ID format");
-
-                if (!int.TryParse(totalAmountLine, out var totalAmount))
-                    throw new InvalidDataException("Invalid Total Amount format");
 
                 if (!int.TryParse(productsCountLine, out var productsCount))
                     throw new InvalidDataException("Invalid Products Count format");
+                
+                if (!int.TryParse(supplierLine, out var supplier))
+                    throw new InvalidDataException("Invalid Batch ID format");
+
+                if (!int.TryParse(responsibleLine, out var responsible))
+                    throw new InvalidDataException("Invalid Batch ID format");
 
                 // Чтение продуктов
-                var products = new List<ProductLine>();
+                var products = new List<ProductInfo>();
                 for (int i = 0; i < productsCount; i++)
                 {
                     var productLine = reader.ReadLine();
@@ -68,31 +82,32 @@ namespace ProductBatchReading
                     }
                 }
 
-                return new ProductBatch(batchId, totalAmount, products);
+                return new ProductBatch(batchId, supplier, responsible, products);
             }
         }
 
-        internal ProductLine ParseProductLine(string line)
+        internal ProductInfo ParseProductLine(string line)
         {
+            // id_номенклатуры|production_date|expiration_date|cost_price|amount
             if (string.IsNullOrEmpty(line))
                 throw new InvalidDataException("Product line is empty");
 
-            var parts = line.Split('|');
-            if (parts.Length != 7)
-                throw new InvalidDataException("Product line must contain exactly 7 parts separated by '|'");
+            var parts = line.Split(';');
+            if (parts.Length != 5)
+                throw new InvalidDataException("Product line must contain exactly 7 parts separated by ';'");
 
             try
             {
-                var product = new Product(
-                    Guid.Parse(parts[0]),
-                    int.Parse(parts[1]),
-                    double.Parse(parts[2], System.Globalization.CultureInfo.InvariantCulture),
-                    int.Parse(parts[3]),
-                    parts[4],
-                    parts[5]
+                var product = new ProductInfo(
+                    int.Parse(parts[0]),
+                    DateTime.Parse(parts[1]),
+                    DateTime.Parse(parts[2]),
+                    int.Parse(parts[4]),
+                    double.Parse(parts[3], System.Globalization.NumberStyles.Any,
+                                           System.Globalization.CultureInfo.InvariantCulture)
                 );
 
-                return new ProductLine(product, int.Parse(parts[6]));
+                return product;
             }
             catch (FormatException ex)
             {

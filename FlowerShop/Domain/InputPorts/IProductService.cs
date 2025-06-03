@@ -9,7 +9,8 @@ namespace Domain.InputPorts
     public interface IProductService
     {
         Inventory GetAllAvailableProducts(int limit, int skip); // в каком формате вот это вернуть List<ProductLine>
-        Receipt MakePurchase(List<ReceiptLine> items, User customer); // сюда по идее передаётся корзина, но в каком формате List<ReceiptLine>  
-        bool CheckNewAmount(Guid product_id, int new_n); // есть ли у меня реально id продукта
+        Receipt? MakePurchase(List<ReceiptLine> items, int customerID); // сюда по идее передаётся корзина, но в каком формате List<ReceiptLine>  
+        Product GetInfoOnProduct(int productID);
+        bool CheckNewAmount(int product_id, int new_n); // есть ли у меня реально id продукта
     }
 }

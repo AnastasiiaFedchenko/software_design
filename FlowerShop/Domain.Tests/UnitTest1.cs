@@ -30,8 +30,6 @@ namespace Domain.Tests
             var expectedInventory = new Inventory(
                 id: Guid.NewGuid(),
                 date: DateTime.Now,
-                supplier: new User(Guid.NewGuid(), "Supplier1"),
-                responsible: new User(Guid.NewGuid(), "Responsible1"),
                 total_amount: 10,
                 products: new List<ProductLine>()
             );
@@ -54,8 +52,8 @@ namespace Domain.Tests
         public void CheckNewAmount_WithValidProductAndAmount_ShouldReturnTrue()
         {
             // Arrange
-            var productId = Guid.NewGuid();
-            var amount = 5;
+            var productId = 148;
+            var amount = 10;
             _mockInventoryRepo.Setup(x => x.CheckNewAmount(productId, amount))
                 .Returns(true);
 
@@ -71,7 +69,7 @@ namespace Domain.Tests
         public void CheckNewAmount_WithInvalidProduct_ShouldReturnFalse()
         {
             // Arrange
-            var productId = Guid.NewGuid();
+            var productId = 148;
             var amount = 5;
             _mockInventoryRepo.Setup(x => x.CheckNewAmount(productId, amount))
                 .Returns(false);
@@ -87,7 +85,7 @@ namespace Domain.Tests
         public void CheckNewAmount_WithNegativeAmount_ShouldThrowArgumentException()
         {
             // Arrange
-            var productId = Guid.NewGuid();
+            var productId = 148;
             var amount = -1;
 
             // Act & Assert
@@ -99,7 +97,7 @@ namespace Domain.Tests
         public void CheckNewAmount_WithEmptyProductId_ShouldThrowArgumentException()
         {
             // Arrange
-            var productId = Guid.Empty;
+            int productId = 0;
             var amount = 5;
 
             // Act & Assert

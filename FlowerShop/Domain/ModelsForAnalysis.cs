@@ -10,7 +10,7 @@ namespace Domain
     {
         public string Type { get; }
         public int Amount { get; }
-        List<User> Users { get; }
+        public List<User> Users { get; }
         public UserSegment(string type, int amount, List<User> users)
         {
             Type = type;
@@ -19,15 +19,21 @@ namespace Domain
         }
     }
 
+    public class DailyForecast
+    {
+        public string date { get; set; }
+        public int day_of_week { get; set; }
+        public int orders { get; set; }
+    }
     public class ForecastOfOrders
     {
         public int AmountOfOrders { get; set; }
-        public int AmountOfProducts { get; set; }
+        
         public List<ProductLine> Products { get; set; }
-        public ForecastOfOrders(int amount_of_orders, int amount_of_products, List<ProductLine> products)
+        public List<DailyForecast> DailyForecast { get; set; }
+        public ForecastOfOrders(int amount_of_orders, List<ProductLine> products)
         {
             AmountOfOrders = amount_of_orders;
-            AmountOfProducts = amount_of_products;
             Products = products;
         }
     }

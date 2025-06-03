@@ -8,6 +8,6 @@ namespace Domain.OutputPorts
 {
     public interface IReceiptRepo
     {
-        bool load(Receipt receipt);
+        bool LoadReceiptItemsSale_UpdateAmount(ref Receipt receipt); // один вызов тк одна транзакция
     }
 }

@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Domain.InputPorts;
 using Domain.OutputPorts;
+using SegmentAnalysis;
 
 namespace Domain
 {
@@ -21,11 +22,11 @@ namespace Domain
 
         public ForecastOfOrders GetForecastOfOrders() // опять таки в каком формате это возвращать
         {
-            return _forecast.create();
+            return _forecast.Create();
         }
         public List<UserSegment> GetUserSegmentation()
         {
-            return _segment.create();
+            return _segment.Create();
         }
     }
 }
