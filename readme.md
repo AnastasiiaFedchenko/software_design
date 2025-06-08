@@ -22,10 +22,10 @@
 * Администратор: Пользователь, ответственный за управление магазином и анализ данных. Администраторы имеют доступ к функционалу, позволяющему управлять товарами, обрабатывать заказы и анализировать статистику продаж и клиентского поведения.
 
 ## Use-case 
-![2025-02-26_18-53-04](https://github.com/user-attachments/assets/f8c72720-64f0-4b15-9a99-1332de5a44a0)
+![use_case](https://github.com/user-attachments/assets/3209101a-3ed1-4b24-b356-e4710c1a8e04)
 
 ## ER-диаграмма сущностей
-![ER](https://github.com/user-attachments/assets/dc70e1bf-0c38-4373-8fb7-c0e8b75ff503)
+![ER Chen](https://github.com/user-attachments/assets/c77e44af-6056-429e-8c20-383a312b63b3)
 
 ## Пользовательские сценарии
 * Основной пользовательский сценарий клиента: покупка товара
@@ -88,4 +88,5 @@
 ![class_diagram](https://github.com/user-attachments/assets/5a98e56a-3227-4327-af83-8509e710821f)
 
 ## Схема БД
-![2025-03-13_12-28-10](https://github.com/user-attachments/assets/f9ea1241-5484-4d96-8eef-1d8f3045674c)
+![BD_3](https://github.com/user-attachments/assets/b83fb4f4-bcf0-4a2e-a086-3af308894381)
+
