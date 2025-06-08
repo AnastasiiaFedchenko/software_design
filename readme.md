@@ -85,7 +85,7 @@
 ![2025-03-13_13-07-14](https://github.com/user-attachments/assets/eb020483-eb9c-4a77-b987-548283789c8e)
 
 ## UML диаграммы классов
-![class_diagram](https://github.com/user-attachments/assets/5a98e56a-3227-4327-af83-8509e710821f)
+![class_diagram_res](https://github.com/user-attachments/assets/799b59ab-aaa5-4ad5-bf6b-fd6fa6ae6780)
 
 ## Схема БД
 ![BD_3](https://github.com/user-attachments/assets/b83fb4f4-bcf0-4a2e-a086-3af308894381)
