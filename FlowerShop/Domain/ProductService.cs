@@ -18,7 +18,7 @@ namespace Domain
 
         public Inventory GetAllAvailableProducts(int limit, int skip)
         {
-            if (limit <= 0) 
+            if (limit <= 0)
                 throw new ArgumentOutOfRangeException(nameof(limit));
             if (skip < 0) 
                 throw new ArgumentOutOfRangeException(nameof(skip));

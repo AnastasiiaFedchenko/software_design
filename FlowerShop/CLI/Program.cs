@@ -1,6 +1,9 @@
 ﻿using Domain.InputPorts;
 using Domain.OutputPorts;
 using Domain;
+using Domain.InputPorts;
+using Domain.OutputPorts;
+using Domain;
 using ForecastAnalysis;
 using InventoryOfProducts;
 using Microsoft.Extensions.DependencyInjection;
@@ -13,32 +16,79 @@ using System;
 using System.Runtime.InteropServices;
 using System.ComponentModel.Design;
 using System.Text;
+using Microsoft.Extensions.Logging;
+using Serilog;
+using Microsoft.Extensions.Configuration;
+using System.IO;
+using Serilog.Core;
 
 class Program
 {
     static void Main(string[] args)
     {
+        // Настройка конфигурации
+        var projectDir = Directory.GetParent(AppContext.BaseDirectory)?.Parent?.Parent?.Parent?.FullName;
+        var configPath = Path.Combine(projectDir, "appsettings.json");
 
-        var menu = new Menu();
-        int Id;
-        var type = Menu.WhatTypeOfUser(out Id);
-        switch (type)
+        var configuration = new ConfigurationBuilder()
+            .SetBasePath(Directory.GetCurrentDirectory())
+            .AddJsonFile(configPath, optional: false, reloadOnChange: true)
+            .Build();
+
+        // Настройка Serilog
+        Log.Logger = new LoggerConfiguration()
+            .ReadFrom.Configuration(configuration)
+            .CreateLogger();
+
+        try
         {
-            case UserType.Administrator:
-                Console.WriteLine("Вы вошли как администратор.");
-                Menu.ShowAdminMenu(Id);
-                break;
-            case UserType.Seller:
-                Console.WriteLine("Вы вошли как продавец.");
-                Menu.ShowSellerMenu(Id);
-                break;
-            case UserType.Storekeeper:
-                Console.WriteLine("Вы вошли как кладовщик.");
-                Menu.ShowShopKeeperMenu(Id);
-                break;
-            case null:
-                Console.WriteLine("Ошибка: неверный ID или пароль.");
-                break;
+            // Получаем строку подключения из конфига
+            var connectionString = configuration.GetConnectionString("DefaultConnection");
+            var defaultLimit = configuration.GetValue<int>("AppSettings:DefaultPaginationLimit");
+
+            Log.Information("Limit={DefaultLimit}", defaultLimit);
+            Log.Information("Используется строка подключения: {ConnectionString}",
+                connectionString.Substring(0, connectionString.LastIndexOf("Password="))); // Маскируем пароль в логах
+
+            // Создание фабрики логгеров
+            using var loggerFactory = LoggerFactory.Create(builder =>
+            {
+                builder.AddSerilog(dispose: true);
+            });
+
+            // Передаем connectionString в конструктор Menu
+            var menu = new Menu(loggerFactory, connectionString);
+
+            int Id;
+            var type = Menu.WhatTypeOfUser(out Id);
+
+            switch (type)
+            {
+                case UserType.Administrator:
+                    Log.Information("Пользователь {UserId} вошёл как администратор", Id);
+                    Menu.ShowAdminMenu(Id, defaultLimit);
+                    break;
+                case UserType.Seller:
+                    Log.Information("Пользователь {UserId} вошёл как продавец", Id);
+                    Menu.ShowSellerMenu(Id, defaultLimit);
+                    break;
+                case UserType.Storekeeper:
+                    Log.Information("Пользователь {UserId} вошёл как кладовщик", Id);
+                    Menu.ShowShopKeeperMenu(Id, defaultLimit);
+                    break;
+                case null:
+                    Log.Warning("Неудачная попытка входа (неверный ID или пароль)");
+                    Console.WriteLine("Ошибка: неверный ID или пароль.");
+                    break;
+            }
+        }
+        catch (Exception ex)
+        {
+            Log.Fatal(ex, "Приложение завершилось с ошибкой");
+        }
+        finally
+        {
+            Log.CloseAndFlush();
         }
     }
 }
@@ -50,13 +100,18 @@ class Menu
     private static IAnalysisService analysisService;
     private static ILoadService loadService;
     private static IProductService productService;
-    private string _connectionString = "Host=127.0.0.1;Port=5432;Database=FlowerShopPPO;Username=postgres;Password=5432";
+    private static ILogger<Menu> _logger;
+    private readonly string _connectionString;
 
-    public Menu()
+    public Menu(ILoggerFactory loggerFactory, string connectionString)
     {
+        _logger = loggerFactory.CreateLogger<Menu>();
+        _connectionString = connectionString;
+
         serviceProvider = new ServiceCollection()
-            .AddSingleton<IUserRepo, UserRepo>()
-            .AddSingleton<IInventoryRepo>(_ => new InventoryRepo(_connectionString))
+            .AddLogging(logging => logging.AddSerilog())
+            .AddSingleton<IUserRepo>(provider => new UserRepo(connectionString, provider.GetRequiredService<ILogger<UserRepo>>()))
+            .AddSingleton<IInventoryRepo>(provider => new InventoryRepo(connectionString, provider.GetRequiredService<ILogger<InventoryRepo>>()))
             .AddSingleton<IReceiptRepo>(_ => new ReceiptRepo(_connectionString))
             .AddSingleton<IProductBatchLoader>(_ => new ProductBatchLoader(_connectionString))
             .AddTransient<IForecastServiceAdapter, ForecastServiceAdapter>()
@@ -81,7 +136,7 @@ class Menu
             Console.Write("Введите логин (Ваш ID): ");
             if (!int.TryParse(Console.ReadLine(), out int id))
             {
-                Console.WriteLine("Ошибка: ID должен быть числом!");
+                _logger.LogWarning("Некорректный ID (не число)");
                 Id = 0;
                 return null;
             }
@@ -91,17 +146,21 @@ class Menu
 
             var userType = userService.CheckPasswordAndGetUserType(id, password);
 
+            if (userType == null)
+                _logger.LogWarning("Неудачная попытка входа для пользователя {UserId}", id);
+
             return userType;
         }
         catch (Exception ex)
         {
-            Console.WriteLine($"Произошла ошибка: {ex.Message}");
+            _logger.LogError(ex, "Ошибка при проверке пользователя");
+
             Id = 0;
             return null;
         }
     }
 
-    public static void ShowAdminMenu(int Id)
+    public static void ShowAdminMenu(int Id, int limit)
     {
         while (true)
         {
@@ -118,27 +177,39 @@ class Menu
             switch (choice)
             {
                 case "0":
+                    _logger.LogInformation("0. Выход");
+
                     return;
                 case "1":
-                    ShowOrderMenu(Id);
+                    _logger.LogInformation("1. Сделать заказ");
+
+                    ShowOrderMenu(Id, limit);
                     break;
                 case "2":
+                    _logger.LogInformation("2. Загрузка информации о новой партии");
+
                     ShowLoadBatchMenu();
                     break;
                 case "3":
+                    _logger.LogInformation("3. Прогнозирование количества заказов");
+
                     ShowAmountOfOrdersForecast();
                     break;
                 case "4":
+                    _logger.LogInformation("4. Сегментация клиентов");
+
                     ShowUserSegmentation();
                     break;
                 default:
                     Console.WriteLine("Неверный номер пункта меню. Попробуйте еще раз.");
+                    _logger.LogWarning($"Был введён неверный номер пункта меню: {choice}"); 
+
                     Console.ReadKey();
                     break;
             }
         }
     }
-    public static void ShowSellerMenu(int Id)
+    public static void ShowSellerMenu(int Id, int limit)
     {
         while (true)
         {
@@ -152,19 +223,25 @@ class Menu
             switch (choice)
             {
                 case "0":
+                    _logger.LogInformation("0. Выход");
+
                     return;
                 case "1":
-                    ShowOrderMenu(Id);
+                    _logger.LogInformation("1. Сделать заказ");
+
+                    ShowOrderMenu(Id, limit);
                     break;
                 default:
                     Console.WriteLine("Неверный номер пункта меню. Попробуйте еще раз.");
+                    _logger.LogWarning($"Был введён неверный номер пункта меню: {choice}");
+
                     Console.ReadKey();
                     break;
             }
         }
     }
 
-    public static void ShowShopKeeperMenu(int Id)
+    public static void ShowShopKeeperMenu(int Id, int limit)
     {
         while (true)
         {
@@ -179,11 +256,14 @@ class Menu
             switch (choice)
             {
                 case "0":
+                    _logger.LogInformation("0. Выход");
+
                     return;
                 case "1":
+                    _logger.LogInformation("1.  Показать доступные товары");
+
                     // Показать доступные товары
                     string choice2;
-                    int limit = 20;
                     int skip = 0;
                     do
                     {
@@ -196,7 +276,7 @@ class Menu
                         }
                         Console.WriteLine(new string('_', 70));
                         skip += limit;
-                        if (inventory_temp.TotalAmount < 20)
+                        if (inventory_temp.TotalAmount < limit)
                         {
                             Console.WriteLine("Выведены все доступные товары.");
                             choice2 = "0";
@@ -209,17 +289,21 @@ class Menu
                     } while (choice2 == "1");
                     break;
                 case "2":
+                    _logger.LogInformation("2. Загрузка информации о новой партии");
+
                     ShowLoadBatchMenu();
                     break;
                 default:
                     Console.WriteLine("Неверный номер пункта меню. Попробуйте еще раз.");
+                    _logger.LogWarning($"Был введён неверный номер пункта меню: {choice}");
+
                     Console.ReadKey();
                     break;
             }
         }
     }
 
-    private static void ShowOrderMenu(int Id)
+    private static void ShowOrderMenu(int Id, int limit)
     {
         int customerID = Id;
         List<ReceiptLine> items = new List<ReceiptLine>();
@@ -240,10 +324,13 @@ class Menu
             switch (choice)
             {
                 case "0":
+                    _logger.LogInformation("0. Выход из меню заказа");
+
                     return;
-                case "1": // Показать доступные товары
+                case "1": // 1. Показать доступные товары
+                    _logger.LogInformation("1. Показать доступные товары");
+
                     string choice2;
-                    int limit = 20;
                     int skip = 0;
                     do
                     {
@@ -256,7 +343,7 @@ class Menu
                         }
                         Console.WriteLine(new string('_', 70));
                         skip += limit;
-                        if (inventory_temp.TotalAmount < 20)
+                        if (inventory_temp.TotalAmount < limit)
                         {
                             Console.WriteLine("Выведены все доступные товары.");
                             choice2 = "0";
@@ -268,7 +355,9 @@ class Menu
                         }                        
                     } while (choice2 == "1");
                     break;
-                case "2": // Добавить товар в корзину
+                case "2": // 2. Добавить товар в корзину
+                    _logger.LogInformation("2. Добавить товар в корзину");
+
                     Console.Write("Введите id товара для добавления в корзину: ");
                     int productID = int.Parse(Console.ReadLine());
                     Product temp = productService.GetInfoOnProduct(productID);
@@ -287,7 +376,9 @@ class Menu
                         }
                     }
                     break;
-                case "3": // Изменить количество товара в корзине
+                case "3": // 3. Изменить количество товара в корзине
+                    _logger.LogInformation("3. Изменить количество товара в корзине");
+
                     Console.Write("Введите id товара для изменения количества в корзине: ");
                     int productID2 = int.Parse(Console.ReadLine());
                     for (int i = 0; i < items.Count; i++)
@@ -307,6 +398,8 @@ class Menu
                     }
                     break;
                 case "4": // 4. Удалить товар из корзины
+                    _logger.LogInformation("4. Удалить товар из корзины");
+
                     Console.Write("Введите id товара для удаления из корзины: ");
                     int productID3 = int.Parse(Console.ReadLine());
                     for (int i = 0; i < items.Count; i++)
@@ -320,6 +413,8 @@ class Menu
                     }
                     break; 
                 case "5": // 5. Показать содержание корзины
+                    _logger.LogInformation("5. Показать содержание корзины");
+
                     Console.WriteLine("Корзина:");
                     foreach (var item in items)
                         Console.WriteLine($"{item.Product.IdNomenclature} {item.Product.Type}, " +
@@ -329,6 +424,8 @@ class Menu
                         Console.WriteLine("Корзина пуста.");
                     break;
                 case "6": // 6. Заказать
+                    _logger.LogInformation("6. Заказать");
+
                     Receipt receipt = productService.MakePurchase(items, customerID);
                     items = new List<ReceiptLine>();
                     if (receipt.Id == -1)
@@ -338,6 +435,8 @@ class Menu
                     break;
                 default:
                     Console.WriteLine("Неверный выбор. Попробуйте еще раз.");
+                    _logger.LogWarning($"Был введён неверный номер пункта меню: {choice}");
+
                     Console.ReadKey();
                     break;
             }
@@ -362,6 +461,7 @@ class Menu
         }
         catch (Exception ex)
         {
+            _logger.LogError(ex.Message.ToString());
             Console.WriteLine($"Ошибка: {ex.Message}");
         }
     }
@@ -413,6 +513,8 @@ class Menu
         }
         catch (Exception ex)
         {
+            _logger.LogError(ex.Message.ToString());
+
             Console.WriteLine("\nОшибка при получении прогноза:");
             Console.WriteLine(ex.Message);
         }
@@ -482,6 +584,8 @@ class Menu
         }
         catch (Exception ex)
         {
+            _logger.LogError(ex.Message.ToString());
+
             Console.WriteLine("\nОшибка при получении сегментации:");
             Console.WriteLine(ex.Message);
         }
