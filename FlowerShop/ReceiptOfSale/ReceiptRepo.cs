@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using Domain;
 using Domain.OutputPorts;
-using Microsoft.Extensions.Logging;
 using Npgsql;
 
 namespace ReceiptOfSale
@@ -10,63 +9,43 @@ namespace ReceiptOfSale
     public class ReceiptRepo : IReceiptRepo
     {
         private readonly string _connectionString;
-        private readonly ILogger<ReceiptRepo> _logger;
 
-        public ReceiptRepo(string connectionString, ILogger<ReceiptRepo> logger)
+        public ReceiptRepo(string connectionString)
         {
             _connectionString = connectionString;
-            _logger = logger;
         }
 
         public bool LoadReceiptItemsSale_UpdateAmount(ref Receipt receipt)
         {
-            _logger.LogInformation("Начало обработки чека для клиента {CustomerId}", receipt.CustomerID);
-            _logger.LogInformation("Чек содержит {ProductCount} товаров на сумму {TotalPrice}",
-                receipt.Products.Count, receipt.FinalPrice);
-
             using (var connection = new NpgsqlConnection(_connectionString))
             {
                 connection.Open();
-                _logger.LogInformation("Установлено соединение с БД");
-
                 using (var transaction = connection.BeginTransaction())
                 {
                     try
                     {
                         // 1. Создаем новый заказ
-                        var orderId = CreateNewOrder(connection, transaction, receipt);
-                        _logger.LogInformation("Создан новый заказ ID: {OrderId}", orderId);
+                        receipt.Id = CreateNewOrder(connection, transaction, receipt);
 
                         // 2. Добавляем товары в заказ
-                        AddProductsToOrder(connection, transaction, orderId, receipt.Products);
-                        _logger.LogInformation("Добавлены товары в заказ");
+                        AddProductsToOrder(connection, transaction, receipt.Id, receipt.Products);
 
                         // 3. Создаем запись о продаже
-                        receipt.Id = CreateSaleRecord(connection, transaction, orderId, receipt);
-                        _logger.LogInformation("Создана запись о продаже");
+                        CreateSaleRecord(connection, transaction, receipt.Id, receipt);
 
-                        // 4. Обновляем количество товаров на складе
+                        // 4. Обновляем количество товаров на складе (теперь последним шагом)
                         if (!UpdateAmount(connection, transaction, receipt))
                         {
-                            _logger.LogError("Не удалось обновить количество товаров на складе");
                             throw new Exception("Failed to update product amounts");
                         }
-                        _logger.LogInformation("Обновлено количество товаров на складе");
 
                         transaction.Commit();
-                        _logger.LogInformation("Транзакция успешно завершена");
                         return true;
-                    }
-                    catch (NpgsqlException ex)
-                    {
-                        transaction.Rollback();
-                        _logger.LogError(ex, "Ошибка БД при обработке чека. Транзакция откачена");
-                        return false;
                     }
                     catch (Exception ex)
                     {
                         transaction.Rollback();
-                        _logger.LogError(ex, "Неожиданная ошибка при обработке чека. Транзакция откачена");
+                        Console.WriteLine($"Error processing receipt: {ex.Message}");
                         return false;
                     }
                 }
@@ -75,15 +54,10 @@ namespace ReceiptOfSale
 
         private bool UpdateAmount(NpgsqlConnection connection, NpgsqlTransaction transaction, Receipt receipt)
         {
-            _logger.LogDebug("Начало обновления количества товаров на складе");
-
             foreach (var productLine in receipt.Products)
             {
                 int remainingAmount = productLine.Amount;
                 int nomenclatureId = productLine.Product.IdNomenclature;
-
-                _logger.LogInformation("Обработка товара ID: {NomenclatureId}, запрошено: {Amount}",
-                    nomenclatureId, productLine.Amount);
 
                 while (remainingAmount > 0)
                 {
@@ -129,8 +103,7 @@ namespace ReceiptOfSale
                             }
                             else
                             {
-                                _logger.LogError("Недостаточно товара на складе. ID: {NomenclatureId}, запрошено: {Amount}, осталось: {RemainingAmount}",
-                                    nomenclatureId, productLine.Amount, productLine.Amount - remainingAmount);
+                                Console.WriteLine($"Недостаточно товара на складе. ID: {nomenclatureId}, запрошено: {productLine.Amount}, осталось: {productLine.Amount - remainingAmount}");
                                 return false;
                             }
                         }
@@ -142,8 +115,6 @@ namespace ReceiptOfSale
 
         private int CreateNewOrder(NpgsqlConnection connection, NpgsqlTransaction transaction, Receipt receipt)
         {
-            _logger.LogInformation("Создание нового заказа для клиента {CustomerId}", receipt.CustomerID);
-
             using (var command = new NpgsqlCommand(
                 @"INSERT INTO ""order"" (reg_date, counterpart, responsible) 
                   VALUES (@regDate, @counterpart, 
@@ -155,17 +126,13 @@ namespace ReceiptOfSale
                 command.Parameters.AddWithValue("@regDate", receipt.Date);
                 command.Parameters.AddWithValue("@counterpart", receipt.CustomerID);
 
-                var orderId = (int)command.ExecuteScalar();
-                _logger.LogInformation("Создан заказ ID: {OrderId}", orderId);
-                return orderId;
+                return (int)command.ExecuteScalar();
             }
         }
 
         private void AddProductsToOrder(NpgsqlConnection connection, NpgsqlTransaction transaction,
                                       int orderId, List<ReceiptLine> products)
         {
-            _logger.LogInformation("Добавление {ProductCount} товаров в заказ {OrderId}", products.Count, orderId);
-
             foreach (var productLine in products)
             {
                 using (var findCommand = new NpgsqlCommand(
@@ -195,8 +162,6 @@ namespace ReceiptOfSale
                         }
                         else
                         {
-                            _logger.LogError("Недостаточно товара на складе для номенклатуры {NomenclatureId}",
-                                productLine.Product.IdNomenclature);
                             throw new Exception($"Not enough stock for product {productLine.Product.IdNomenclature}");
                         }
                     }
@@ -215,24 +180,19 @@ namespace ReceiptOfSale
                     insertCommand.Parameters.AddWithValue("@priceId", productLine.PriceId);
 
                     insertCommand.ExecuteNonQuery();
-                    _logger.LogInformation("Товар {ProductId} добавлен в заказ {OrderId}",
-                        productLine.IdProductInStock, orderId);
                 }
             }
         }
 
-        private int CreateSaleRecord(NpgsqlConnection connection, NpgsqlTransaction transaction,
+        private void CreateSaleRecord(NpgsqlConnection connection, NpgsqlTransaction transaction,
                                     int orderId, Receipt receipt)
         {
-            _logger.LogInformation("Создание записи о продаже для заказа {OrderId}", orderId);
-
             using (var getNumberCommand = new NpgsqlCommand(
                 "SELECT COALESCE(MAX(receipt_number), 0) + 1 FROM sales",
                 connection,
                 transaction))
             {
                 int receiptNumber = (int)getNumberCommand.ExecuteScalar();
-                _logger.LogInformation("Получен номер чека: {ReceiptNumber}", receiptNumber);
 
                 using (var insertCommand = new NpgsqlCommand(
                     @"INSERT INTO sales 
@@ -247,12 +207,8 @@ namespace ReceiptOfSale
                     insertCommand.Parameters.AddWithValue("@finalPrice", receipt.FinalPrice);
 
                     insertCommand.ExecuteNonQuery();
-                    _logger.LogInformation("Создана продажа с номером чека {ReceiptNumber} на сумму {FinalPrice}",
-                        receiptNumber, receipt.FinalPrice);
                 }
-                return receiptNumber;
             }
-            return -1;
         }
     }
 }

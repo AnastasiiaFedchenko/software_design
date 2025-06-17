@@ -1,18 +1,8 @@
 {
-  "total_orders": 54,
-  "forecast_start_date": "2025-06-15",
-  "forecast_end_date": "2025-06-21",
+  "total_orders": 57,
+  "forecast_start_date": "2025-06-17",
+  "forecast_end_date": "2025-06-23",
   "daily_forecast": [
-    {
-      "date": "2025-06-15",
-      "day_of_week": 6,
-      "orders": 6
-    },
-    {
-      "date": "2025-06-16",
-      "day_of_week": 0,
-      "orders": 8
-    },
     {
       "date": "2025-06-17",
       "day_of_week": 1,
@@ -37,6 +27,16 @@
       "date": "2025-06-21",
       "day_of_week": 5,
       "orders": 7
+    },
+    {
+      "date": "2025-06-22",
+      "day_of_week": 6,
+      "orders": 8
+    },
+    {
+      "date": "2025-06-23",
+      "day_of_week": 0,
+      "orders": 9
     }
   ],
   "products": [
@@ -57,9 +57,9 @@
     {
       "product_id": 43,
       "product_name": "Хлопок",
-      "predicted_demand": 76,
+      "predicted_demand": 11,
       "current_stock": 0,
-      "amount": 12
+      "amount": 1
     },
     {
       "product_id": 44,
@@ -78,9 +78,9 @@
     {
       "product_id": 61,
       "product_name": "Лента атласная красная 100м",
-      "predicted_demand": 64,
+      "predicted_demand": 59,
       "current_stock": 6,
-      "amount": 4
+      "amount": 3
     },
     {
       "product_id": 63,
@@ -88,13 +88,6 @@
       "predicted_demand": 15,
       "current_stock": 0,
       "amount": 2
-    },
-    {
-      "product_id": 80,
-      "product_name": "Книфофия",
-      "predicted_demand": 50,
-      "current_stock": 1,
-      "amount": 7
     },
     {
       "product_id": 88,
@@ -113,9 +106,9 @@
     {
       "product_id": 112,
       "product_name": "Лента джутовая цветная 100м",
-      "predicted_demand": 24,
+      "predicted_demand": 23,
       "current_stock": 0,
-      "amount": 4
+      "amount": 3
     },
     {
       "product_id": 117,
@@ -141,23 +134,16 @@
     {
       "product_id": 144,
       "product_name": "Галантус",
-      "predicted_demand": 55,
+      "predicted_demand": 54,
       "current_stock": 8,
       "amount": 1
     },
     {
       "product_id": 147,
       "product_name": "Кипарисовик",
-      "predicted_demand": 43,
+      "predicted_demand": 42,
       "current_stock": 2,
       "amount": 5
-    },
-    {
-      "product_id": 150,
-      "product_name": "Аспарагус",
-      "predicted_demand": 18,
-      "current_stock": 0,
-      "amount": 3
     },
     {
       "product_id": 158,
@@ -176,23 +162,23 @@
     {
       "product_id": 222,
       "product_name": "Монстера",
-      "predicted_demand": 28,
+      "predicted_demand": 8,
       "current_stock": 0,
-      "amount": 4
+      "amount": 1
     },
     {
       "product_id": 235,
       "product_name": "Эрика",
-      "predicted_demand": 15,
+      "predicted_demand": 13,
       "current_stock": 0,
       "amount": 2
     },
     {
       "product_id": 239,
       "product_name": "Сетария",
-      "predicted_demand": 24,
+      "predicted_demand": 9,
       "current_stock": 0,
-      "amount": 4
+      "amount": 1
     },
     {
       "product_id": 249,
@@ -202,36 +188,8 @@
       "amount": 4
     },
     {
-      "product_id": 263,
-      "product_name": "Мискантус",
-      "predicted_demand": 47,
-      "current_stock": 5,
-      "amount": 2
-    },
-    {
-      "product_id": 281,
-      "product_name": "Эрика",
-      "predicted_demand": 6,
-      "current_stock": 0,
-      "amount": 1
-    },
-    {
       "product_id": 299,
       "product_name": "Латирус",
-      "predicted_demand": 85,
-      "current_stock": 0,
-      "amount": 14
-    },
-    {
-      "product_id": 303,
-      "product_name": "Лента репсовая Пудра 100м",
-      "predicted_demand": 11,
-      "current_stock": 0,
-      "amount": 1
-    },
-    {
-      "product_id": 306,
-      "product_name": "Геликония",
       "predicted_demand": 7,
       "current_stock": 0,
       "amount": 1
@@ -239,9 +197,9 @@
     {
       "product_id": 334,
       "product_name": "Капуста",
-      "predicted_demand": 70,
+      "predicted_demand": 29,
       "current_stock": 0,
-      "amount": 11
+      "amount": 4
     },
     {
       "product_id": 357,
@@ -251,25 +209,11 @@
       "amount": 2
     },
     {
-      "product_id": 366,
-      "product_name": "Антуриум",
-      "predicted_demand": 50,
-      "current_stock": 0,
-      "amount": 8
-    },
-    {
-      "product_id": 384,
-      "product_name": "Гениста",
-      "predicted_demand": 6,
-      "current_stock": 0,
-      "amount": 1
-    },
-    {
       "product_id": 386,
       "product_name": "Мискантус",
-      "predicted_demand": 36,
+      "predicted_demand": 35,
       "current_stock": 2,
-      "amount": 4
+      "amount": 3
     },
     {
       "product_id": 387,
@@ -277,13 +221,6 @@
       "predicted_demand": 47,
       "current_stock": 1,
       "amount": 6
-    },
-    {
-      "product_id": 389,
-      "product_name": "Гиацинт",
-      "predicted_demand": 7,
-      "current_stock": 0,
-      "amount": 1
     },
     {
       "product_id": 427,
@@ -295,16 +232,16 @@
     {
       "product_id": 428,
       "product_name": "Эрика",
-      "predicted_demand": 35,
+      "predicted_demand": 6,
       "current_stock": 0,
-      "amount": 5
+      "amount": 1
     },
     {
       "product_id": 429,
       "product_name": "Бруния",
-      "predicted_demand": 42,
+      "predicted_demand": 35,
       "current_stock": 0,
-      "amount": 7
+      "amount": 5
     },
     {
       "product_id": 430,
@@ -342,13 +279,6 @@
       "amount": 11
     },
     {
-      "product_id": 496,
-      "product_name": "Хлопок",
-      "predicted_demand": 7,
-      "current_stock": 0,
-      "amount": 1
-    },
-    {
       "product_id": 499,
       "product_name": "Органза для упаковки золотая 50смx100м",
       "predicted_demand": 19,
@@ -358,23 +288,23 @@
     {
       "product_id": 507,
       "product_name": "Органза для упаковки золотая 50смx100м",
-      "predicted_demand": 66,
-      "current_stock": 0,
-      "amount": 11
-    },
-    {
-      "product_id": 512,
-      "product_name": "Сетария",
-      "predicted_demand": 26,
+      "predicted_demand": 25,
       "current_stock": 0,
       "amount": 4
     },
     {
+      "product_id": 512,
+      "product_name": "Сетария",
+      "predicted_demand": 21,
+      "current_stock": 0,
+      "amount": 3
+    },
+    {
       "product_id": 527,
       "product_name": "Телопея",
-      "predicted_demand": 100,
+      "predicted_demand": 83,
       "current_stock": 1,
-      "amount": 15
+      "amount": 12
     },
     {
       "product_id": 531,
@@ -386,7 +316,7 @@
     {
       "product_id": 559,
       "product_name": "Лента рафия натуральная 100м",
-      "predicted_demand": 28,
+      "predicted_demand": 26,
       "current_stock": 0,
       "amount": 4
     },
@@ -398,25 +328,11 @@
       "amount": 1
     },
     {
-      "product_id": 573,
-      "product_name": "Спирея",
-      "predicted_demand": 7,
-      "current_stock": 0,
-      "amount": 1
-    },
-    {
-      "product_id": 600,
-      "product_name": "Целозия",
-      "predicted_demand": 76,
-      "current_stock": 0,
-      "amount": 12
-    },
-    {
       "product_id": 602,
       "product_name": "Лента кружевная черная 100м",
-      "predicted_demand": 12,
+      "predicted_demand": 10,
       "current_stock": 0,
-      "amount": 2
+      "amount": 1
     },
     {
       "product_id": 607,
@@ -428,7 +344,7 @@
     {
       "product_id": 617,
       "product_name": "Блеск для листьев 300мл",
-      "predicted_demand": 17,
+      "predicted_demand": 16,
       "current_stock": 0,
       "amount": 2
     },
@@ -440,18 +356,11 @@
       "amount": 1
     },
     {
-      "product_id": 633,
-      "product_name": "Сетка декоративная медовая 45смx100м",
+      "product_id": 642,
+      "product_name": "Молюцелла",
       "predicted_demand": 13,
       "current_stock": 0,
       "amount": 2
-    },
-    {
-      "product_id": 642,
-      "product_name": "Молюцелла",
-      "predicted_demand": 49,
-      "current_stock": 0,
-      "amount": 8
     },
     {
       "product_id": 652,
@@ -463,16 +372,9 @@
     {
       "product_id": 656,
       "product_name": "Лента атласная сиреневая 100м",
-      "predicted_demand": 21,
+      "predicted_demand": 17,
       "current_stock": 0,
-      "amount": 3
-    },
-    {
-      "product_id": 669,
-      "product_name": "Вероника",
-      "predicted_demand": 51,
-      "current_stock": 4,
-      "amount": 4
+      "amount": 2
     },
     {
       "product_id": 681,
@@ -484,16 +386,16 @@
     {
       "product_id": 684,
       "product_name": "Кашпо керамическое 25см",
-      "predicted_demand": 14,
+      "predicted_demand": 10,
       "current_stock": 0,
-      "amount": 2
+      "amount": 1
     },
     {
       "product_id": 690,
       "product_name": "Аллиум",
-      "predicted_demand": 50,
+      "predicted_demand": 47,
       "current_stock": 2,
-      "amount": 6
+      "amount": 5
     },
     {
       "product_id": 698,
@@ -501,13 +403,6 @@
       "predicted_demand": 23,
       "current_stock": 0,
       "amount": 3
-    },
-    {
-      "product_id": 710,
-      "product_name": "Калина",
-      "predicted_demand": 133,
-      "current_stock": 18,
-      "amount": 4
     },
     {
       "product_id": 724,
@@ -519,7 +414,7 @@
     {
       "product_id": 760,
       "product_name": "Лента кружевная белая 100м",
-      "predicted_demand": 53,
+      "predicted_demand": 48,
       "current_stock": 0,
       "amount": 8
     },
@@ -531,18 +426,11 @@
       "amount": 8
     },
     {
-      "product_id": 792,
-      "product_name": "Эрика",
-      "predicted_demand": 7,
-      "current_stock": 0,
-      "amount": 1
-    },
-    {
       "product_id": 794,
       "product_name": "Гениста",
-      "predicted_demand": 34,
+      "predicted_demand": 21,
       "current_stock": 1,
-      "amount": 4
+      "amount": 2
     },
     {
       "product_id": 803,
@@ -559,25 +447,11 @@
       "amount": 3
     },
     {
-      "product_id": 825,
-      "product_name": "Мускари",
-      "predicted_demand": 14,
-      "current_stock": 0,
-      "amount": 2
-    },
-    {
       "product_id": 827,
       "product_name": "Мимоза",
-      "predicted_demand": 57,
+      "predicted_demand": 55,
       "current_stock": 0,
       "amount": 9
-    },
-    {
-      "product_id": 856,
-      "product_name": "Хлопок",
-      "predicted_demand": 6,
-      "current_stock": 0,
-      "amount": 1
     },
     {
       "product_id": 861,
@@ -587,24 +461,10 @@
       "amount": 5
     },
     {
-      "product_id": 870,
-      "product_name": "Анигозантос",
-      "predicted_demand": 22,
-      "current_stock": 0,
-      "amount": 3
-    },
-    {
       "product_id": 872,
       "product_name": "Геликония",
-      "predicted_demand": 22,
+      "predicted_demand": 21,
       "current_stock": 1,
-      "amount": 2
-    },
-    {
-      "product_id": 877,
-      "product_name": "Цимбидиум",
-      "predicted_demand": 104,
-      "current_stock": 15,
       "amount": 2
     },
     {
@@ -622,16 +482,9 @@
       "amount": 8
     },
     {
-      "product_id": 915,
-      "product_name": "Туя",
-      "predicted_demand": 12,
-      "current_stock": 0,
-      "amount": 2
-    },
-    {
       "product_id": 916,
       "product_name": "Дуб",
-      "predicted_demand": 23,
+      "predicted_demand": 18,
       "current_stock": 0,
       "amount": 3
     },
@@ -662,13 +515,6 @@
       "predicted_demand": 36,
       "current_stock": 2,
       "amount": 4
-    },
-    {
-      "product_id": 997,
-      "product_name": "Василек",
-      "predicted_demand": 7,
-      "current_stock": 0,
-      "amount": 1
     }
   ]
 }

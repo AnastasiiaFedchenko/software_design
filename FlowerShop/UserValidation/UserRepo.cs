@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Data;
 using Domain;
 using Domain.OutputPorts;
-using Microsoft.Extensions.Logging;
 using Npgsql;
 
 namespace UserValidation
@@ -11,66 +10,44 @@ namespace UserValidation
     public class UserRepo : IUserRepo
     {
         private readonly string _connectionString;
-        private readonly ILogger<UserRepo> _logger;
 
-        public UserRepo(string connectionString, ILogger<UserRepo> logger)
+        public UserRepo(string connectionString)
         {
             _connectionString = connectionString;
-            _logger = logger;
         }
 
         public UserType? CheckPasswordAndGetUserType(int id, string inputPassword)
         {
-            try
+            using (var connection = new NpgsqlConnection(_connectionString))
             {
-                _logger.LogInformation("Попытка авторизации пользователя {UserId}", id);
+                connection.Open();
 
-                using (var connection = new NpgsqlConnection(_connectionString))
+                var query = @"
+                SELECT type 
+                FROM ""user"" 
+                WHERE id = @id AND password = @password;";
+
+                using (var command = new NpgsqlCommand(query, connection))
                 {
-                    connection.Open();
-                    _logger.LogInformation("Установлено соединение с БД");
+                    command.Parameters.AddWithValue("@id", id);
+                    command.Parameters.AddWithValue("@password", inputPassword);
 
-                    var query = @"
-                    SELECT type 
-                    FROM ""user"" 
-                    WHERE id = @id AND password = @password;";
-
-                    using (var command = new NpgsqlCommand(query, connection))
+                    using (var reader = command.ExecuteReader())
                     {
-                        command.Parameters.AddWithValue("@id", id);
-                        command.Parameters.AddWithValue("@password", inputPassword);
+                        if (!reader.Read())
+                            return null; // Пользователь не найден или пароль неверный
 
-                        using (var reader = command.ExecuteReader())
+                        string userTypeFromDb = reader.GetString(0); // Роль из БД
+
+                        return userTypeFromDb switch
                         {
-                            if (!reader.Read())
-                            {
-                                _logger.LogWarning("Неверные учетные данные для пользователя {UserId}", id);
-                                return null;
-                            }
-
-                            string userTypeFromDb = reader.GetString(0);
-                            _logger.LogDebug("Получена роль из БД: {UserRole}", userTypeFromDb);
-
-                            return userTypeFromDb switch
-                            {
-                                "администратор" => UserType.Administrator,
-                                "продавец" => UserType.Seller,
-                                "кладовщик" => UserType.Storekeeper,
-                                _ => null // Неизвестная роль
-                            };
-                        }
+                            "администратор" => UserType.Administrator,
+                            "продавец" => UserType.Seller,
+                            "кладовщик" => UserType.Storekeeper,
+                            _ => null // Неизвестная роль
+                        };
                     }
                 }
-            }
-            catch (NpgsqlException ex)
-            {
-                _logger.LogError(ex, "Ошибка базы данных при проверке пользователя {UserId}", id);
-                throw;
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Неожиданная ошибка при проверке пользователя {UserId}", id);
-                throw;
             }
         }
     }

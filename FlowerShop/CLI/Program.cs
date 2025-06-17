@@ -45,6 +45,13 @@ class Program
             // Получаем строку подключения из конфига
             var connectionString = configuration.GetConnectionString("DefaultConnection");
             var defaultLimit = configuration.GetValue<int>("AppSettings:DefaultPaginationLimit");
+            var pythonPath = configuration["PythonSettings:PythonPath"];
+            var scriptPath = configuration["PythonSettings:ScriptPath"];
+
+            if (string.IsNullOrEmpty(pythonPath))
+                throw new ArgumentNullException(nameof(pythonPath));
+            if (string.IsNullOrEmpty(scriptPath))
+                throw new ArgumentNullException(nameof(scriptPath));
 
             Log.Information("Limit={DefaultLimit}", defaultLimit);
             Log.Information("Используется строка подключения: {ConnectionString}",
@@ -57,7 +64,7 @@ class Program
             });
 
             // Передаем connectionString в конструктор Menu
-            var menu = new Menu(loggerFactory, connectionString);
+            var menu = new Menu(loggerFactory, connectionString, pythonPath, scriptPath);
 
             int Id;
             var type = Menu.WhatTypeOfUser(out Id);
@@ -103,29 +110,36 @@ class Menu
     private static ILogger<Menu> _logger;
     private readonly string _connectionString;
 
-    public Menu(ILoggerFactory loggerFactory, string connectionString)
+    public Menu(ILoggerFactory loggerFactory, string connectionString, string pythonPath, string scriptPath)
     {
         _logger = loggerFactory.CreateLogger<Menu>();
         _connectionString = connectionString;
 
         serviceProvider = new ServiceCollection()
             .AddLogging(logging => logging.AddSerilog())
-            .AddSingleton<IUserRepo>(provider => new UserRepo(connectionString, provider.GetRequiredService<ILogger<UserRepo>>()))
-            .AddSingleton<IInventoryRepo>(provider => new InventoryRepo(connectionString, provider.GetRequiredService<ILogger<InventoryRepo>>()))
-            .AddSingleton<IReceiptRepo>(provider => new ReceiptRepo(connectionString, provider.GetRequiredService<ILogger<ReceiptRepo>>()))
-            .AddSingleton<IProductBatchLoader>(provider => new ProductBatchLoader(connectionString, provider.GetRequiredService<ILogger<ProductBatchLoader>>()))
-            .AddTransient<IForecastServiceAdapter>(provider => new ForecastServiceAdapter(provider.GetRequiredService<ILogger<ForecastServiceAdapter>>()))
-            .AddTransient<IProductBatchReader>(provider => new ProductBatchReader(provider.GetRequiredService<ILogger<ProductBatchReader>>()))
-            .AddTransient<IUserSegmentationServiceAdapter>(provider => new UserSegmentationServiceAdapter(connectionString, provider.GetRequiredService<ILogger<UserSegmentationServiceAdapter>>()))
-            .AddTransient<IUserService, UserService>()
-            .AddTransient<IAnalysisService, AnalysisService>()
-            .AddTransient<ILoadService, LoadService>()
-            .AddTransient<IProductService, ProductService>()
+            .AddSingleton<IUserRepo>(provider => new UserRepo(_connectionString))
+            .AddSingleton<IInventoryRepo>(provider => new InventoryRepo(_connectionString))
+            .AddSingleton<IReceiptRepo>(provider => new ReceiptRepo(_connectionString))
+            .AddSingleton<IProductBatchLoader>(provider => new ProductBatchLoader(_connectionString))
+            .AddTransient<IForecastServiceAdapter>(provider => new ForecastServiceAdapter(pythonPath, scriptPath))
+            .AddTransient<IProductBatchReader>(provider => new ProductBatchReader())
+            .AddTransient<IUserSegmentationServiceAdapter>(provider => new UserSegmentationServiceAdapter(_connectionString))
+            .AddTransient<IUserService>(provider => new UserService(provider.GetRequiredService<IUserRepo>(), 
+                                                                    provider.GetRequiredService<ILogger<UserService>>()))
+            .AddTransient<IAnalysisService>(provider => new AnalysisService(provider.GetRequiredService<IForecastServiceAdapter>(),
+                                                                            provider.GetRequiredService<IUserSegmentationServiceAdapter>(),
+                                                                            provider.GetRequiredService<ILogger<AnalysisService>>()))
+            .AddTransient<ILoadService>(provider => new LoadService(provider.GetRequiredService<IProductBatchReader>(),
+                                                                    provider.GetRequiredService<IProductBatchLoader>(),
+                                                                    provider.GetRequiredService<ILogger<LoadService>>()))
+            .AddTransient<IProductService>(provider => new ProductService(provider.GetRequiredService<IInventoryRepo>(),
+                                                                          provider.GetRequiredService<IReceiptRepo>(),
+                                                                          provider.GetRequiredService<ILogger<ProductService>>()))
             .BuildServiceProvider();
 
         userService = serviceProvider.GetRequiredService<IUserService>();
         analysisService = serviceProvider.GetRequiredService<IAnalysisService>();
-        loadService = serviceProvider.GetRequiredService<ILoadService>();
+        loadService = serviceProvider.GetRequiredService<ILoadService>();       
         productService = serviceProvider.GetRequiredService<IProductService>();
     }
 

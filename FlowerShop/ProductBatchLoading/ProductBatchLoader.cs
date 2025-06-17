@@ -1,121 +1,90 @@
 ﻿using Domain.OutputPorts;
-using Domain;
-using Microsoft.Extensions.Logging;
-using Npgsql;
 using System;
 using System.Collections.Generic;
+using Npgsql;
+using Domain;
 
 namespace ProductBatchLoading
 {
+
     public class ProductBatchLoader : IProductBatchLoader
     {
         private readonly string _connectionString;
-        private readonly ILogger<ProductBatchLoader> _logger;
-
-        public ProductBatchLoader(string connectionString, ILogger<ProductBatchLoader> logger)
+        public ProductBatchLoader(string connectionString)
         {
             _connectionString = connectionString;
-            _logger = logger;
         }
-
         public bool Load(ProductBatch batch)
         {
             if (batch == null || batch.ProductsInfo == null || batch.ProductsInfo.Count == 0)
             {
-                _logger.LogWarning("Попытка загрузить пустую или невалидную партию товаров");
                 return false;
             }
-
-            _logger.LogInformation("Начало загрузки партии товаров ID: {BatchId}, товаров: {ProductsCount}",
-                batch.Id, batch.ProductsInfo.Count);
 
             try
             {
                 using (var connection = new NpgsqlConnection(_connectionString))
                 {
                     connection.Open();
-                    _logger.LogInformation("Установлено соединение с БД");
 
                     using (var transaction = connection.BeginTransaction())
                     {
                         try
                         {
-                            // 1. Загрузка в batch_of_products
+                            // 1. Сначала загружаем данные в batch_of_products
                             if (!InsertIntoBatchOfProducts(connection, transaction, batch))
                             {
-                                _logger.LogError("Ошибка загрузки в batch_of_products");
                                 transaction.Rollback();
                                 return false;
                             }
-                            _logger.LogInformation("Успешно загружено в batch_of_products");
+                            Console.WriteLine("загружено в batch_of_products");
 
-                            // 2. Загрузка в product_in_stock
+                            // 2. Затем загружаем данные в product_in_stock
                             if (!InsertIntoProductInStock(connection, transaction, batch))
                             {
-                                _logger.LogError("Ошибка загрузки в product_in_stock");
                                 transaction.Rollback();
                                 return false;
                             }
-                            _logger.LogInformation("Успешно загружено в product_in_stock");
+                            Console.WriteLine("загружено в product_in_stock");
 
-                            // 3. Загрузка в price
+                            // 3. Загружаем информацию о прайсе
                             if (!InsertIntoPrice(connection, transaction, batch))
                             {
-                                _logger.LogError("Ошибка загрузки в price");
                                 transaction.Rollback();
                                 return false;
                             }
-                            _logger.LogInformation("Успешно загружено в price");
+                            Console.WriteLine("загружено в price");
 
                             transaction.Commit();
-                            _logger.LogInformation("Транзакция успешно завершена. Партия ID: {BatchId} загружена", batch.Id);
                             return true;
-                        }
-                        catch (NpgsqlException ex)
-                        {
-                            _logger.LogError(ex, "Ошибка БД при загрузке партии. Транзакция откачена");
-                            transaction.Rollback();
-                            return false;
                         }
                         catch (Exception ex)
                         {
-                            _logger.LogError(ex, "Неожиданная ошибка при загрузке партии. Транзакция откачена");
                             transaction.Rollback();
+                            Console.WriteLine($"Ошибка при загрузке партии: {ex.Message}");
                             return false;
                         }
                     }
                 }
             }
-            catch (NpgsqlException ex)
-            {
-                _logger.LogError(ex, "Ошибка подключения к БД");
-                return false;
-            }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Неожиданная ошибка при подключении к БД");
+                Console.WriteLine($"Ошибка подключения: {ex.Message}");
                 return false;
             }
         }
-
         private bool InsertIntoBatchOfProducts(NpgsqlConnection connection, NpgsqlTransaction transaction, ProductBatch batch)
         {
-            _logger.LogInformation("Начало загрузки в batch_of_products");
-
             foreach (var product in batch.ProductsInfo)
             {
                 // Валидация данных
                 if (product.IdNomenclature <= 0 || product.Amount <= 0 || product.CostPrice <= 0)
                 {
-                    _logger.LogError("Невалидные данные товара: ID {ProductId}, Amount {Amount}, CostPrice {CostPrice}",
-                        product.IdNomenclature, product.Amount, product.CostPrice);
                     return false;
                 }
 
                 if (product.ProductionDate > product.ExpirationDate)
                 {
-                    _logger.LogError("Дата производства позже срока годности: {ProductionDate} > {ExpirationDate}",
-                        product.ProductionDate, product.ExpirationDate);
                     return false;
                 }
 
@@ -152,11 +121,8 @@ namespace ProductBatchLoading
                     command.Parameters.AddWithValue("@responsible", batch.Responsible);
                     command.Parameters.AddWithValue("@supplier", batch.Supplier);
 
-                    int affectedRows = command.ExecuteNonQuery();
-                    if (affectedRows != 1)
+                    if (command.ExecuteNonQuery() != 1)
                     {
-                        _logger.LogError("Не удалось вставить запись в batch_of_products для товара {ProductId}",
-                            product.IdNomenclature);
                         return false;
                     }
                 }
@@ -166,11 +132,11 @@ namespace ProductBatchLoading
 
         private bool InsertIntoProductInStock(NpgsqlConnection connection, NpgsqlTransaction transaction, ProductBatch batch)
         {
-            _logger.LogDebug("Начало загрузки в product_in_stock");
-
             try
             {
+                // Сначала получаем максимальный ID для генерации новых
                 int nextId = GetNextProductInStockId(connection, transaction);
+                Console.WriteLine($"Next product in stock id {nextId}");
 
                 foreach (var product in batch.ProductsInfo)
                 {
@@ -203,30 +169,22 @@ namespace ProductBatchLoading
                         int affectedRows = command.ExecuteNonQuery();
                         if (affectedRows != 1)
                         {
-                            _logger.LogError("Не удалось вставить/обновить запись в product_in_stock для товара {ProductId}",
-                                product.IdNomenclature);
+                            Console.WriteLine($"Не удалось вставить запись для номенклатуры {product.IdNomenclature}");
                             return false;
                         }
                     }
                 }
                 return true;
             }
-            catch (NpgsqlException ex)
-            {
-                _logger.LogError(ex, "Ошибка БД при загрузке в product_in_stock");
-                return false;
-            }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Неожиданная ошибка при загрузке в product_in_stock");
+                Console.WriteLine($"Ошибка при добавлении в product_in_stock: {ex.Message}");
                 return false;
             }
         }
 
         private bool InsertIntoPrice(NpgsqlConnection connection, NpgsqlTransaction transaction, ProductBatch batch)
         {
-            _logger.LogInformation("Начало загрузки в price");
-
             try
             {
                 foreach (var product in batch.ProductsInfo)
@@ -258,8 +216,6 @@ namespace ProductBatchLoading
 		                    AND EXTRACT(YEAR FROM bop.production_date) = ac.production_year
 		                where bop.id_nomenclature = @nomenclatureId and bop.id_product_batch = @batchId";
 
-                    _logger.LogTrace("Выполнение SQL: {Sql}", sql);
-
                     using (var command = new NpgsqlCommand(sql, connection, transaction))
                     {
                         command.Parameters.AddWithValue("@nomenclatureId", product.IdNomenclature);
@@ -268,37 +224,26 @@ namespace ProductBatchLoading
                         int affectedRows = command.ExecuteNonQuery();
                         if (affectedRows != 1)
                         {
-                            _logger.LogError("Не удалось вставить запись в price для товара {ProductId}",
-                                product.IdNomenclature);
+                            Console.WriteLine($"Не удалось вставить запись в price для номенклатуры {product.IdNomenclature}");
                             return false;
                         }
                     }
                 }
                 return true;
             }
-            catch (NpgsqlException ex)
-            {
-                _logger.LogError(ex, "Ошибка БД при загрузке в price");
-                return false;
-            }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Неожиданная ошибка при загрузке в price");
+                Console.WriteLine($"Ошибка при добавлении в price: {ex.Message}");
                 return false;
             }
         }
-
         private int GetNextProductInStockId(NpgsqlConnection connection, NpgsqlTransaction transaction)
         {
             var sql = "SELECT COALESCE(MAX(id), 0) FROM product_in_stock";
-            _logger.LogTrace("Получение следующего ID для product_in_stock: {Sql}", sql);
-
             using (var command = new NpgsqlCommand(sql, connection, transaction))
             {
                 object result = command.ExecuteScalar();
-                int nextId = Convert.ToInt32(result) + 1;
-                _logger.LogInformation("Получен следующий ID: {NextId}", nextId);
-                return nextId;
+                return Convert.ToInt32(result) + 1;
             }
         }
     }
