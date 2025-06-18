@@ -22,8 +22,6 @@ namespace Domain
             _productBatchReader = productBatchReader ?? throw new ArgumentNullException(nameof(productBatchReader));
             _productBatchLoader = productBatchLoader ?? throw new ArgumentNullException(nameof(productBatchLoader));
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
-
-            _logger.LogInformation("Инициализирован LoadService");
         }
 
         public bool LoadProductBatch(FileStream stream)

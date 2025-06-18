@@ -21,8 +21,6 @@ namespace Domain
             _forecast = forecast ?? throw new ArgumentNullException(nameof(forecast));
             _segment = segment ?? throw new ArgumentNullException(nameof(segment));
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
-
-            _logger.LogInformation("Инициализация AnalysisService");
         }
 
         public ForecastOfOrders GetForecastOfOrders()

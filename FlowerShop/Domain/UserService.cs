@@ -14,8 +14,6 @@ namespace Domain
         {
             _userRepo = userRepo ?? throw new ArgumentNullException(nameof(userRepo));
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
-
-            _logger.LogInformation("Инициализация UserService");
         }
 
         public UserType? CheckPasswordAndGetUserType(int id, string password)

@@ -20,8 +20,6 @@ namespace Domain
             _inventoryRepo = inventoryRepo ?? throw new ArgumentNullException(nameof(inventoryRepo));
             _receiptRepo = receiptRepo ?? throw new ArgumentNullException(nameof(receiptRepo));
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
-
-            _logger.LogInformation("Сервис товаров инициализирован");
         }
 
         public Inventory GetAllAvailableProducts(int limit, int skip)
