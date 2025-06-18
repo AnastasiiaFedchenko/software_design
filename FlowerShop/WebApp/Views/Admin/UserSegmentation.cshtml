@@ -1,0 +1,37 @@
+﻿@model List<Domain.UserSegment>
+@{
+    ViewData["Title"] = "Сегментация пользователей";
+}
+
+<h2>Сегментация пользователей</h2>
+
+@foreach (var segment in Model)
+{
+    <div class="card mt-4">
+        <div class="card-header">
+            <h4>@segment.Type.ToUpper()</h4>
+            <p>Всего пользователей: @segment.Amount</p>
+        </div>
+        <div class="card-body">
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Роль</th>
+                        <th>Имя</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var user in segment.Users)
+                    {
+                        <tr>
+                            <td>@user.Id</td>
+                            <td>@user.Role</td>
+                            <td>@user.Name</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+}

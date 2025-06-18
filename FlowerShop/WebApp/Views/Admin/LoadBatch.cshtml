@@ -1,0 +1,13 @@
+﻿@{
+    ViewData["Title"] = "Загрузка партии товаров";
+}
+
+<h2>Загрузка партии товаров</h2>
+
+<form asp-action="LoadBatch" method="post" enctype="multipart/form-data" class="mt-4">
+    <div class="form-group">
+        <label for="batchFile">Выберите файл с данными о партии:</label>
+        <input type="file" class="form-control-file" id="batchFile" name="batchFile" required>
+    </div>
+    <button type="submit" class="btn btn-primary mt-3">Загрузить</button>
+</form>

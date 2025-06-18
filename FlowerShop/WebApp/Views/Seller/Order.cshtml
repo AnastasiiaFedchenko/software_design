@@ -1,0 +1,48 @@
+﻿@model Domain.Inventory
+@{
+    ViewData["Title"] = "Оформление заказа";
+}
+
+<h2>Оформление заказа</h2>
+
+<div class="row mt-4">
+    <div class="col-md-8">
+        <h4>Доступные товары</h4>
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Название</th>
+                    <th>Страна</th>
+                    <th>Количество</th>
+                    <th>Цена</th>
+                    <th>Действия</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model.Products)
+                {
+                    <tr>
+                        <td>@item.Product.IdNomenclature</td>
+                        <td>@item.Product.Type</td>
+                        <td>@item.Product.Country</td>
+                        <td>@item.Amount</td>
+                        <td>@item.Product.Price.ToString("C")</td>
+                        <td>
+                            <button class="btn btn-sm btn-primary">Добавить</button>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+    <div class="col-md-4">
+        <h4>Корзина</h4>
+        <div class="card">
+            <div class="card-body">
+                <p class="text-muted">Ваша корзина пуста</p>
+                <button class="btn btn-success w-100" disabled>Оформить заказ</button>
+            </div>
+        </div>
+    </div>
+</div>
