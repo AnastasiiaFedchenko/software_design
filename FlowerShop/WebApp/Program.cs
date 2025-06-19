@@ -5,12 +5,14 @@ using Domain.OutputPorts;
 using ForecastAnalysis;
 using InventoryOfProducts;
 using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Http.Features;
 using ProductBatchLoading;
 using ProductBatchReading;
 using ReceiptOfSale;
 using SegmentAnalysis;
 using Serilog;
 using UserValidation;
+using System.Security.Cryptography.X509Certificates;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -24,13 +26,19 @@ builder.Host.UseSerilog();
 // Конфигурация сервисов
 builder.Services.AddControllersWithViews();
 builder.Services.AddHttpContextAccessor();
+builder.Services.AddSession(options =>
+{
+    options.Cookie.HttpOnly = true;
+    options.Cookie.IsEssential = true;
+    options.IdleTimeout = TimeSpan.FromMinutes(30);
+});
 
-// Регистрация ваших сервисов
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 var defaultLimit = builder.Configuration.GetValue<int>("AppSettings:DefaultPaginationLimit");
 var pythonPath = builder.Configuration["PythonSettings:PythonPath"];
 var scriptPath = builder.Configuration["PythonSettings:ScriptPath"];
 
+// Регистрация сервисов
 builder.Services
     .AddSingleton<IUserRepo>(_ => new UserRepo(connectionString))
     .AddSingleton<IInventoryRepo>(_ => new InventoryRepo(connectionString))
@@ -43,6 +51,35 @@ builder.Services
     .AddTransient<IAnalysisService, AnalysisService>()
     .AddTransient<ILoadService, LoadService>()
     .AddTransient<IProductService, ProductService>();
+
+/*builder.Services.Configure<IISServerOptions>(options =>
+{
+    options.MaxRequestBodySize = 50 * 1024 * 1024; // 50MB
+    options.AllowSynchronousIO = true; // Если нужно
+});
+
+builder.WebHost.ConfigureKestrel(serverOptions =>
+{
+    serverOptions.ConfigureHttpsDefaults(httpsOptions =>
+    {
+        // Используем встроенный сертификат разработки
+        httpsOptions.ServerCertificate = new X509Certificate2(
+            Path.Combine("..", "..", "..", "..", "localhost.pfx"), 
+            "123456" // Пароль для сертификата разработки
+        );
+    });
+});*/
+
+builder.Services.Configure<FormOptions>(options =>
+{
+    options.MultipartBodyLengthLimit = 52428800; // 50MB
+});
+
+builder.Services.AddControllersWithViews()
+    .AddJsonOptions(options =>
+    {
+        options.JsonSerializerOptions.Converters.Add(new ProductJsonConverter());
+    });
 
 // Настройка аутентификации
 builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
@@ -73,6 +110,7 @@ if (!app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 app.UseStaticFiles();
+app.UseSession();
 app.UseRouting();
 
 app.UseAuthentication();

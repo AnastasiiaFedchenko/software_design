@@ -62,7 +62,6 @@ namespace WebApp.Controllers
                         return View();
                 }
 
-                // Добавлено: возвращаем View() если userType имеет неожиданное значение
                 ModelState.AddModelError("", "Неизвестный тип пользователя");
                 return View();
             }

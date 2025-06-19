@@ -3,32 +3,68 @@
     ViewData["Title"] = "Список товаров";
 }
 
-<h2>Список товаров</h2>
+<div class="container">
+    <h1 class="my-4">@ViewData["Title"]</h1>
 
-<table class="table table-striped mt-4">
-    <thead>
-        <tr>
-            <th>ID</th>
-            <th>Название</th>
-            <th>Страна</th>
-            <th>Количество</th>
-            <th>Цена</th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var item in Model.Products)
-        {
-            <tr>
-                <td>@item.Product.IdNomenclature</td>
-                <td>@item.Product.Type</td>
-                <td>@item.Product.Country</td>
-                <td>@item.Amount</td>
-                <td>@item.Product.Price.ToString("C")</td>
-            </tr>
-        }
-    </tbody>
-</table>
+    <div class="card mb-4">
+        <div class="card-header bg-primary text-white">
+            <h3 class="mb-0">
+                <i class="fas fa-boxes"></i> Все товары в наличии
+            </h3>
+        </div>
+        <div class="card-body">
+            @if (Model.Products != null && Model.Products.Count > 0)
+            {
+                <div class="table-responsive">
+                    <table class="table table-bordered table-hover" id="productsTable">
+                        <thead class="thead-light">
+                            <tr>
+                                <th>ID</th>
+                                <th>Название</th>
+                                <th>Страна</th>
+                                <th>Цена</th>
+                                <th>В наличии</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var item in Model.Products)
+                            {
+                                <tr>
+                                    <td>@item.Product.IdNomenclature</td>
+                                    <td>@item.Product.Type</td>
+                                    <td>@item.Product.Country</td>
+                                    <td>@item.Product.Price.ToString("C")</td>
+                                    <td>@item.Amount</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
 
-<div class="mt-3">
-    <a href="#" class="btn btn-outline-primary">Показать еще</a>
+                <!-- Обновленная пагинация -->
+                <nav aria-label="Page navigation">
+                    <ul class="pagination justify-content-center mt-3">
+                        <li class="page-item @(ViewBag.Skip == 0 ? "disabled" : "")">
+                            <a class="page-link"
+                               href="@Url.Action("Products", new { skip = ViewBag.Skip - ViewBag.Limit, limit = ViewBag.Limit })">
+                                <i class="fas fa-chevron-left"></i> Предыдущая
+                            </a>
+                        </li>
+                        <li class="page-item @(Model.Products.Count < ViewBag.Limit ? "disabled" : "")">
+                            <a class="page-link"
+                               href="@Url.Action("Products", new { skip = ViewBag.Skip + ViewBag.Limit, limit = ViewBag.Limit })">
+                                Следующая <i class="fas fa-chevron-right"></i>
+                            </a>
+                        </li>
+                    </ul>
+                </nav>
+            }
+            else
+            {
+                <div class="alert alert-info">
+                    <i class="fas fa-info-circle"></i> Нет доступных товаров в инвентаре
+                </div>
+            }
+        </div>
+    </div>
 </div>

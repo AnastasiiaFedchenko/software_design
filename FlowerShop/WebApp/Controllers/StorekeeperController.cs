@@ -33,6 +33,11 @@ namespace WebApp.Controllers
         public IActionResult Products(int skip = 0)
         {
             var products = _productService.GetAllAvailableProducts(_defaultLimit, skip);
+
+            ViewBag.Products = products.Products;
+            ViewBag.Skip = skip;
+            ViewBag.Limit = _defaultLimit;
+            ViewBag.IsLastPage = products.TotalAmount <= skip + _defaultLimit;
             return View(products);
         }
 
