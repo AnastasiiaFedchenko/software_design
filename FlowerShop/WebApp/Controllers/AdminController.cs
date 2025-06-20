@@ -270,75 +270,47 @@ namespace WebApp.Controllers
         [HttpPost]
         public IActionResult LoadBatch(IFormFile batchFile)
         {
-            // Проверка наличия файла
             if (batchFile == null || batchFile.Length == 0)
             {
-                TempData["Error"] = "Пожалуйста, выберите файл для загрузки";
+                TempData["Error"] = "Файл не выбран.";
                 return RedirectToAction("Index");
             }
 
-            // Проверка размера файла (макс. 10MB)
-            if (batchFile.Length > 10 * 1024 * 1024)
-            {
-                TempData["Error"] = "Размер файла не должен превышать 10MB";
-                return RedirectToAction("Index");
-            }
-
-            // Проверка расширения файла
-            var allowedExtensions = new[] { ".csv", ".xlsx", ".txt" };
-            var fileExtension = Path.GetExtension(batchFile.FileName).ToLower();
-            if (!allowedExtensions.Contains(fileExtension))
-            {
-                TempData["Error"] = "Неподдерживаемый формат файла. Разрешены: CSV, XLSX, TXT";
-                return RedirectToAction("Index");
-            }
-
+            string tempFilePath = Path.GetTempFileName();
             try
             {
-                // Создаем временный файл для обработки
-                var tempFilePath = Path.GetTempFileName();
-                using (var stream = new FileStream(tempFilePath, FileMode.Create))
+                using (var stream = new FileStream(tempFilePath, FileMode.Create, FileAccess.ReadWrite, FileShare.None, 4096, FileOptions.DeleteOnClose))
                 {
                     batchFile.CopyTo(stream);
-                }
+                    stream.Position = 0;
 
-                // Обработка файла
-                bool result;
-                using (var fileStream = new FileStream(tempFilePath, FileMode.Open))
-                {
-                    result = _loadService.LoadProductBatch(fileStream);
+                    bool result = _loadService.LoadProductBatch(stream);
+                    if (!result)
+                    {
+                        TempData["Error"] = "Ошибка при обработке файла.";
+                        return RedirectToAction("Index");
+                    }
                 }
-
-                // Удаляем временный файл
-                System.IO.File.Delete(tempFilePath);
-
-                if (result)
-                {
-                    TempData["Message"] = "Партия товаров успешно загружена!";
-                    _logger.LogInformation($"Успешно загружена партия из файла: {batchFile.FileName}");
-                }
-                else
-                {
-                    TempData["Error"] = "Ошибка при обработке данных файла";
-                    _logger.LogWarning($"Ошибка при загрузке партии из файла: {batchFile.FileName}");
-                }
-            }
-            catch (UnauthorizedAccessException ex)
-            {
-                _logger.LogError(ex, "Ошибка доступа к файлу");
-                TempData["Error"] = "Ошибка доступа к файлу. Проверьте права.";
             }
             catch (IOException ex)
             {
-                _logger.LogError(ex, "Ошибка ввода-вывода");
-                TempData["Error"] = "Ошибка чтения файла. Файл может быть поврежден.";
+                _logger.LogError(ex, "IO ошибка при загрузке файла");
+                TempData["Error"] = "Ошибка чтения/записи файла.";
+                return RedirectToAction("Index");
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Ошибка при загрузке партии");
-                TempData["Error"] = $"Произошла ошибка: {ex.Message}";
+                _logger.LogError(ex, "Неизвестная ошибка");
+                TempData["Error"] = "Произошла ошибка: " + ex.Message;
+                return RedirectToAction("Index");
+            }
+            finally
+            {
+                if (System.IO.File.Exists(tempFilePath))
+                    System.IO.File.Delete(tempFilePath);
             }
 
+            TempData["Message"] = "Файл успешно загружен!";
             return RedirectToAction("Index");
         }
 

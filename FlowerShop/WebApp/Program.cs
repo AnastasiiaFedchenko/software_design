@@ -13,6 +13,7 @@ using SegmentAnalysis;
 using Serilog;
 using UserValidation;
 using System.Security.Cryptography.X509Certificates;
+using Microsoft.AspNetCore.Diagnostics;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -43,13 +44,13 @@ builder.Services
     .AddSingleton<IUserRepo>(_ => new UserRepo(connectionString))
     .AddSingleton<IInventoryRepo>(_ => new InventoryRepo(connectionString))
     .AddSingleton<IReceiptRepo>(_ => new ReceiptRepo(connectionString))
-    .AddSingleton<IProductBatchLoader>(_ => new ProductBatchLoader(connectionString))
+    .AddScoped<IProductBatchLoader>(_ => new ProductBatchLoader(connectionString))
     .AddTransient<IForecastServiceAdapter>(_ => new ForecastServiceAdapter(pythonPath, scriptPath))
     .AddTransient<IProductBatchReader>(_ => new ProductBatchReader())
     .AddTransient<IUserSegmentationServiceAdapter>(_ => new UserSegmentationServiceAdapter(connectionString))
     .AddTransient<IUserService, UserService>()
     .AddTransient<IAnalysisService, AnalysisService>()
-    .AddTransient<ILoadService, LoadService>()
+    .AddScoped<ILoadService, LoadService>()
     .AddTransient<IProductService, ProductService>();
 
 /*builder.Services.Configure<IISServerOptions>(options =>
@@ -73,6 +74,18 @@ builder.WebHost.ConfigureKestrel(serverOptions =>
 builder.Services.Configure<FormOptions>(options =>
 {
     options.MultipartBodyLengthLimit = 52428800; // 50MB
+});
+
+builder.Services.AddSession(options =>
+{
+    options.IdleTimeout = TimeSpan.FromMinutes(20);
+    options.Cookie.HttpOnly = true;
+});
+builder.Services.AddDistributedMemoryCache();
+
+builder.Services.Configure<HostOptions>(options =>
+{
+    options.ShutdownTimeout = TimeSpan.FromMinutes(5);
 });
 
 builder.Services.AddControllersWithViews()
@@ -99,6 +112,12 @@ builder.Services.AddAuthorization(options =>
     options.AddPolicy("StorekeeperOnly", policy => policy.RequireClaim(ClaimTypes.Role, "Storekeeper"));
 });
 
+AppDomain.CurrentDomain.UnhandledException += (sender, e) =>
+{
+    var exception = e.ExceptionObject as Exception;
+    Log.Fatal(exception, "Необработанное исключение");
+};
+
 var app = builder.Build();
 
 // Конфигурация HTTP pipeline
@@ -107,6 +126,18 @@ if (!app.Environment.IsDevelopment())
     app.UseExceptionHandler("/Home/Error");
     app.UseHsts();
 }
+app.UseExceptionHandler(errorApp =>
+{
+    errorApp.Run(async context =>
+    {
+        var exception = context.Features.Get<IExceptionHandlerFeature>()?.Error;
+        var logger = context.RequestServices.GetRequiredService<ILogger<Program>>();
+        logger.LogError(exception, "Глобальная ошибка");
+
+        context.Response.StatusCode = 500;
+        await context.Response.WriteAsync("Произошла ошибка. Подробности в логах.");
+    });
+});
 
 app.UseHttpsRedirection();
 app.UseStaticFiles();

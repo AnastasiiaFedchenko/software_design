@@ -49,29 +49,48 @@ namespace WebApp.Controllers
         [HttpPost]
         public IActionResult LoadBatch(IFormFile batchFile)
         {
+            if (batchFile == null || batchFile.Length == 0)
+            {
+                TempData["Error"] = "Файл не выбран.";
+                return RedirectToAction("Index");
+            }
+
+            string tempFilePath = Path.GetTempFileName();
             try
             {
-                using var memoryStream = new MemoryStream();
-                batchFile.CopyTo(memoryStream);
-                memoryStream.Position = 0;
-
-                bool result = _loadService.LoadProductBatch(memoryStream);
-
-                if (result)
+                using (var stream = new FileStream(tempFilePath, FileMode.Create, FileAccess.ReadWrite, FileShare.None, 4096, FileOptions.DeleteOnClose))
                 {
-                    TempData["Message"] = "Загрузка прошла успешно!";
-                    return RedirectToAction("Index");
-                }
+                    batchFile.CopyTo(stream);
+                    stream.Position = 0;
 
-                TempData["Error"] = "Ошибка при загрузке данных";
-                return View();
+                    bool result = _loadService.LoadProductBatch(stream);
+                    if (!result)
+                    {
+                        TempData["Error"] = "Ошибка при обработке файла.";
+                        return RedirectToAction("Index");
+                    }
+                }
+            }
+            catch (IOException ex)
+            {
+                _logger.LogError(ex, "IO ошибка при загрузке файла");
+                TempData["Error"] = "Ошибка чтения/записи файла.";
+                return RedirectToAction("Index");
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Ошибка при загрузке партии товаров");
-                TempData["Error"] = ex.Message;
-                return View();
+                _logger.LogError(ex, "Неизвестная ошибка");
+                TempData["Error"] = "Произошла ошибка: " + ex.Message;
+                return RedirectToAction("Index");
             }
+            finally
+            {
+                if (System.IO.File.Exists(tempFilePath))
+                    System.IO.File.Delete(tempFilePath);
+            }
+
+            TempData["Message"] = "Файл успешно загружен!";
+            return RedirectToAction("Index");
         }
     }
 }
