@@ -29,6 +29,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "UserValidation", "UserValid
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Integration.Tests", "Integration.Tests\Integration.Tests.csproj", "{D8716679-15C4-4801-83EE-60CD3B3C5A5E}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebApp", "WebApp\WebApp.csproj", "{BAEE0A86-64AC-4844-9183-C007521F5EFB}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -195,6 +197,18 @@ Global
 		{D8716679-15C4-4801-83EE-60CD3B3C5A5E}.Release|x64.Build.0 = Release|Any CPU
 		{D8716679-15C4-4801-83EE-60CD3B3C5A5E}.Release|x86.ActiveCfg = Release|Any CPU
 		{D8716679-15C4-4801-83EE-60CD3B3C5A5E}.Release|x86.Build.0 = Release|Any CPU
+		{BAEE0A86-64AC-4844-9183-C007521F5EFB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BAEE0A86-64AC-4844-9183-C007521F5EFB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BAEE0A86-64AC-4844-9183-C007521F5EFB}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{BAEE0A86-64AC-4844-9183-C007521F5EFB}.Debug|x64.Build.0 = Debug|Any CPU
+		{BAEE0A86-64AC-4844-9183-C007521F5EFB}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{BAEE0A86-64AC-4844-9183-C007521F5EFB}.Debug|x86.Build.0 = Debug|Any CPU
+		{BAEE0A86-64AC-4844-9183-C007521F5EFB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BAEE0A86-64AC-4844-9183-C007521F5EFB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BAEE0A86-64AC-4844-9183-C007521F5EFB}.Release|x64.ActiveCfg = Release|Any CPU
+		{BAEE0A86-64AC-4844-9183-C007521F5EFB}.Release|x64.Build.0 = Release|Any CPU
+		{BAEE0A86-64AC-4844-9183-C007521F5EFB}.Release|x86.ActiveCfg = Release|Any CPU
+		{BAEE0A86-64AC-4844-9183-C007521F5EFB}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

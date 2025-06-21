@@ -24,7 +24,7 @@ namespace Domain
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
 
-        public bool LoadProductBatch(FileStream stream)
+        public bool LoadProductBatch(Stream stream)
         {
             if (stream == null)
             {

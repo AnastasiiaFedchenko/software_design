@@ -1,0 +1,25 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
+  <PropertyGroup>
+    <TargetFramework>net7.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.Authentication.Cookies" Version="2.3.0" />
+    <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="7.0.5" />
+    <PackageReference Include="Microsoft.AspNetCore.Server.IIS" Version="2.2.6" />
+    <PackageReference Include="Serilog.AspNetCore" Version="9.0.0" />
+    <PackageReference Include="Swashbuckle.AspNetCore" Version="6.4.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\InventoryRepo\InventoryOfProducts.csproj" />
+    <ProjectReference Include="..\Forecast\ForecastAnalysis.csproj" />
+    <ProjectReference Include="..\ProductBatchLoading\ProductBatchLoading.csproj" />
+    <ProjectReference Include="..\ProductBatchReading\ProductBatchReading.csproj" />
+    <ProjectReference Include="..\Segment\SegmentAnalysis.csproj" />
+    <ProjectReference Include="..\ReceiptOfSale\ReceiptOfSale.csproj" />
+    <ProjectReference Include="..\UserValidation\UserValidation.csproj" />
+  </ItemGroup>
+</Project>
