@@ -39,7 +39,7 @@ namespace ProductBatchReading
                 var productsCountLine = reader.ReadLine();
                 if (string.IsNullOrEmpty(productsCountLine))
                     throw new InvalidDataException("Products count line is missing");
-                
+
                 var supplierLine = reader.ReadLine();
                 if (string.IsNullOrEmpty(supplierLine))
                     throw new InvalidDataException("Supplier line is missing");
@@ -54,7 +54,7 @@ namespace ProductBatchReading
 
                 if (!int.TryParse(productsCountLine, out var productsCount))
                     throw new InvalidDataException("Invalid Products Count format");
-                
+
                 if (!int.TryParse(supplierLine, out var supplier))
                     throw new InvalidDataException("Invalid Batch ID format");
 

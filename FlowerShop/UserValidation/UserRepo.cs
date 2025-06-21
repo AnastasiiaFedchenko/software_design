@@ -11,9 +11,9 @@ namespace UserValidation
     {
         private readonly string _connectionString;
 
-        public UserRepo()
+        public UserRepo(string connectionString)
         {
-            _connectionString = "Host=127.0.0.1;Port=5432;Database=FlowerShopPPO;Username=postgres;Password=5432";
+            _connectionString = connectionString;
         }
 
         public UserType? CheckPasswordAndGetUserType(int id, string inputPassword)

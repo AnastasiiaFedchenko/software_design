@@ -1,16 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Runtime.InteropServices;
-using System.Text;
-using System.Threading.Tasks;
 using Domain;
 using Domain.OutputPorts;
 using Npgsql;
 
 namespace InventoryOfProducts
 {
-    public class InventoryRepo: IInventoryRepo
+    public class InventoryRepo : IInventoryRepo
     {
         private readonly string _connectionString;
 
