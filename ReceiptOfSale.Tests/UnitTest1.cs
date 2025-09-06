@@ -14,7 +14,7 @@ namespace ReceiptOfSale.Tests
 
         public ReceiptRepoTests()
         {
-            // _receiptRepo = new ReceiptRepo("Host=127.0.0.1;Port=5432;Database=FlowerShopPPO;Username=postgres;Password=5432");
+           // _receiptRepo = new ReceiptRepo("Host=127.0.0.1;Port=5432;Database=FlowerShopPPO;Username=postgres;Password=5432");
         }
 
         [Fact]
@@ -36,7 +36,7 @@ namespace ReceiptOfSale.Tests
 
             // Assert
             Assert.NotNull(result);
-            Assert.Equal(10.99 + (5.99 * 2), result.FinalPrice, 2); //                     2                    
+            Assert.Equal(10.99 + (5.99 * 2), result.FinalPrice, 2); // Используем точность 2 знака после запятой
             Assert.Equal(3, result.TotalAmount);
             Assert.Equal(items, result.Products);
             Assert.True((DateTime.Now - result.Date).TotalSeconds < 1);
@@ -100,7 +100,7 @@ namespace ReceiptOfSale.Tests
             var ex = Assert.Throws<ArgumentException>(() => new Receipt(1, items));
             Assert.Contains("items", ex.Message);
         }
-        //             ,                    
+        // тут был тест, но он утратил смысл
 
         [Fact]
         public void Create_WithMultipleItems_CorrectlyCalculatesTotals()
