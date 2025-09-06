@@ -14,12 +14,12 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\InventoryRepo\InventoryOfProducts.csproj" />
-    <ProjectReference Include="..\Forecast\ForecastAnalysis.csproj" />
-    <ProjectReference Include="..\ProductBatchLoading\ProductBatchLoading.csproj" />
-    <ProjectReference Include="..\ProductBatchReading\ProductBatchReading.csproj" />
-    <ProjectReference Include="..\Segment\SegmentAnalysis.csproj" />
-    <ProjectReference Include="..\ReceiptOfSale\ReceiptOfSale.csproj" />
-    <ProjectReference Include="..\UserValidation\UserValidation.csproj" />
+    <ProjectReference Include="..\InventoryRepo\InventoryRepo_Project.csproj" />
+    <ProjectReference Include="..\Forecast\ForecastServiceAdapter_Project.csproj" />
+    <ProjectReference Include="..\ProductBatchLoading\ProductBatchLoader_Project.csproj" />
+    <ProjectReference Include="..\ProductBatchReading\ProductBatchReader_Project.csproj" />
+    <ProjectReference Include="..\Segment\UserSegmentationServiceAdapter_Project.csproj" />
+    <ProjectReference Include="..\ReceiptOfSale\ReceiptRepo_Project.csproj" />
+    <ProjectReference Include="..\UserValidation\UserRepo_Project.csproj" />
   </ItemGroup>
 </Project>

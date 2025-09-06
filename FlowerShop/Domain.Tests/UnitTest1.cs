@@ -5,6 +5,8 @@ using Domain.InputPorts;
 using Domain.OutputPorts;
 using System;
 using System.Collections.Generic;
+using Castle.Core.Logging;
+using Microsoft.Extensions.Logging;
 
 namespace Domain.Tests
 {
@@ -12,15 +14,19 @@ namespace Domain.Tests
     {
         private readonly Mock<IInventoryRepo> _mockInventoryRepo;
         private readonly Mock<IReceiptRepo> _mockReceiptRepo;
+        private readonly Mock<ILogger<ProductService>> _mockLogger;
         private readonly ProductService _productService;
 
         public ProductServiceTests()
         {
             _mockInventoryRepo = new Mock<IInventoryRepo>();
             _mockReceiptRepo = new Mock<IReceiptRepo>();
+            _mockLogger = new Mock<ILogger<ProductService>>();
+
             _productService = new ProductService(
                 _mockInventoryRepo.Object,
-                _mockReceiptRepo.Object);
+                _mockReceiptRepo.Object,
+                _mockLogger.Object);
         }
 
         [Fact]
