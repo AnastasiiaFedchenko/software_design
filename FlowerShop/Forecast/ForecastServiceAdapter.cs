@@ -7,27 +7,34 @@ using Newtonsoft.Json;
 using System.Text;
 using System.IO;
 using System.Linq;
+using Serilog;
+using Microsoft.Extensions.Configuration;
+using Newtonsoft.Json;
 
 namespace ForecastAnalysis
 {
     public class ForecastServiceAdapter : IForecastServiceAdapter
     {
+        private readonly string _pythonPath;
+        private readonly string _scriptPath;
+        public ForecastServiceAdapter(string pythonPath, string scriptPath)
+        {
+            _pythonPath = pythonPath;
+            _scriptPath = scriptPath;
+        }
         public ForecastOfOrders Create()
         {
-            const string pythonPath = "D:/bmstu/PPO/software_design/pythonProject/.venv/Scripts/python.exe";
-            const string scriptPath = "D:/bmstu/PPO/software_design/pythonProject/ForecastOfOrders.py";
-
             Console.OutputEncoding = Encoding.UTF8;
 
             var processInfo = new ProcessStartInfo
             {
-                FileName = pythonPath,
-                Arguments = $"\"{scriptPath}\"",
+                FileName = _pythonPath,
+                Arguments = $"\"{_scriptPath}\"",
                 UseShellExecute = false,
                 RedirectStandardOutput = true,
                 RedirectStandardError = true,
                 CreateNoWindow = true,
-                WorkingDirectory = System.IO.Path.GetDirectoryName(scriptPath),
+                WorkingDirectory = System.IO.Path.GetDirectoryName(_scriptPath),
                 StandardOutputEncoding = Encoding.UTF8,
                 StandardErrorEncoding = Encoding.UTF8,
                 Environment = { ["PYTHONIOENCODING"] = "utf-8" }
@@ -86,7 +93,7 @@ namespace ForecastAnalysis
                             amount_in_stock: (int)productItem.current_stock
                         ));
                     }
-                    
+
                 }
 
                 // Преобразование ежедневного прогноза

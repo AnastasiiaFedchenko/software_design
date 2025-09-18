@@ -1,16 +1,27 @@
 using Moq;
 using Xunit;
+using Allure.Xunit.Attributes;
+using Allure.Xunit;
 using System;
 using System.IO;
 using ProductBatchReading;
 using Domain;
 using Domain.OutputPorts;
+using Allure.Net.Commons;
 
 namespace ProductBatchReader_Tests
 {
+    // пример лондоского теста
+    [AllureSuite("ProductBatchReader Layer")]
+    [AllureFeature("Product Management")]
+    [AllureSubSuite("Product Entity")]
     public class ProductBatchReaderTests
     {
         [Fact]
+        [AllureStory("ProductBatchReader")]
+        [AllureTag("Unit")]
+        [AllureSeverity(SeverityLevel.critical)]
+        [AllureOwner("ProductBatchReader Team")]
         public void Create_WithValidData_ReturnsProductBatch()
         {
             // Arrange
@@ -50,6 +61,10 @@ namespace ProductBatchReader_Tests
         }
 
         [Fact]
+        [AllureStory("ProductBatchReader")]
+        [AllureTag("Unit")]
+        [AllureSeverity(SeverityLevel.critical)]
+        [AllureOwner("ProductBatchReader Team")]
         public void Create_WithEmptyFile_ThrowsException()
         {
             // Arrange
@@ -61,6 +76,10 @@ namespace ProductBatchReader_Tests
         }
 
         [Fact]
+        [AllureStory("ProductBatchReader")]
+        [AllureTag("Unit")]
+        [AllureSeverity(SeverityLevel.critical)]
+        [AllureOwner("ProductBatchReader Team")]
         public void Create_WithInvalidData_ThrowsException()
         {
             // Arrange

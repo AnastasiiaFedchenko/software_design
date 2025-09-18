@@ -1,0 +1,5 @@
+﻿<Project>
+  <PropertyGroup>
+    <AllureResultsDirectory>$(MSBuildThisFileDirectory)allure-results</AllureResultsDirectory>
+  </PropertyGroup>
+</Project>

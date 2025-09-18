@@ -6,6 +6,7 @@ using Npgsql;
 using Xunit;
 using Xunit.Abstractions;
 using System.Collections.Generic;
+using ConnectionToDB;
 
 namespace Integration.Tests
 {
@@ -22,7 +23,7 @@ namespace Integration.Tests
         {
             _output = output;
             _fixture = fixture;
-            _receiptRepo = new ReceiptRepo(_fixture.TestConnectionString);
+            _receiptRepo = new ReceiptRepo(new NpgsqlConnectionFactory(_fixture.TestConnectionString));
             _connection = new NpgsqlConnection(_fixture.TestConnectionString);
             _connection.Open();
             _transaction = _connection.BeginTransaction();

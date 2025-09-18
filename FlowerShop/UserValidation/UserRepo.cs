@@ -1,36 +1,47 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Data;
 using Domain;
 using Domain.OutputPorts;
+using ConnectionToDB;
 using Npgsql;
 
 namespace UserValidation
 {
     public class UserRepo : IUserRepo
     {
-        private readonly string _connectionString;
+        private readonly IDbConnectionFactory _connectionFactory;
 
-        public UserRepo()
+        // Внедряем фабрику
+        public UserRepo(IDbConnectionFactory connectionFactory)
         {
-            _connectionString = "Host=127.0.0.1;Port=5432;Database=FlowerShopPPO;Username=postgres;Password=5432";
+            _connectionFactory = connectionFactory;
         }
 
         public UserType? CheckPasswordAndGetUserType(int id, string inputPassword)
         {
-            using (var connection = new NpgsqlConnection(_connectionString))
+            using (var connection = _connectionFactory.CreateOpenConnection())
             {
-                connection.Open();
-
                 var query = @"
                 SELECT type 
                 FROM ""user"" 
                 WHERE id = @id AND password = @password;";
 
-                using (var command = new NpgsqlCommand(query, connection))
+                using (var command = connection.CreateCommand())
                 {
-                    command.Parameters.AddWithValue("@id", id);
-                    command.Parameters.AddWithValue("@password", inputPassword);
+                    command.CommandText = query;
+
+                    // Создаем параметры через CreateParameter
+                    var idParam = command.CreateParameter();
+                    idParam.ParameterName = "@id";
+                    idParam.Value = id;
+                    command.Parameters.Add(idParam);
+
+                    var passwordParam = command.CreateParameter();
+                    passwordParam.ParameterName = "@password";
+                    passwordParam.Value = inputPassword;
+                    command.Parameters.Add(passwordParam);
 
                     using (var reader = command.ExecuteReader())
                     {

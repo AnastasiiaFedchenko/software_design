@@ -11,9 +11,9 @@ namespace SegmentAnalysis
     {
         private readonly string _connectionString;
 
-        public UserSegmentationServiceAdapter()
+        public UserSegmentationServiceAdapter(string connectionString)
         {
-            _connectionString = "Host=127.0.0.1;Port=5432;Database=FlowerShopPPO;Username=postgres;Password=5432";
+            _connectionString = connectionString;
         }
 
         public List<UserSegment> Create()
@@ -126,7 +126,7 @@ namespace SegmentAnalysis
                             id: id,
                             role: UserType.Storekeeper,
                             password: "supplier_no_password",
-                            name: $"{name} (Поставки на {totalCost:N2} руб.)" 
+                            name: $"{name} (Поставки на {totalCost:N2} руб.)"
                         );
 
                         users.Add(user);

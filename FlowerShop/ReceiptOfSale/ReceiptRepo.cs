@@ -1,25 +1,25 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data;
 using Domain;
 using Domain.OutputPorts;
-using Npgsql;
+using ConnectionToDB;
 
 namespace ReceiptOfSale
 {
     public class ReceiptRepo : IReceiptRepo
     {
-        private readonly string _connectionString;
+        private readonly IDbConnectionFactory _connectionFactory;
 
-        public ReceiptRepo(string connectionString)
+        public ReceiptRepo(IDbConnectionFactory connectionFactory)
         {
-            _connectionString = connectionString;
+            _connectionFactory = connectionFactory;
         }
 
         public bool LoadReceiptItemsSale_UpdateAmount(ref Receipt receipt)
         {
-            using (var connection = new NpgsqlConnection(_connectionString))
+            using (var connection = _connectionFactory.CreateOpenConnection())
             {
-                connection.Open();
                 using (var transaction = connection.BeginTransaction())
                 {
                     try
@@ -33,7 +33,7 @@ namespace ReceiptOfSale
                         // 3. Создаем запись о продаже
                         CreateSaleRecord(connection, transaction, receipt.Id, receipt);
 
-                        // 4. Обновляем количество товаров на складе (теперь последним шагом)
+                        // 4. Обновляем количество товаров на складе
                         if (!UpdateAmount(connection, transaction, receipt))
                         {
                             throw new Exception("Failed to update product amounts");
@@ -52,7 +52,7 @@ namespace ReceiptOfSale
             }
         }
 
-        private bool UpdateAmount(NpgsqlConnection connection, NpgsqlTransaction transaction, Receipt receipt)
+        private bool UpdateAmount(IDbConnection connection, IDbTransaction transaction, Receipt receipt)
         {
             foreach (var productLine in receipt.Products)
             {
@@ -61,21 +61,22 @@ namespace ReceiptOfSale
 
                 while (remainingAmount > 0)
                 {
-                    using (var findBatchCommand = new NpgsqlCommand(
-                        @"SELECT pis.id, pis.amount
-                          FROM product_in_stock pis
-                          JOIN batch_of_products bop ON pis.id_product_batch = bop.id_product_batch
-                                                    AND pis.id_nomenclature = bop.id_nomenclature
-                          WHERE pis.id_nomenclature = @nomenclatureId
-                            AND pis.amount > 0
-                            AND bop.expiration_date > CURRENT_DATE
-                          ORDER BY bop.expiration_date ASC, pis.amount DESC
-                          LIMIT 1
-                          FOR UPDATE",
-                        connection,
-                        transaction))
+                    using (var findBatchCommand = connection.CreateCommand())
                     {
-                        findBatchCommand.Parameters.AddWithValue("@nomenclatureId", nomenclatureId);
+                        findBatchCommand.Transaction = transaction;
+                        findBatchCommand.CommandText = @"
+                            SELECT pis.id, pis.amount
+                            FROM product_in_stock pis
+                            JOIN batch_of_products bop ON pis.id_product_batch = bop.id_product_batch
+                                                      AND pis.id_nomenclature = bop.id_nomenclature
+                            WHERE pis.id_nomenclature = @nomenclatureId
+                              AND pis.amount > 0
+                              AND bop.expiration_date > CURRENT_DATE
+                            ORDER BY bop.expiration_date ASC, pis.amount DESC
+                            LIMIT 1
+                            FOR UPDATE";
+
+                        AddParameter(findBatchCommand, "@nomenclatureId", nomenclatureId);
 
                         using (var reader = findBatchCommand.ExecuteReader())
                         {
@@ -87,15 +88,16 @@ namespace ReceiptOfSale
 
                                 int amountToReduce = Math.Min(availableAmount, remainingAmount);
 
-                                using (var updateCommand = new NpgsqlCommand(
-                                    @"UPDATE product_in_stock
-                                      SET amount = amount - @amountToReduce
-                                      WHERE id = @productInStockId",
-                                    connection,
-                                    transaction))
+                                using (var updateCommand = connection.CreateCommand())
                                 {
-                                    updateCommand.Parameters.AddWithValue("@amountToReduce", amountToReduce);
-                                    updateCommand.Parameters.AddWithValue("@productInStockId", productInStockId);
+                                    updateCommand.Transaction = transaction;
+                                    updateCommand.CommandText = @"
+                                        UPDATE product_in_stock
+                                        SET amount = amount - @amountToReduce
+                                        WHERE id = @productInStockId";
+
+                                    AddParameter(updateCommand, "@amountToReduce", amountToReduce);
+                                    AddParameter(updateCommand, "@productInStockId", productInStockId);
                                     updateCommand.ExecuteNonQuery();
                                 }
 
@@ -113,45 +115,47 @@ namespace ReceiptOfSale
             return true;
         }
 
-        private int CreateNewOrder(NpgsqlConnection connection, NpgsqlTransaction transaction, Receipt receipt)
+        private int CreateNewOrder(IDbConnection connection, IDbTransaction transaction, Receipt receipt)
         {
-            using (var command = new NpgsqlCommand(
-                @"INSERT INTO ""order"" (reg_date, counterpart, responsible) 
-                  VALUES (@regDate, @counterpart, 
-                         (SELECT id FROM ""user"" WHERE type = 'кладовщик' ORDER BY random() LIMIT 1))
-                  RETURNING id",
-                connection,
-                transaction))
+            using (var command = connection.CreateCommand())
             {
-                command.Parameters.AddWithValue("@regDate", receipt.Date);
-                command.Parameters.AddWithValue("@counterpart", receipt.CustomerID);
+                command.Transaction = transaction;
+                command.CommandText = @"
+                    INSERT INTO ""order"" (reg_date, counterpart, responsible) 
+                    VALUES (@regDate, @counterpart, 
+                           (SELECT id FROM ""user"" WHERE type = 'кладовщик' ORDER BY random() LIMIT 1))
+                    RETURNING id";
 
-                return (int)command.ExecuteScalar();
+                AddParameter(command, "@regDate", receipt.Date);
+                AddParameter(command, "@counterpart", receipt.CustomerID);
+
+                return Convert.ToInt32(command.ExecuteScalar());
             }
         }
 
-        private void AddProductsToOrder(NpgsqlConnection connection, NpgsqlTransaction transaction,
+        private void AddProductsToOrder(IDbConnection connection, IDbTransaction transaction,
                                       int orderId, List<ReceiptLine> products)
         {
             foreach (var productLine in products)
             {
-                using (var findCommand = new NpgsqlCommand(
-                    @"SELECT pis.id, p.id as price_id
-                      FROM product_in_stock pis
-                      JOIN price p ON pis.id_nomenclature = p.id_nomenclature 
-                                  AND pis.id_product_batch = p.id_product_batch
-                      JOIN batch_of_products bop ON pis.id_product_batch = bop.id_product_batch
-                                                AND pis.id_nomenclature = bop.id_nomenclature
-                      WHERE pis.id_nomenclature = @nomenclatureId
-                      AND pis.amount >= @amount 
-                      AND bop.expiration_date > CURRENT_DATE
-                      ORDER BY bop.expiration_date ASC, pis.amount DESC
-                      LIMIT 1;",
-                    connection,
-                    transaction))
+                using (var findCommand = connection.CreateCommand())
                 {
-                    findCommand.Parameters.AddWithValue("@nomenclatureId", productLine.Product.IdNomenclature);
-                    findCommand.Parameters.AddWithValue("@amount", productLine.Amount);
+                    findCommand.Transaction = transaction;
+                    findCommand.CommandText = @"
+                        SELECT pis.id, p.id as price_id
+                        FROM product_in_stock pis
+                        JOIN price p ON pis.id_nomenclature = p.id_nomenclature 
+                                    AND pis.id_product_batch = p.id_product_batch
+                        JOIN batch_of_products bop ON pis.id_product_batch = bop.id_product_batch
+                                                  AND pis.id_nomenclature = bop.id_nomenclature
+                        WHERE pis.id_nomenclature = @nomenclatureId
+                        AND pis.amount >= @amount 
+                        AND bop.expiration_date > CURRENT_DATE
+                        ORDER BY bop.expiration_date ASC, pis.amount DESC
+                        LIMIT 1";
+
+                    AddParameter(findCommand, "@nomenclatureId", productLine.Product.IdNomenclature);
+                    AddParameter(findCommand, "@amount", productLine.Amount);
 
                     using (var reader = findCommand.ExecuteReader())
                     {
@@ -167,48 +171,59 @@ namespace ReceiptOfSale
                     }
                 }
 
-                using (var insertCommand = new NpgsqlCommand(
-                    @"INSERT INTO order_product_in_stock 
-                      (id_order, id_product, amount, price)
-                      VALUES (@orderId, @productId, @amount, @priceId)",
-                    connection,
-                    transaction))
+                using (var insertCommand = connection.CreateCommand())
                 {
-                    insertCommand.Parameters.AddWithValue("@orderId", orderId);
-                    insertCommand.Parameters.AddWithValue("@productId", productLine.IdProductInStock);
-                    insertCommand.Parameters.AddWithValue("@amount", productLine.Amount);
-                    insertCommand.Parameters.AddWithValue("@priceId", productLine.PriceId);
+                    insertCommand.Transaction = transaction;
+                    insertCommand.CommandText = @"
+                        INSERT INTO order_product_in_stock 
+                        (id_order, id_product, amount, price)
+                        VALUES (@orderId, @productId, @amount, @priceId)";
+
+                    AddParameter(insertCommand, "@orderId", orderId);
+                    AddParameter(insertCommand, "@productId", productLine.IdProductInStock);
+                    AddParameter(insertCommand, "@amount", productLine.Amount);
+                    AddParameter(insertCommand, "@priceId", productLine.PriceId);
 
                     insertCommand.ExecuteNonQuery();
                 }
             }
         }
 
-        private void CreateSaleRecord(NpgsqlConnection connection, NpgsqlTransaction transaction,
+        private void CreateSaleRecord(IDbConnection connection, IDbTransaction transaction,
                                     int orderId, Receipt receipt)
         {
-            using (var getNumberCommand = new NpgsqlCommand(
-                "SELECT COALESCE(MAX(receipt_number), 0) + 1 FROM sales",
-                connection,
-                transaction))
+            using (var getNumberCommand = connection.CreateCommand())
             {
-                int receiptNumber = (int)getNumberCommand.ExecuteScalar();
+                getNumberCommand.Transaction = transaction;
+                getNumberCommand.CommandText = "SELECT COALESCE(MAX(receipt_number), 0) + 1 FROM sales";
 
-                using (var insertCommand = new NpgsqlCommand(
-                    @"INSERT INTO sales 
-                      (receipt_number, counterpart, order_id, order_status, final_price)
-                      VALUES (@receiptNumber, @counterpart, @orderId, 'Получен', @finalPrice)",
-                    connection,
-                    transaction))
+                int receiptNumber = Convert.ToInt32(getNumberCommand.ExecuteScalar());
+
+                using (var insertCommand = connection.CreateCommand())
                 {
-                    insertCommand.Parameters.AddWithValue("@receiptNumber", receiptNumber);
-                    insertCommand.Parameters.AddWithValue("@counterpart", receipt.CustomerID);
-                    insertCommand.Parameters.AddWithValue("@orderId", orderId);
-                    insertCommand.Parameters.AddWithValue("@finalPrice", receipt.FinalPrice);
+                    insertCommand.Transaction = transaction;
+                    insertCommand.CommandText = @"
+                        INSERT INTO sales 
+                        (receipt_number, counterpart, order_id, order_status, final_price)
+                        VALUES (@receiptNumber, @counterpart, @orderId, 'Получен', @finalPrice)";
+
+                    AddParameter(insertCommand, "@receiptNumber", receiptNumber);
+                    AddParameter(insertCommand, "@counterpart", receipt.CustomerID);
+                    AddParameter(insertCommand, "@orderId", orderId);
+                    AddParameter(insertCommand, "@finalPrice", receipt.FinalPrice);
 
                     insertCommand.ExecuteNonQuery();
                 }
             }
+        }
+
+        // Вспомогательный метод для добавления параметров
+        private void AddParameter(IDbCommand command, string parameterName, object value)
+        {
+            var parameter = command.CreateParameter();
+            parameter.ParameterName = parameterName;
+            parameter.Value = value ?? DBNull.Value;
+            command.Parameters.Add(parameter);
         }
     }
 }

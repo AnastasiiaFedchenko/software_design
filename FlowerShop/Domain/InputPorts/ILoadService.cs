@@ -11,6 +11,6 @@ namespace Domain.InputPorts
 {
     public interface ILoadService
     {
-        public bool LoadProductBatch(FileStream stream); // FileStream / может быть массив строк
+        public bool LoadProductBatch(Stream stream); // FileStream / может быть массив строк
     }
 }

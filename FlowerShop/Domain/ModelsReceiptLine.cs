@@ -36,6 +36,9 @@ namespace Domain
         public List<ReceiptLine> Products { get; }
         public Receipt(int customerID, List<ReceiptLine> items)
         {
+            /*
+             * Вы одобрили тестирование этого конструктора именно в таком виде и согласились, что тут есть бизнес логика
+             */
             if (items == null)
                 throw new ArgumentNullException(nameof(items));
 

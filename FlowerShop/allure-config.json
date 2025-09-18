@@ -1,0 +1,14 @@
+{
+  "allure": {
+    "directory": "allure-results",
+    "links": [
+      "https://github.com/allure-framework/allure2/issues/{issue}",
+      "https://example.org/tms/{tms}"
+    ],
+    "environment": {
+      "Solution": "FlowerShop",
+      "TestType": "xUnit",
+      "Runtime": ".NET 8.0"
+    }
+  }
+}

@@ -1,4 +1,5 @@
-﻿using Domain;
+﻿using ConnectionToDB;
+using Domain;
 using Domain.OutputPorts;
 using InventoryOfProducts;
 using Npgsql;
@@ -20,7 +21,7 @@ namespace Integration.Tests
         {
             _output = output;
             _fixture = fixture;
-            _inventoryRepo = new InventoryRepo(_fixture.TestConnectionString);
+            _inventoryRepo = new InventoryRepo(new NpgsqlConnectionFactory(_fixture.TestConnectionString));
             _connection = new NpgsqlConnection(_fixture.TestConnectionString);
             _connection.Open();
             _transaction = _connection.BeginTransaction();
