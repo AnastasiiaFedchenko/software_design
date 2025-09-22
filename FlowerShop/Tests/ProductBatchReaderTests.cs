@@ -11,7 +11,9 @@ using Allure.Net.Commons;
 
 namespace ProductBatchReader_Tests
 {
-    // пример лондоского теста
+    // пример лондоского теста 
+    // не поняла почему это лондонский тут же нет моков
+    // это же классический
     [AllureSuite("ProductBatchReader Layer")]
     [AllureFeature("Product Management")]
     [AllureSubSuite("Product Entity")]

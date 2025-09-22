@@ -169,7 +169,7 @@ namespace Domain.Tests
 
             // Assert
             Assert.NotNull(result);
-            Assert.Equal(10.99 + (5.99 * 2), result.FinalPrice, 2); // Используем точность 2 знака после запятой
+            Assert.Equal(10.99 + (5.99 * 2), result.FinalPrice, 2);
             Assert.Equal(3, result.TotalAmount);
             Assert.Equal(items, result.Products);
             Assert.True((DateTime.Now - result.Date).TotalSeconds < 1);
@@ -261,7 +261,7 @@ namespace Domain.Tests
         }
     }
 
-    // Класс для построения списка ReceiptLine
+    // Builder ReceiptLine
     public class ReceiptListBuilder
     {
         private readonly List<ReceiptLine> _items = new List<ReceiptLine>();
@@ -292,16 +292,13 @@ namespace Domain.Tests
         private string Type = "General";
         private string Country = "Local";
 
-        // Приватный конструктор - создаем через статический метод
         private Product_Builder() { }
 
-        // Статический метод для начала построения продукта
         public static Product_Builder ForProduct()
         {
             return new Product_Builder();
         }
 
-        // Методы для настройки продукта (возвращают this для fluent interface)
         public Product_Builder WithId(int id)
         {
             IdNomenclature = id;
@@ -332,14 +329,13 @@ namespace Domain.Tests
             return this;
         }
 
-        // Финальный метод построения продукта
         public Product Build()
         {
             return new Product(IdNomenclature, Price, AmountInStock, Type, Country);
         }
     }
 
-    // Класс Object Mother
+    // Object Mother
     public class ReceiptData_Mother
     {
         public static List<ReceiptLine> CreateReceipt_WithSingleItem()
@@ -378,13 +374,12 @@ namespace Domain.Tests
             };
         }
 
-        // Статический метод, который возвращает билдера
+        // возвращает билдер
         public static ReceiptListBuilder GetBuilder()
         {
             return new ReceiptListBuilder();
         }
 
-        // Готовые шаблоны через Builder
         public static List<ReceiptLine> CreateStandardReceipt()
         {
             return GetBuilder()

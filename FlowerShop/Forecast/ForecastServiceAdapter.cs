@@ -1,14 +1,7 @@
-﻿using Domain;
-using Domain.OutputPorts;
-using System;
-using System.Collections.Generic;
+﻿using Domain.OutputPorts;
+using Domain;
 using System.Diagnostics;
-using Newtonsoft.Json;
 using System.Text;
-using System.IO;
-using System.Linq;
-using Serilog;
-using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
 
 namespace ForecastAnalysis
@@ -17,11 +10,24 @@ namespace ForecastAnalysis
     {
         private readonly string _pythonPath;
         private readonly string _scriptPath;
+        private readonly IProcessRunner _processRunner;
+        private readonly IJsonParser _jsonParser;
+
         public ForecastServiceAdapter(string pythonPath, string scriptPath)
+            : this(pythonPath, scriptPath, new ProcessRunner(), new JsonParser())
+        {
+        }
+
+        // Конструктор для тестирования
+        public ForecastServiceAdapter(string pythonPath, string scriptPath,
+            IProcessRunner processRunner, IJsonParser jsonParser)
         {
             _pythonPath = pythonPath;
             _scriptPath = scriptPath;
+            _processRunner = processRunner;
+            _jsonParser = jsonParser;
         }
+
         public ForecastOfOrders Create()
         {
             Console.OutputEncoding = Encoding.UTF8;
@@ -34,46 +40,32 @@ namespace ForecastAnalysis
                 RedirectStandardOutput = true,
                 RedirectStandardError = true,
                 CreateNoWindow = true,
-                WorkingDirectory = System.IO.Path.GetDirectoryName(_scriptPath),
+                WorkingDirectory = Path.GetDirectoryName(_scriptPath),
                 StandardOutputEncoding = Encoding.UTF8,
                 StandardErrorEncoding = Encoding.UTF8,
                 Environment = { ["PYTHONIOENCODING"] = "utf-8" }
             };
 
-            string jsonResult;
-            using (var process = new Process { StartInfo = processInfo })
+            var (jsonResult, errors, exitCode) = _processRunner.RunProcess(processInfo);
+
+            if (exitCode != 0)
             {
-                process.Start();
-
-                using (var reader = new StreamReader(process.StandardOutput.BaseStream, Encoding.UTF8))
-                {
-                    jsonResult = reader.ReadToEnd();
-                }
-
-                string errors;
-                using (var errorReader = new StreamReader(process.StandardError.BaseStream, Encoding.UTF8))
-                {
-                    errors = errorReader.ReadToEnd();
-                }
-
-                process.WaitForExit();
-
-                if (process.ExitCode != 0)
-                {
-                    throw new ApplicationException($"Ошибка выполнения Python-скрипта: {errors}");
-                }
+                throw new ApplicationException($"Ошибка выполнения Python-скрипта: {errors}");
             }
 
+            return ParseForecastData(jsonResult);
+        }
+
+        internal ForecastOfOrders ParseForecastData(string jsonResult)
+        {
             try
             {
-                // Динамическая десериализация JSON
-                dynamic pythonData = JsonConvert.DeserializeObject(jsonResult);
+                dynamic pythonData = _jsonParser.ParseJson(jsonResult);
                 if (pythonData == null)
                 {
                     throw new ApplicationException("Не удалось десериализовать выходные данные скрипта");
                 }
 
-                // Преобразование продуктов
                 var productLines = new List<ProductLine>();
                 foreach (var productItem in pythonData.products)
                 {
@@ -93,10 +85,8 @@ namespace ForecastAnalysis
                             amount_in_stock: (int)productItem.current_stock
                         ));
                     }
-
                 }
 
-                // Преобразование ежедневного прогноза
                 var dailyForecasts = new List<DailyForecast>();
                 foreach (var dailyItem in pythonData.daily_forecast)
                 {
@@ -108,7 +98,6 @@ namespace ForecastAnalysis
                     });
                 }
 
-                // Создание итогового объекта ForecastOfOrders
                 var resultForecast = new ForecastOfOrders(
                     amount_of_orders: (int)pythonData.total_orders,
                     products: productLines
@@ -123,6 +112,51 @@ namespace ForecastAnalysis
             {
                 throw new ApplicationException($"Ошибка при обработке данных: {ex.Message}\nДанные: {jsonResult}");
             }
+        }
+    }
+
+    public interface IProcessRunner
+    {
+        (string output, string errors, int exitCode) RunProcess(ProcessStartInfo startInfo);
+    }
+
+    public interface IJsonParser
+    {
+        dynamic ParseJson(string json);
+    }
+
+    public class ProcessRunner : IProcessRunner
+    {
+        public (string output, string errors, int exitCode) RunProcess(ProcessStartInfo startInfo)
+        {
+            using (var process = new Process { StartInfo = startInfo })
+            {
+                process.Start();
+
+                string output;
+                using (var reader = new StreamReader(process.StandardOutput.BaseStream, Encoding.UTF8))
+                {
+                    output = reader.ReadToEnd();
+                }
+
+                string errors;
+                using (var errorReader = new StreamReader(process.StandardError.BaseStream, Encoding.UTF8))
+                {
+                    errors = errorReader.ReadToEnd();
+                }
+
+                process.WaitForExit();
+
+                return (output, errors, process.ExitCode);
+            }
+        }
+    }
+
+    public class JsonParser : IJsonParser
+    {
+        public dynamic ParseJson(string json)
+        {
+            return JsonConvert.DeserializeObject(json);
         }
     }
 }
