@@ -189,31 +189,12 @@ jobs:
       run: |
         PGPASSWORD=5432 psql -h localhost -U postgres -d postgres -c "CREATE DATABASE flowershoptest;"
         
-    - name: Copy SQL files for E2E tests
-      run: |
-        # Создаем директорию для E2E тестов
-        mkdir -p /home/runner/work/software_design/software_design/FlowerShop/E2E.Tests/
-        
-        # Копируем SQL файл в ожидаемое место для E2E тестов
-        if [ -f "FlowerShop/E2E.Tests/CreationOfTestDB.sql" ]; then
-          cp FlowerShop/E2E.Tests/CreationOfTestDB.sql /home/runner/work/software_design/software_design/FlowerShop/E2E.Tests/
-          echo "SQL file copied to E2E.Tests directory"
-        else
-          echo "Warning: FlowerShop/E2E.Tests/CreationOfTestDB.sql not found"
-          # Создаем минимальный SQL файл если его нет
-          cat > /home/runner/work/software_design/software_design/FlowerShop/E2E.Tests/CreationOfTestDB.sql << 'EOF'
-          -- Minimal database schema for E2E tests
-          SELECT 'E2E Test Database Initialized' as status;
-          EOF
-          echo "Created minimal SQL file for E2E tests"
-        fi
-        
-        # Проверяем что файл на месте
-        echo "Files in E2E.Tests directory:"
-        ls -la /home/runner/work/software_design/software_design/FlowerShop/E2E.Tests/
-        
-    - name: Build application
-      run: dotnet build --configuration Release
+    - name: Restore dependencies
+      run: dotnet restore
+      working-directory: ./FlowerShop
+      
+    - name: Build solution
+      run: dotnet build --no-restore --configuration Release
       working-directory: ./FlowerShop
       
     - name: Run E2E tests
@@ -237,9 +218,16 @@ jobs:
     - name: Cleanup test database
       if: always()
       run: |
+        # Завершаем все активные соединения с тестовой БД
         PGPASSWORD=5432 psql -h localhost -U postgres -d postgres -c "SELECT pg_terminate_backend(pid) FROM pg_stat_activity WHERE datname = 'flowershoptest' AND pid <> pg_backend_pid();"
+        
+        # Небольшая задержка для завершения процессов
         sleep 2
+        
+        # Удаляем тестовую БД
         PGPASSWORD=5432 psql -h localhost -U postgres -d postgres -c "DROP DATABASE IF EXISTS flowershoptest;"
+        
+        echo "Test database cleanup completed"
 
   test-report:
     name: Generate Test Report
