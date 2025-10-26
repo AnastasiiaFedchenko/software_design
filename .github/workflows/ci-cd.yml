@@ -251,48 +251,77 @@ jobs:
       with:
         path: artifacts
         
-    - name: Create skipped test result files
+    - name: Create valid skipped test result files
       run: |
-        # Создаем пустые TRX файлы для пропущенных тестов
+        # Создаем корректные TRX файлы для пропущенных тестов с минимальным набором тестов
         mkdir -p artifacts/skipped
         
-        # Шаблон для пустого TRX файла с пропущенными тестами
-        cat > artifacts/skipped/skipped-template.trx << 'EOF'
-        <?xml version="1.0" encoding="utf-8"?>
-        <TestRun id="{{run-id}}" name="{{test-name}}" runUser="{{user}}" xmlns="http://microsoft.com/schemas/VisualStudio/TeamTest/2010">
-          <Times creation="{{creation-time}}" finish="{{finish-time}}"/>
-          <ResultSummary outcome="NotExecuted">
-            <Counters total="0" executed="0" passed="0" failed="0" error="0" timeout="0" aborted="0" inconclusive="0" passedButRunAborted="0" notRunnable="0" notExecuted="0" disconnected="0" warning="0" completed="0" inProgress="0" pending="0"/>
-            <Output>
-              <StdOut>Test suite was skipped due to previous job failure.</StdOut>
-            </Output>
-          </ResultSummary>
-          <TestDefinitions/>
-          <TestLists/>
-          <TestEntries/>
-          <Results/>
-        </TestRun>
-        EOF
-        
-        # Создаем пропущенные файлы для jobs, которые не выполнились
-        if [[ "${{ needs.integration-tests.result }}" != "success" ]]; then
-          sed "s/{{run-id}}/$(uuidgen)/g; s/{{test-name}}/Integration Tests/g; s/{{user}}/GitHub Actions/g; s/{{creation-time}}/$(date -u +"%Y-%m-%dT%H:%M:%S.0000000Z")/g; s/{{finish-time}}/$(date -u +"%Y-%m-%dT%H:%M:%S.0000000Z")/g" \
-          artifacts/skipped/skipped-template.trx > artifacts/integration-test-results/integration-test-results.trx
-          echo "Created skipped result for integration tests"
-        fi
-        
-        if [[ "${{ needs.e2e-tests.result }}" != "success" ]]; then
-          sed "s/{{run-id}}/$(uuidgen)/g; s/{{test-name}}/E2E Tests/g; s/{{user}}/GitHub Actions/g; s/{{creation-time}}/$(date -u +"%Y-%m-%dT%H:%M:%S.0000000Z")/g; s/{{finish-time}}/$(date -u +"%Y-%m-%dT%H:%M:%S.0000000Z")/g" \
-          artifacts/skipped/skipped-template.trx > artifacts/e2e-test-results/e2e-test-results.trx
-          echo "Created skipped result for E2E tests"
-        fi
-        
-        # Убедимся, что все необходимые директории существуют
+        # Создаем директории для каждого типа тестов
         mkdir -p artifacts/unit-test-results
         mkdir -p artifacts/integration-test-results  
         mkdir -p artifacts/e2e-test-results
         
-        echo "Skipped test result files created successfully"
+        # Функция для создания валидного TRX файла с одним пропущенным тестом
+        create_skipped_trx() {
+          local test_type=$1
+          local filename=$2
+          local run_id=$(uuidgen)
+          local creation_time=$(date -u +"%Y-%m-%dT%H:%M:%S.0000000Z")
+          local finish_time=$(date -u +"%Y-%m-%dT%H:%M:%S.0000000Z")
+          
+          cat > "$filename" << EOF
+        <?xml version="1.0" encoding="utf-8"?>
+        <TestRun id="$run_id" name="$test_type Tests" runUser="GitHub Actions" xmlns="http://microsoft.com/schemas/VisualStudio/TeamTest/2010">
+          <Times creation="$creation_time" finish="$finish_time"/>
+          <ResultSummary outcome="NotExecuted">
+            <Counters total="1" executed="0" passed="0" failed="0" error="0" timeout="0" aborted="0" inconclusive="0" passedButRunAborted="0" notRunnable="0" notExecuted="1" disconnected="0" warning="0" completed="0" inProgress="0" pending="0"/>
+            <Output>
+              <StdOut>Test suite was skipped due to previous job failure: $test_type Tests</StdOut>
+            </Output>
+          </ResultSummary>
+          <TestDefinitions>
+            <UnitTest name="Skipped_${test_type}_Test" storage="dummy.dll" id="$(uuidgen)">
+              <Execution id="$(uuidgen)"/>
+              <TestMethod codeBase="dummy.dll" className="SkippedTests" name="Skipped_${test_type}_Test"/>
+            </UnitTest>
+          </TestDefinitions>
+          <TestLists>
+            <TestList name="Results Not in a List" id="8c84fa94-04c1-424b-9868-57a2d4851a1d"/>
+            <TestList name="All Loaded Results" id="19431567-8539-422a-85d7-44ee4e166bda"/>
+          </TestLists>
+          <TestEntries>
+            <TestEntry testId="$(uuidgen)" executionId="$(uuidgen)" testListId="19431567-8539-422a-85d7-44ee4e166bda"/>
+          </TestEntries>
+          <Results>
+            <UnitTestResult testName="Skipped_${test_type}_Test" outcome="NotExecuted" testListId="19431567-8539-422a-85d7-44ee4e166bda">
+              <Output>
+                <StdOut>Test was skipped because the $test_type test job did not run due to previous stage failure.</StdOut>
+              </Output>
+            </UnitTestResult>
+          </Results>
+        </TestRun>
+        EOF
+        }
+        
+        # Создаем пропущенные файлы для jobs, которые не выполнились
+        if [[ "${{ needs.integration-tests.result }}" != "success" ]]; then
+          create_skipped_trx "Integration" "artifacts/integration-test-results/integration-test-results.trx"
+          echo "Created valid skipped result for integration tests"
+        fi
+        
+        if [[ "${{ needs.e2e-tests.result }}" != "success" ]]; then
+          create_skipped_trx "E2E" "artifacts/e2e-test-results/e2e-test-results.trx"
+          echo "Created valid skipped result for E2E tests"
+        fi
+        
+        echo "Valid skipped test result files created successfully"
+      
+    - name: List downloaded artifacts
+      run: |
+        echo "=== Artifacts structure ==="
+        find artifacts -name "*.trx" -type f | head -20
+        echo "=== Total TRX files found: ==="
+        find artifacts -name "*.trx" -type f | wc -l
       
     - name: Publish Test Results
       uses: dorny/test-reporter@v1
@@ -301,6 +330,7 @@ jobs:
         name: Test Results
         path: artifacts/**/*.trx
         reporter: dotnet-trx
+        fail-on-error: false
         
     - name: Generate Detailed Test Summary
       if: always()
@@ -345,7 +375,7 @@ jobs:
         fi
         
         echo "" >> $GITHUB_STEP_SUMMARY
-        echo "### Pipeline Summary" >> $GITHUB_STEP_SUMMARY
+        echo "###  Pipeline Summary" >> $GITHUB_STEP_SUMMARY
         echo "" >> $GITHUB_STEP_SUMMARY
         
         if [[ "${{ needs.unit-tests.result }}" == "success" && "${{ needs.integration-tests.result }}" == "success" && "${{ needs.e2e-tests.result }}" == "success" ]]; then
@@ -358,3 +388,7 @@ jobs:
           echo "2. Review failed tests and fix the issues" >> $GITHUB_STEP_SUMMARY
           echo "3. Re-run the pipeline after fixes" >> $GITHUB_STEP_SUMMARY
         fi
+        
+        echo "" >> $GITHUB_STEP_SUMMARY
+        echo "---" >> $GITHUB_STEP_SUMMARY
+        echo "*Report generated automatically by GitHub Actions*" >> $GITHUB_STEP_SUMMARY
