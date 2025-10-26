@@ -43,7 +43,7 @@ namespace Integration.Tests
             Db = new NpgsqlConnection(TestConnectionString);
             Db.Open();
 
-            // Получаем директорию где находится исполняемый файл
+            // крассиво ищу файл с инициализацией бд
             var assemblyLocation = System.Reflection.Assembly.GetExecutingAssembly().Location;
             var assemblyDirectory = Path.GetDirectoryName(assemblyLocation);
 
