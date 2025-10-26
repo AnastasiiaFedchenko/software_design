@@ -185,7 +185,27 @@ insert into batch_of_products
 (id_product_batch, id_nomenclature, production_date, expiration_date, cost_price, amount, responsible, suppliers)
 values (401, 70, '2025-04-17', '2026-04-17', 972.52, 26, 62, 101);
 
-COPY storage_place FROM 'D:\bmstu\PPO\software_design\FlowerShop\Integration.Tests\storage_places.csv' (DELIMITER ';', ENCODING 'UTF8');
+INSERT INTO storage_place (id, name, address) VALUES
+(1, 'Склад 1', '{"street": "алл. Мая 1, д. 2 стр. 8", "city": "Москва", "postal_code": "379269", "country": "Россия", "coordinates": {"lat": "24.112643", "lng": "61.011824"}, "metro": "Курская"}'),
+(2, 'Склад 2', '{"street": "ш. Энергетиков, д. 6 стр. 8/8", "city": "Москва", "postal_code": "275444", "country": "Россия", "coordinates": {"lat": "64.0714675", "lng": "-85.134205"}, "metro": "Китай-город"}'),
+(3, 'Склад 3', '{"street": "наб. Крымская, д. 73 стр. 7/4", "city": "Москва", "postal_code": "532322", "country": "Россия", "coordinates": {"lat": "-85.578581", "lng": "-137.537090"}, "metro": "Арбатская"}'),
+(4, 'Склад 4', '{"street": "бул. Котовского, д. 799 стр. 6", "city": "Москва", "postal_code": "057318", "country": "Россия", "coordinates": {"lat": "-27.301843", "lng": "-161.552970"}, "metro": "Арбатская"}'),
+(5, 'Склад 5', '{"street": "ш. Базарное, д. 49 стр. 15", "city": "Москва", "postal_code": "349226", "country": "Россия", "coordinates": {"lat": "39.841832", "lng": "133.461482"}, "metro": "Охотный ряд"}'),
+(6, 'Склад 6', '{"street": "ш. Магистральное, д. 45 стр. 848", "city": "Москва", "postal_code": "253563", "country": "Россия", "coordinates": {"lat": "47.9467045", "lng": "37.972912"}, "metro": "Арбатская"}'),
+(7, 'Склад 7', '{"street": "бул. Фадеева, д. 3/8", "city": "Москва", "postal_code": "867165", "country": "Россия", "coordinates": {"lat": "-3.9640715", "lng": "55.265769"}, "metro": "Китай-город"}'),
+(8, 'Склад 8', '{"street": "ул. Высотная, д. 6/1 к. 1/2", "city": "Москва", "postal_code": "633621", "country": "Россия", "coordinates": {"lat": "12.5771165", "lng": "-52.539158"}, "metro": "Китай-город"}'),
+(9, 'Склад 9', '{"street": "бул. Леонова, д. 534 стр. 2/6", "city": "Москва", "postal_code": "640824", "country": "Россия", "coordinates": {"lat": "-37.3589815", "lng": "-94.009903"}, "metro": "Охотный ряд"}'),
+(10, 'Склад 10', '{"street": "пр. Ленский, д. 7 стр. 28", "city": "Москва", "postal_code": "044025", "country": "Россия", "coordinates": {"lat": "-64.556132", "lng": "147.442355"}, "metro": "Охотный ряд"}'),
+(11, 'Склад 11', '{"street": "пер. Садовый, д. 9/3", "city": "Москва", "postal_code": "576359", "country": "Россия", "coordinates": {"lat": "30.6809115", "lng": "-77.776005"}, "metro": "Охотный ряд"}'),
+(12, 'Склад 12', '{"street": "алл. Промышленная, д. 59", "city": "Москва", "postal_code": "648281", "country": "Россия", "coordinates": {"lat": "-82.4147435", "lng": "-21.033602"}, "metro": "Курская"}'),
+(13, 'Склад 13', '{"street": "бул. Леваневского, д. 8/7 стр. 7", "city": "Москва", "postal_code": "874329", "country": "Россия", "coordinates": {"lat": "-1.310931", "lng": "-34.763769"}, "metro": "Арбатская"}'),
+(14, 'Склад 14', '{"street": "пер. Новый, д. 9 к. 152", "city": "Москва", "postal_code": "896872", "country": "Россия", "coordinates": {"lat": "32.6149005", "lng": "44.158055"}, "metro": "Парк культуры"}'),
+(15, 'Склад 15', '{"street": "бул. Смоленский, д. 6/4 к. 9", "city": "Москва", "postal_code": "180024", "country": "Россия", "coordinates": {"lat": "-12.724958", "lng": "44.568628"}, "metro": "Парк культуры"}'),
+(16, 'Склад 16', '{"street": "наб. Тульская, д. 869 к. 28", "city": "Москва", "postal_code": "249173", "country": "Россия", "coordinates": {"lat": "-47.985412", "lng": "29.830207"}, "metro": "Арбатская"}'),
+(17, 'Склад 17', '{"street": "наб. Ольховая, д. 2/5", "city": "Москва", "postal_code": "971533", "country": "Россия", "coordinates": {"lat": "-53.475596", "lng": "-74.477026"}, "metro": "Курская"}'),
+(18, 'Склад 18', '{"street": "пр. Братский, д. 2/2 стр. 7/5", "city": "Москва", "postal_code": "141160", "country": "Россия", "coordinates": {"lat": "10.2580525", "lng": "111.307273"}, "metro": "Арбатская"}'),
+(19, 'Склад 19', '{"street": "пр. Разина, д. 21 к. 3", "city": "Москва", "postal_code": "008612", "country": "Россия", "coordinates": {"lat": "10.951773", "lng": "81.791822"}, "metro": "Парк культуры"}'),
+(20, 'Склад 20', '{"street": "наб. Геологов, д. 6", "city": "Москва", "postal_code": "036235", "country": "Россия", "coordinates": {"lat": "28.5196795", "lng": "179.293664"}, "metro": "Курская"}');
 
 insert into product_in_stock (id, id_nomenclature, id_product_batch, amount, storage_place)
 values (6052, 70, 401, 3, 19);
