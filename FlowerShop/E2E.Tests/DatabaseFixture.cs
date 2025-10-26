@@ -3,7 +3,7 @@ using System.IO;
 using Npgsql;
 using Xunit;
 
-namespace Integration.Tests
+namespace E2E.Tests
 {
     [CollectionDefinition("DatabaseIntegrationTests", DisableParallelization = true)]
     public class DatabaseFixture : IDisposable

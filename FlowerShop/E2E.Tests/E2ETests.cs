@@ -4,7 +4,6 @@ using System.Text;
 using System.Text.Json;
 using Xunit;
 using Allure.Xunit.Attributes;
-using Integration.Tests;
 using Xunit.Abstractions;
 
 namespace E2E.Tests

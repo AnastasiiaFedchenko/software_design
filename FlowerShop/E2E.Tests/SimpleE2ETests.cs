@@ -1,7 +1,6 @@
 ﻿using System.Net;
 using Xunit;
 using Allure.Xunit.Attributes;
-using Integration.Tests;
 using Xunit.Abstractions;
 
 namespace E2E.Tests
