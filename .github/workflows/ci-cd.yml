@@ -4,7 +4,7 @@ on:
   push:
     branches: [ main, lab_test_1 ]
   pull_request:
-    branches: [  main, lab_test_1 ]
+    branches: [ main, lab_test_1 ]
 
 jobs:
   unit-tests:
@@ -22,15 +22,18 @@ jobs:
         
     - name: Restore dependencies
       run: dotnet restore
+      working-directory: ./FlowerShop
       
     - name: Build solution
       run: dotnet build --no-restore --configuration Release
+      working-directory: ./FlowerShop
       
     - name: Run unit tests
       run: |
         dotnet test --filter Category=Unit --configuration Release --no-build --verbosity normal `
         --logger "trx;LogFileName=unit-test-results.trx" `
         --results-directory TestResults/Unit
+      working-directory: ./FlowerShop
       continue-on-error: false
       
     - name: Upload unit test results
@@ -38,7 +41,7 @@ jobs:
       if: always()
       with:
         name: unit-test-results
-        path: TestResults/Unit/
+        path: FlowerShop/TestResults/Unit/
         retention-days: 30
 
   integration-tests:
@@ -86,9 +89,11 @@ jobs:
         
     - name: Restore dependencies
       run: dotnet restore
+      working-directory: ./FlowerShop
       
     - name: Build solution
       run: dotnet build --no-restore --configuration Release
+      working-directory: ./FlowerShop
       
     - name: Run integration tests
       env:
@@ -97,6 +102,7 @@ jobs:
         dotnet test --filter Category=Integration --configuration Release --no-build --verbosity normal `
         --logger "trx;LogFileName=integration-test-results.trx" `
         --results-directory TestResults/Integration
+      working-directory: ./FlowerShop
       continue-on-error: false
       
     - name: Upload integration test results
@@ -104,7 +110,7 @@ jobs:
       if: always()
       with:
         name: integration-test-results
-        path: TestResults/Integration/
+        path: FlowerShop/TestResults/Integration/
         retention-days: 30
         
     - name: Cleanup test database
@@ -134,12 +140,14 @@ jobs:
         
     - name: Build application
       run: dotnet build --configuration Release
+      working-directory: ./FlowerShop
       
     - name: Run E2E tests
       run: |
         dotnet test --filter Category=E2E --configuration Release --no-build --verbosity normal `
         --logger "trx;LogFileName=e2e-test-results.trx" `
         --results-directory TestResults/E2E
+      working-directory: ./FlowerShop
       continue-on-error: false
       
     - name: Upload E2E test results
@@ -147,7 +155,7 @@ jobs:
       if: always()
       with:
         name: e2e-test-results
-        path: TestResults/E2E/
+        path: FlowerShop/TestResults/E2E/
         retention-days: 30
 
   test-report:
