@@ -1,0 +1,171 @@
+name: .NET CI/CD Pipeline
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  unit-tests:
+    name: Run Unit Tests
+    runs-on: windows-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v3
+      with:
+        dotnet-version: '8.0.x'
+        
+    - name: Restore dependencies
+      run: dotnet restore
+      
+    - name: Build solution
+      run: dotnet build --no-restore --configuration Release
+      
+    - name: Run unit tests
+      run: |
+        dotnet test --filter Category=Unit --configuration Release --no-build --verbosity normal `
+        --logger "trx;LogFileName=unit-test-results.trx" `
+        --results-directory TestResults/Unit
+      continue-on-error: false
+      
+    - name: Upload unit test results
+      uses: actions/upload-artifact@v4
+      if: always()
+      with:
+        name: unit-test-results
+        path: TestResults/Unit/
+        retention-days: 30
+
+  integration-tests:
+    name: Run Integration Tests
+    runs-on: windows-latest
+    needs: unit-tests
+    services:
+      postgres:
+        image: postgres:15
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: 5432
+          POSTGRES_DB: postgres
+        ports:
+          - 5432:5432
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v3
+      with:
+        dotnet-version: '8.0.x'
+        
+    - name: Wait for PostgreSQL
+      run: |
+        for ($i=1; $i -le 30; $i++) {
+          try {
+            & pg_isready -h localhost -p 5432 -U postgres
+            if ($LASTEXITCODE -eq 0) {
+              Write-Host "PostgreSQL is ready"
+              break
+            }
+          } catch {
+            Write-Host "Waiting for PostgreSQL... ($i/30)"
+            Start-Sleep -Seconds 2
+          }
+        }
+        
+    - name: Initialize test database
+      run: |
+        $env:PGPASSWORD = "5432"
+        & psql -h localhost -U postgres -d postgres -c "CREATE DATABASE flowershoptest;"
+        
+    - name: Restore dependencies
+      run: dotnet restore
+      
+    - name: Build solution
+      run: dotnet build --no-restore --configuration Release
+      
+    - name: Run integration tests
+      env:
+        TEST_CONNECTION_STRING: "Host=localhost;Port=5432;Database=flowershoptest;Username=postgres;Password=5432;Include Error Detail=true"
+      run: |
+        dotnet test --filter Category=Integration --configuration Release --no-build --verbosity normal `
+        --logger "trx;LogFileName=integration-test-results.trx" `
+        --results-directory TestResults/Integration
+      continue-on-error: false
+      
+    - name: Upload integration test results
+      uses: actions/upload-artifact@v4
+      if: always()
+      with:
+        name: integration-test-results
+        path: TestResults/Integration/
+        retention-days: 30
+        
+    - name: Cleanup test database
+      if: always()
+      run: |
+        $env:PGPASSWORD = "5432"
+        & psql -h localhost -U postgres -d postgres -c "
+        SELECT pg_terminate_backend(pg_stat_activity.pid) 
+        FROM pg_stat_activity 
+        WHERE pg_stat_activity.datname = 'flowershoptest' 
+        AND pid <> pg_backend_pid();
+        DROP DATABASE IF EXISTS flowershoptest;"
+
+  e2e-tests:
+    name: Run E2E Tests
+    runs-on: windows-latest
+    needs: integration-tests
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v3
+      with:
+        dotnet-version: '8.0.x'
+        
+    - name: Build application
+      run: dotnet build --configuration Release
+      
+    - name: Run E2E tests
+      run: |
+        dotnet test --filter Category=E2E --configuration Release --no-build --verbosity normal `
+        --logger "trx;LogFileName=e2e-test-results.trx" `
+        --results-directory TestResults/E2E
+      continue-on-error: false
+      
+    - name: Upload E2E test results
+      uses: actions/upload-artifact@v4
+      if: always()
+      with:
+        name: e2e-test-results
+        path: TestResults/E2E/
+        retention-days: 30
+
+  test-report:
+    name: Generate Test Report
+    runs-on: windows-latest
+    needs: [unit-tests, integration-tests, e2e-tests]
+    if: always()
+    
+    steps:
+    - name: Download all test results
+      uses: actions/download-artifact@v4
+      with:
+        path: artifacts
+        
+    - name: Publish Test Results
+      uses: dorny/test-reporter@v1
+      if: always()
+      with:
+        name: Test Results
+        path: artifacts/**/*.trx
+        reporter: dotnet-trx

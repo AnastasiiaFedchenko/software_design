@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using Newtonsoft.Json;
 using System.Diagnostics;
 
+[Trait("Category", "Unit")]
 public class ForecastServiceAdapterTests
 {
     private readonly Mock<IProcessRunner> _mockProcessRunner;

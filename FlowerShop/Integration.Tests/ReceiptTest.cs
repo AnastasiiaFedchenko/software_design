@@ -11,7 +11,7 @@ using ConnectionToDB;
 namespace Integration.Tests
 {
     [Collection("Database collection")]
-    public class ReceiptRepoTest : IDisposable
+    public class ReceiptTest : IDisposable
     {
         private readonly IReceiptRepo _receiptRepo;
         private readonly NpgsqlConnection _connection;
@@ -19,7 +19,7 @@ namespace Integration.Tests
         private readonly ITestOutputHelper _output;
         private readonly DatabaseFixture _fixture;
 
-        public ReceiptRepoTest(ITestOutputHelper output, DatabaseFixture fixture)
+        public ReceiptTest(ITestOutputHelper output, DatabaseFixture fixture)
         {
             _output = output;
             _fixture = fixture;

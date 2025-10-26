@@ -1,23 +1,21 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>net7.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
-
     <IsPackable>false</IsPackable>
     <IsTestProject>true</IsTestProject>
-    <DisableParallelization>true</DisableParallelization>
+    <PreserveCompilationContext>true</PreserveCompilationContext>
+    <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Remove="ProductBatchLoaderTest.cs" />
-    <Compile Remove="ReceiptTest.cs" />
+    <Compile Remove="WebApplicationFactory.cs" />
   </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.5.0" />
-    <PackageReference Include="Moq" Version="4.20.72" />
     <PackageReference Include="xunit" Version="2.4.2" />
     <PackageReference Include="xunit.runner.visualstudio" Version="2.4.5">
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
@@ -27,17 +25,15 @@
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
+    <!-- ДОБАВЛЕННЫЕ ПАКЕТЫ ДЛЯ E2E ТЕСТОВ -->
+    <PackageReference Include="Microsoft.AspNetCore.Mvc.Testing" Version="7.0.0" />
+    <PackageReference Include="Allure.Xunit" Version="2.9.5" />
+    <PackageReference Include="Moq" Version="4.20.70" />
   </ItemGroup>
+
+  <!-- ДОБАВЛЕННАЯ ССЫЛКА НА ВЕБ-ПРИЛОЖЕНИЕ -->
   <ItemGroup>
-    <ProjectReference Include="..\ProductBatchLoading\ProductBatchLoading.csproj" />
-    <ProjectReference Include="..\ReceiptOfSale\ReceiptOfSale.csproj" />
-    <ProjectReference Include="..\InventoryRepo\InventoryOfProducts.csproj" />
-    <ProjectReference Include="..\Domain\Domain.csproj" />
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="xunit.runner.json">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
+    <ProjectReference Include="..\WebApp\WebApp.csproj" />
   </ItemGroup>
 
 </Project>

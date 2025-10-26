@@ -15,6 +15,8 @@ using UserValidation;
 using System.Security.Cryptography.X509Certificates;
 using Microsoft.AspNetCore.Diagnostics;
 using ConnectionToDB;
+using Microsoft.OpenApi.Models;
+using WebApp2.Application.Mappings;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -28,6 +30,29 @@ builder.Host.UseSerilog();
 // Конфигурация сервисов
 builder.Services.AddControllersWithViews();
 builder.Services.AddHttpContextAccessor();
+
+// Добавление API и Swagger
+builder.Services.AddControllers();
+builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddSwaggerGen(c =>
+{
+    c.SwaggerDoc("v2", new OpenApiInfo
+    {
+        Title = "FlowerShop API v2",
+        Version = "v2"
+    });
+    
+    // Проигнорировать проблемы с типами
+    c.IgnoreObsoleteProperties();
+    c.IgnoreObsoleteActions();
+    
+    // Простая схема именования
+    c.CustomSchemaIds(x => x.FullName);
+});
+
+// AutoMapper
+builder.Services.AddAutoMapper(typeof(Program));
+
 builder.Services.AddSession(options =>
 {
     options.Cookie.HttpOnly = true;
@@ -40,7 +65,7 @@ var defaultLimit = builder.Configuration.GetValue<int>("AppSettings:DefaultPagin
 var pythonPath = builder.Configuration["PythonSettings:PythonPath"];
 var scriptPath = builder.Configuration["PythonSettings:ScriptPath"];
 
-// Регистрация сервисов
+// Регистрация сервисов (оставляем как есть)
 builder.Services
     .AddSingleton<IUserRepo>(_ => new UserRepo(new NpgsqlConnectionFactory(connectionString)))
     .AddSingleton<IInventoryRepo>(_ => new InventoryRepo(new NpgsqlConnectionFactory(connectionString)))
@@ -53,24 +78,6 @@ builder.Services
     .AddTransient<IAnalysisService, AnalysisService>()
     .AddScoped<ILoadService, LoadService>()
     .AddTransient<IProductService, ProductService>();
-
-/*builder.Services.Configure<IISServerOptions>(options =>
-{
-    options.MaxRequestBodySize = 50 * 1024 * 1024; // 50MB
-    options.AllowSynchronousIO = true; // Если нужно
-});
-
-builder.WebHost.ConfigureKestrel(serverOptions =>
-{
-    serverOptions.ConfigureHttpsDefaults(httpsOptions =>
-    {
-        // Используем встроенный сертификат разработки
-        httpsOptions.ServerCertificate = new X509Certificate2(
-            Path.Combine("..", "..", "..", "..", "localhost.pfx"), 
-            "123456" // Пароль для сертификата разработки
-        );
-    });
-});*/
 
 builder.Services.Configure<FormOptions>(options =>
 {
@@ -127,6 +134,7 @@ if (!app.Environment.IsDevelopment())
     app.UseExceptionHandler("/Home/Error");
     app.UseHsts();
 }
+
 app.UseExceptionHandler(errorApp =>
 {
     errorApp.Run(async context =>
@@ -140,6 +148,16 @@ app.UseExceptionHandler(errorApp =>
     });
 });
 
+// Включение Swagger в Development режиме
+if (app.Environment.IsDevelopment())
+{
+    app.UseSwagger();
+    app.UseSwaggerUI(c =>
+    {
+        c.SwaggerEndpoint("/swagger/v2/swagger.json", "FlowerShop API v2");
+    });
+}
+
 app.UseHttpsRedirection();
 app.UseStaticFiles();
 app.UseSession();
@@ -148,6 +166,10 @@ app.UseRouting();
 app.UseAuthentication();
 app.UseAuthorization();
 
+// Map API контроллеры
+app.MapControllers(); // Это для API контроллеров
+
+// Map MVC контроллеры (легаси)
 app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Account}/{action=Login}/{id?}");

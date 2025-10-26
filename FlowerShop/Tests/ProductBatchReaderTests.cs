@@ -14,6 +14,11 @@ namespace ProductBatchReader_Tests
     // пример лондоского теста 
     // не поняла почему это лондонский тут же нет моков
     // это же классический
+
+    // классический это без моков и стабов и тестируем ед поведения
+    // лондонский должен быть с моками или стабами с исключением внешних зависимост класса
+
+    [Trait("Category", "Unit")]
     [AllureSuite("ProductBatchReader Layer")]
     [AllureFeature("Product Management")]
     [AllureSubSuite("Product Entity")]

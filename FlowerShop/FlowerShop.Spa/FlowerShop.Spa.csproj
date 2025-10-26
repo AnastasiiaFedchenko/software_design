@@ -1,19 +1,28 @@
-﻿<Project Sdk="Microsoft.NET.Sdk.Web">
+﻿<Project Sdk="Microsoft.NET.Sdk.BlazorWebAssembly">
+
   <PropertyGroup>
     <TargetFramework>net7.0</TargetFramework>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
-    <PreserveCompilationContext>true</PreserveCompilationContext>
+    <RootNamespace>FlowerShop.Spa</RootNamespace>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.AspNetCore.Authentication.Cookies" Version="2.3.0" />
-    <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="7.0.5" />
-    <PackageReference Include="Microsoft.AspNetCore.Server.IIS" Version="2.2.6" />
-    <PackageReference Include="Serilog.AspNetCore" Version="9.0.0" />
-    <PackageReference Include="Swashbuckle.AspNetCore" Version="6.4.0" />
+    <Compile Remove="Models\Product.cs" />
+    <Compile Remove="Services\ApiService.cs" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Content Remove="Components\Routes.razor" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly" Version="7.0.0" />
+    <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.DevServer" Version="7.0.0" PrivateAssets="all" />
+    <PackageReference Include="System.Net.Http.Json" Version="7.0.0" />
+  </ItemGroup>
+
+  <!-- ДОБАВЬ ЭТИ ССЫЛКИ НА ПРОЕКТЫ -->
   <ItemGroup>
     <ProjectReference Include="..\InventoryRepo\InventoryOfProducts.csproj" />
     <ProjectReference Include="..\Forecast\ForecastAnalysis.csproj" />
@@ -23,4 +32,5 @@
     <ProjectReference Include="..\ReceiptOfSale\ReceiptOfSale.csproj" />
     <ProjectReference Include="..\UserValidation\UserValidation.csproj" />
   </ItemGroup>
+
 </Project>

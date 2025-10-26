@@ -13,6 +13,7 @@ using Allure.Net.Commons;
 
 namespace Domain.Tests
 {
+    [Trait("Category", "Unit")]
     [AllureSuite("Domain Layer")]
     [AllureFeature("Product Management")]
     [AllureSubSuite("Product Entity")]
