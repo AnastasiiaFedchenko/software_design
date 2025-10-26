@@ -13,6 +13,7 @@ using System.Collections.Generic;
 
 namespace Integration.Tests
 {
+    [Trait("Category", "Integration")]
     [Collection("Database collection")]
     public class ProductServiceTest : IDisposable
     {
