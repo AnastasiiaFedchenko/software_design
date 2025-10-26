@@ -2,9 +2,9 @@ name: .NET CI/CD Pipeline
 
 on:
   push:
-    branches: [ main, develop ]
+    branches: [ main, lab_test_1 ]
   pull_request:
-    branches: [ main ]
+    branches: [  main, lab_test_1 ]
 
 jobs:
   unit-tests:
