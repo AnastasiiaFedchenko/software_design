@@ -328,17 +328,24 @@ jobs:
         find artifacts -name "*.trx" -type f | head -20
         echo "=== Total TRX files found: ==="
         find artifacts -name "*.trx" -type f | wc -l
-      
-    - name: Publish Test Results with Fallback
+
+    - name: Publish Test Results for Internal PR
+      if: github.event.pull_request.head.repo.full_name == github.repository || github.event_name != 'pull_request'
       uses: dorny/test-reporter@v1
-      if: always()
       with:
         name: Test Results
         path: artifacts/**/*.trx
         reporter: dotnet-trx
         fail-on-error: false
-        # Используем токен только для внутренних PR
-        token: ${{ github.event.pull_request.head.repo.full_name == github.repository && secrets.GITHUB_TOKEN || '' }}
+        
+    - name: Skip Test Results for Fork PR
+      if: github.event.pull_request.head.repo.full_name != github.repository && github.event_name == 'pull_request'
+      run: |
+        echo "Skipping test report publication for fork PR due to security restrictions"
+        echo "Test artifacts are available for download in the workflow run"
+        echo "Unit Tests: ${{ needs.unit-tests.result }}"
+        echo "Integration Tests: ${{ needs.integration-tests.result }}" 
+        echo "E2E Tests: ${{ needs.e2e-tests.result }}"
         
     - name: Generate Detailed Test Summary
       if: always()
@@ -386,6 +393,13 @@ jobs:
         echo "### Pipeline Summary" >> $GITHUB_STEP_SUMMARY
         echo "" >> $GITHUB_STEP_SUMMARY
         
+        # Добавляем информацию о доступности отчета
+        if [[ "${{ github.event.pull_request.head.repo.full_name != github.repository && github.event_name == 'pull_request' }}" == "true" ]]; then
+          echo "> **Security Notice**: Detailed test reports are limited for pull requests from forks." >> $GITHUB_STEP_SUMMARY
+          echo "> Test artifacts are available for download in the workflow run." >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+        fi
+        
         if [[ "${{ needs.unit-tests.result }}" == "success" && "${{ needs.integration-tests.result }}" == "success" && "${{ needs.e2e-tests.result }}" == "success" ]]; then
           echo "**All tests passed successfully!** The application is ready for deployment." >> $GITHUB_STEP_SUMMARY
         else
@@ -400,17 +414,3 @@ jobs:
         echo "" >> $GITHUB_STEP_SUMMARY
         echo "---" >> $GITHUB_STEP_SUMMARY
         echo "*Report generated automatically by GitHub Actions*" >> $GITHUB_STEP_SUMMARY
-
-    - name: Alternative Test Summary for Forks
-      if: always() && github.event.pull_request.head.repo.full_name != github.repository
-      run: |
-        echo "## Limited Test Report for Fork PR" >> $GITHUB_STEP_SUMMARY
-        echo "" >> $GITHUB_STEP_SUMMARY
-        echo "Due to security restrictions, detailed test reports are not available for pull requests from forks." >> $GITHUB_STEP_SUMMARY
-        echo "" >> $GITHUB_STEP_SUMMARY
-        echo "**Test execution status:**" >> $GITHUB_STEP_SUMMARY
-        echo "- Unit Tests: ${{ needs.unit-tests.result }}" >> $GITHUB_STEP_SUMMARY
-        echo "- Integration Tests: ${{ needs.integration-tests.result }}" >> $GITHUB_STEP_SUMMARY
-        echo "- E2E Tests: ${{ needs.e2e-tests.result }}" >> $GITHUB_STEP_SUMMARY
-        echo "" >> $GITHUB_STEP_SUMMARY
-        echo "For full test details, please check the workflow artifacts." >> $GITHUB_STEP_SUMMARY
