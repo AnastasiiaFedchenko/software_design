@@ -57,6 +57,7 @@ jobs:
     name: Run Integration Tests
     runs-on: ubuntu-latest
     needs: unit-tests
+    if: needs.unit-tests.result == 'success'
     services:
       postgres:
         image: postgres:15
@@ -145,6 +146,7 @@ jobs:
     name: Run E2E Tests
     runs-on: ubuntu-latest
     needs: integration-tests
+    if: needs.integration-tests.result == 'success'
     services:
       postgres:
         image: postgres:15
@@ -232,15 +234,66 @@ jobs:
   test-report:
     name: Generate Test Report
     runs-on: ubuntu-latest
-    needs: [unit-tests, integration-tests, e2e-tests]
+    needs: 
+      - unit-tests
+      - integration-tests  
+      - e2e-tests
     if: always()
     
     steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+    
     - name: Download all test results
       uses: actions/download-artifact@v4
       with:
         path: artifacts
         
+    - name: Create skipped test result files
+      run: |
+        # Создаем пустые TRX файлы для пропущенных тестов
+        mkdir -p artifacts/skipped
+        
+        # Шаблон для пустого TRX файла с пропущенными тестами
+        cat > artifacts/skipped/skipped-template.trx << 'EOF'
+        <?xml version="1.0" encoding="utf-8"?>
+        <TestRun id="{{run-id}}" name="{{test-name}}" runUser="{{user}}" xmlns="http://microsoft.com/schemas/VisualStudio/TeamTest/2010">
+          <Times creation="{{creation-time}}" finish="{{finish-time}}"/>
+          <ResultSummary outcome="NotExecuted">
+            <Counters total="0" executed="0" passed="0" failed="0" error="0" timeout="0" aborted="0" inconclusive="0" passedButRunAborted="0" notRunnable="0" notExecuted="0" disconnected="0" warning="0" completed="0" inProgress="0" pending="0"/>
+            <Output>
+              <StdOut>Test suite was skipped due to previous job failure.</StdOut>
+            </Output>
+          </ResultSummary>
+          <TestDefinitions/>
+          <TestLists/>
+          <TestEntries/>
+          <Results/>
+        </TestRun>
+        EOF
+        
+        # Создаем пропущенные файлы для jobs, которые не выполнились
+        if [[ "${{ needs.integration-tests.result }}" != "success" ]]; then
+          sed "s/{{run-id}}/$(uuidgen)/g; s/{{test-name}}/Integration Tests/g; s/{{user}}/GitHub Actions/g; s/{{creation-time}}/$(date -u +"%Y-%m-%dT%H:%M:%S.0000000Z")/g; s/{{finish-time}}/$(date -u +"%Y-%m-%dT%H:%M:%S.0000000Z")/g" \
+          artifacts/skipped/skipped-template.trx > artifacts/integration-test-results/integration-test-results.trx
+          echo "Created skipped result for integration tests"
+        fi
+        
+        if [[ "${{ needs.e2e-tests.result }}" != "success" ]]; then
+          sed "s/{{run-id}}/$(uuidgen)/g; s/{{test-name}}/E2E Tests/g; s/{{user}}/GitHub Actions/g; s/{{creation-time}}/$(date -u +"%Y-%m-%dT%H:%M:%S.0000000Z")/g; s/{{finish-time}}/$(date -u +"%Y-%m-%dT%H:%M:%S.0000000Z")/g" \
+          artifacts/skipped/skipped-template.trx > artifacts/e2e-test-results/e2e-test-results.trx
+          echo "Created skipped result for E2E tests"
+        fi
+        
+        # Убедимся, что все необходимые директории существуют
+        mkdir -p artifacts/unit-test-results
+        mkdir -p artifacts/integration-test-results  
+        mkdir -p artifacts/e2e-test-results
+        
+        echo "Skipped test result files created successfully"
+      
     - name: Publish Test Results
       uses: dorny/test-reporter@v1
       if: always()
@@ -248,3 +301,60 @@ jobs:
         name: Test Results
         path: artifacts/**/*.trx
         reporter: dotnet-trx
+        
+    - name: Generate Detailed Test Summary
+      if: always()
+      run: |
+        echo "## Comprehensive Test Report" >> $GITHUB_STEP_SUMMARY
+        echo "" >> $GITHUB_STEP_SUMMARY
+        
+        echo "### Job Execution Status" >> $GITHUB_STEP_SUMMARY
+        echo "" >> $GITHUB_STEP_SUMMARY
+        echo "| Test Stage | Status | Details |" >> $GITHUB_STEP_SUMMARY
+        echo "|------------|--------|---------|" >> $GITHUB_STEP_SUMMARY
+        
+        # Unit Tests
+        if [[ "${{ needs.unit-tests.result }}" == "success" ]]; then
+          echo "| Unit Tests | Success | All unit tests passed |" >> $GITHUB_STEP_SUMMARY
+        elif [[ "${{ needs.unit-tests.result }}" == "failure" ]]; then
+          echo "| Unit Tests | Failed | Check unit test results for details |" >> $GITHUB_STEP_SUMMARY
+        else
+          echo "| Unit Tests | Unknown | Unexpected status |" >> $GITHUB_STEP_SUMMARY
+        fi
+        
+        # Integration Tests
+        if [[ "${{ needs.integration-tests.result }}" == "success" ]]; then
+          echo "| Integration Tests | Success | All integration tests passed |" >> $GITHUB_STEP_SUMMARY
+        elif [[ "${{ needs.integration-tests.result }}" == "failure" ]]; then
+          echo "| Integration Tests | Failed | Check integration test results for details |" >> $GITHUB_STEP_SUMMARY
+        elif [[ "${{ needs.integration-tests.result }}" == "skipped" ]]; then
+          echo "| Integration Tests | Skipped | Previous job failed, tests were not executed |" >> $GITHUB_STEP_SUMMARY
+        else
+          echo "| Integration Tests | Unknown | Unexpected status |" >> $GITHUB_STEP_SUMMARY
+        fi
+        
+        # E2E Tests
+        if [[ "${{ needs.e2e-tests.result }}" == "success" ]]; then
+          echo "| E2E Tests | Success | All end-to-end tests passed |" >> $GITHUB_STEP_SUMMARY
+        elif [[ "${{ needs.e2e-tests.result }}" == "failure" ]]; then
+          echo "| E2E Tests | Failed | Check E2E test results for details |" >> $GITHUB_STEP_SUMMARY
+        elif [[ "${{ needs.e2e-tests.result }}" == "skipped" ]]; then
+          echo "| E2E Tests | Skipped | Previous job failed, tests were not executed |" >> $GITHUB_STEP_SUMMARY
+        else
+          echo "| E2E Tests | Unknown | Unexpected status |" >> $GITHUB_STEP_SUMMARY
+        fi
+        
+        echo "" >> $GITHUB_STEP_SUMMARY
+        echo "### Pipeline Summary" >> $GITHUB_STEP_SUMMARY
+        echo "" >> $GITHUB_STEP_SUMMARY
+        
+        if [[ "${{ needs.unit-tests.result }}" == "success" && "${{ needs.integration-tests.result }}" == "success" && "${{ needs.e2e-tests.result }}" == "success" ]]; then
+          echo " **All tests passed successfully!** The application is ready for deployment." >> $GITHUB_STEP_SUMMARY
+        else
+          echo " **Some tests failed or were skipped.** Please review the test results above." >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**Next steps:**" >> $GITHUB_STEP_SUMMARY
+          echo "1. Check the detailed test reports in the artifacts" >> $GITHUB_STEP_SUMMARY
+          echo "2. Review failed tests and fix the issues" >> $GITHUB_STEP_SUMMARY
+          echo "3. Re-run the pipeline after fixes" >> $GITHUB_STEP_SUMMARY
+        fi
