@@ -127,14 +127,19 @@ jobs:
         path: FlowerShop/TestResults/Integration/
         retention-days: 30
         
-     - name: Cleanup test database
+    - name: Cleanup test database
       if: always()
       run: |
-        # Завершаем все соединения
+        # Завершаем все активные соединения с тестовой БД
         PGPASSWORD=5432 psql -h localhost -U postgres -d postgres -c "SELECT pg_terminate_backend(pid) FROM pg_stat_activity WHERE datname = 'flowershoptest' AND pid <> pg_backend_pid();"
         
-        # Удаляем базу данных
+        # Небольшая задержка для завершения процессов
+        sleep 2
+        
+        # Удаляем тестовую БД
         PGPASSWORD=5432 psql -h localhost -U postgres -d postgres -c "DROP DATABASE IF EXISTS flowershoptest;"
+        
+        echo "Test database cleanup completed"
 
   e2e-tests:
     name: Run E2E Tests
