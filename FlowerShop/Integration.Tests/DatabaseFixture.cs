@@ -43,7 +43,28 @@ namespace Integration.Tests
             Db = new NpgsqlConnection(TestConnectionString);
             Db.Open();
 
-            var createScript = File.ReadAllText("D:/bmstu/PPO/software_design/FlowerShop/Integration.Tests/CreationOfTestDB.sql");
+            // Получаем директорию где находится исполняемый файл
+            var assemblyLocation = System.Reflection.Assembly.GetExecutingAssembly().Location;
+            var assemblyDirectory = Path.GetDirectoryName(assemblyLocation);
+
+            // Поднимаемся на 3 уровня вверх чтобы найти корень проекта
+            var projectRoot = Directory.GetParent(assemblyDirectory)?.Parent?.Parent;
+            var sqlPath = Path.Combine(projectRoot.FullName, "Integration.Tests", "CreationOfTestDB.sql");
+
+            if (!File.Exists(sqlPath))
+            {
+                // Альтернативный способ - поиск от текущей директории
+                sqlPath = Path.Combine(Directory.GetCurrentDirectory(), "..", "..", "..", "CreationOfTestDB.sql");
+                sqlPath = Path.GetFullPath(sqlPath);
+            }
+
+            if (!File.Exists(sqlPath))
+            {
+                throw new FileNotFoundException($"Could not find SQL file at: {sqlPath}");
+            }
+
+            var createScript = File.ReadAllText(sqlPath);
+
             using (var cmd = new NpgsqlCommand(createScript, Db))
             {
                 cmd.ExecuteNonQuery();
