@@ -141,11 +141,25 @@ jobs:
         
         echo "Test database cleanup completed"
 
-  e2e-tests:
+e2e-tests:
     name: Run E2E Tests
     runs-on: ubuntu-latest
     needs: integration-tests
-    
+    services:
+      postgres:
+        image: postgres:15
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: 5432
+          POSTGRES_DB: postgres
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 5432:5432
+
     steps:
     - name: Checkout code
       uses: actions/checkout@v4
@@ -155,11 +169,33 @@ jobs:
       with:
         dotnet-version: '7.0.x'
         
+    - name: Install PostgreSQL client
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y postgresql-client
+        
+    - name: Wait for PostgreSQL
+      run: |
+        for i in {1..30}; do
+          if pg_isready -h localhost -p 5432 -U postgres; then
+            echo "PostgreSQL is ready"
+            break
+          fi
+          echo "Waiting for PostgreSQL... ($i/30)"
+          sleep 2
+        done
+        
+    - name: Initialize test database
+      run: |
+        PGPASSWORD=5432 psql -h localhost -U postgres -d postgres -c "CREATE DATABASE flowershoptest;"
+        
     - name: Build application
       run: dotnet build --configuration Release
       working-directory: ./FlowerShop
       
     - name: Run E2E tests
+      env:
+        TEST_CONNECTION_STRING: "Host=localhost;Port=5432;Database=flowershoptest;Username=postgres;Password=5432;Include Error Detail=true"
       run: |
         dotnet test --filter Category=E2E --configuration Release --no-build --verbosity normal \
         --logger "trx;LogFileName=e2e-test-results.trx" \
@@ -174,6 +210,13 @@ jobs:
         name: e2e-test-results
         path: FlowerShop/TestResults/E2E/
         retention-days: 30
+        
+    - name: Cleanup test database
+      if: always()
+      run: |
+        PGPASSWORD=5432 psql -h localhost -U postgres -d postgres -c "SELECT pg_terminate_backend(pid) FROM pg_stat_activity WHERE datname = 'flowershoptest' AND pid <> pg_backend_pid();"
+        sleep 2
+        PGPASSWORD=5432 psql -h localhost -U postgres -d postgres -c "DROP DATABASE IF EXISTS flowershoptest;"
 
   test-report:
     name: Generate Test Report
