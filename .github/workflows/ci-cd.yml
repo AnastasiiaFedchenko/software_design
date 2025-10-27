@@ -28,14 +28,11 @@ jobs:
     - name: Find solution and project files
       run: |
         echo "Solution files:"
-        find . -name "*.sln" -type f
+        find . -name "*.sln"
         echo "Project files:"
-        find . -name "*.csproj" -type f
+        find . -name "*.csproj"
         echo "Test project files:"
-        find . -name "*Tests*.csproj" -type f
-        echo "Test project files (alternative patterns):"
-        find . -name "*.Tests.csproj" -type f
-        find . -name "*Test*.csproj" -type f
+        find . -name "*Tests*.csproj"
       
     - name: Restore dependencies
       run: dotnet restore
@@ -47,60 +44,14 @@ jobs:
       
     - name: Run unit tests with Allure
       run: |
-        # Создаем директорию для Allure результатов
-        mkdir -p TestResults/Unit/allure-results
-        
-        # Запускаем тесты с Allure logger
         dotnet test --filter Category=Unit --configuration Release --no-build --verbosity normal \
         --logger "trx;LogFileName=unit-test-results.trx" \
         --logger "console;verbosity=normal" \
-        --logger "allure" \
         --results-directory TestResults/Unit
       working-directory: ./FlowerShop
       env:
-        ALLURE_OUTPUT_DIR: TestResults/Unit/allure-results
+        ALLURE_RESULTS_DIR: TestResults/Unit/allure-results
       continue-on-error: false
-      
-    - name: Generate Allure results manually (fallback)
-      if: always()
-      run: |
-        # Проверяем, есть ли Allure результаты
-        if [ ! "$(ls -A TestResults/Unit/allure-results/*.json 2>/dev/null)" ]; then
-          echo "No Allure JSON results found, creating sample data..."
-          mkdir -p TestResults/Unit/allure-results
-          
-          # Создаем пример результата теста с правильным синтаксисом
-          cat > "TestResults/Unit/allure-results/unit-result-1.json" << 'EOF'
-          {
-            "name": "Sample Unit Test",
-            "status": "passed",
-            "start": 1698412800000,
-            "stop": 1698412802000,
-            "uuid": "unit-test-uuid-1",
-            "historyId": "unit-history-1",
-            "fullName": "FlowerShop.UnitTests.SampleTest",
-            "labels": [
-              {
-                "name": "suite",
-                "value": "Unit Tests"
-              },
-              {
-                "name": "testClass",
-                "value": "SampleTest"
-              },
-              {
-                "name": "feature",
-                "value": "Unit Testing"
-              }
-            ]
-          }
-          EOF
-          echo "Created sample Allure results"
-        else
-          echo "Allure results found:"
-          ls -la TestResults/Unit/allure-results/
-        fi
-      working-directory: ./FlowerShop
       
     - name: Upload unit test results
       uses: actions/upload-artifact@v4
@@ -177,62 +128,16 @@ jobs:
       working-directory: ./FlowerShop
       
     - name: Run integration tests with Allure
+      env:
+        TEST_CONNECTION_STRING: "Host=localhost;Port=5432;Database=flowershoptest;Username=postgres;Password=5432;Include Error Detail=true"
+        ALLURE_RESULTS_DIR: TestResults/Integration/allure-results
       run: |
-        # Создаем директорию для Allure результатов
-        mkdir -p TestResults/Integration/allure-results
-        
-        # Запускаем тесты с Allure logger
         dotnet test --filter Category=Integration --configuration Release --no-build --verbosity normal \
         --logger "trx;LogFileName=integration-test-results.trx" \
         --logger "console;verbosity=normal" \
-        --logger "allure" \
         --results-directory TestResults/Integration
       working-directory: ./FlowerShop
-      env:
-        TEST_CONNECTION_STRING: "Host=localhost;Port=5432;Database=flowershoptest;Username=postgres;Password=5432;Include Error Detail=true"
-        ALLURE_OUTPUT_DIR: TestResults/Integration/allure-results
       continue-on-error: false
-      
-    - name: Generate Allure results manually (fallback)
-      if: always()
-      run: |
-        # Проверяем, есть ли Allure результаты
-        if [ ! "$(ls -A TestResults/Integration/allure-results/*.json 2>/dev/null)" ]; then
-          echo "No Allure JSON results found, creating sample data..."
-          mkdir -p TestResults/Integration/allure-results
-          
-          # Создаем пример результата теста с правильным синтаксисом
-          cat > "TestResults/Integration/allure-results/integration-result-1.json" << 'EOF'
-          {
-            "name": "Sample Integration Test",
-            "status": "passed",
-            "start": 1698412800000,
-            "stop": 1698412803000,
-            "uuid": "integration-test-uuid-1",
-            "historyId": "integration-history-1",
-            "fullName": "FlowerShop.IntegrationTests.DatabaseTest",
-            "labels": [
-              {
-                "name": "suite",
-                "value": "Integration Tests"
-              },
-              {
-                "name": "testClass",
-                "value": "DatabaseTest"
-              },
-              {
-                "name": "feature",
-                "value": "Database Integration"
-              }
-            ]
-          }
-          EOF
-          echo "Created sample Allure results"
-        else
-          echo "Allure results found:"
-          ls -la TestResults/Integration/allure-results/
-        fi
-      working-directory: ./FlowerShop
       
     - name: Upload integration test results
       uses: actions/upload-artifact@v4
@@ -257,7 +162,6 @@ jobs:
         sleep 2
         PGPASSWORD=5432 psql -h localhost -U postgres -d postgres -c "DROP DATABASE IF EXISTS flowershoptest;"
         echo "Test database cleanup completed"
-
   e2e-tests:
     name: Run E2E Tests
     runs-on: ubuntu-latest
@@ -316,7 +220,7 @@ jobs:
         echo "=== FlowerShop directory ==="
         ls -la FlowerShop/ || echo "FlowerShop directory not found"
         echo "=== Looking for .csproj files ==="
-        find . -name "*.csproj" -type f | head -10
+        find . -name "*.csproj" | head -10
         
     - name: Restore dependencies
       run: dotnet restore
@@ -332,8 +236,7 @@ jobs:
         echo "Starting application from FlowerShop directory..."
         cd FlowerShop
         dotnet run --configuration Release --no-build &
-        APP_PID=$!
-        echo "Application starting in background with PID: $APP_PID"
+        echo "Application starting in background..."
         sleep 25
       working-directory: ./
       env:
@@ -363,63 +266,17 @@ jobs:
         ps aux | grep dotnet || echo "No dotnet processes found"
         
     - name: Run E2E tests with Allure
-      run: |
-        # Создаем директорию для Allure результатов
-        mkdir -p TestResults/E2E/allure-results
-        
-        # Запускаем тесты с Allure logger
-        dotnet test --filter Category=E2E --configuration Release --no-build --verbosity normal \
-        --logger "trx;LogFileName=e2e-test-results.trx" \
-        --logger "console;verbosity=normal" \
-        --logger "allure" \
-        --results-directory TestResults/E2E
-      working-directory: ./FlowerShop
       env:
         TEST_CONNECTION_STRING: "Host=localhost;Port=5432;Database=flowershoptest;Username=postgres;Password=5432;Include Error Detail=true"
         BASE_URL: "http://localhost:5000"
-        ALLURE_OUTPUT_DIR: TestResults/E2E/allure-results
-      continue-on-error: false
-      
-    - name: Generate Allure results manually (fallback)
-      if: always()
+        ALLURE_RESULTS_DIR: TestResults/E2E/allure-results
       run: |
-        # Проверяем, есть ли Allure результаты
-        if [ ! "$(ls -A TestResults/E2E/allure-results/*.json 2>/dev/null)" ]; then
-          echo "No Allure JSON results found, creating sample data..."
-          mkdir -p TestResults/E2E/allure-results
-          
-          # Создаем пример результата теста с правильным синтаксисом
-          cat > "TestResults/E2E/allure-results/e2e-result-1.json" << 'EOF'
-          {
-            "name": "Sample E2E Test",
-            "status": "passed",
-            "start": 1698412800000,
-            "stop": 1698412805000,
-            "uuid": "e2e-test-uuid-1",
-            "historyId": "e2e-history-1",
-            "fullName": "FlowerShop.E2ETests.APITest",
-            "labels": [
-              {
-                "name": "suite",
-                "value": "E2E Tests"
-              },
-              {
-                "name": "testClass",
-                "value": "APITest"
-              },
-              {
-                "name": "feature",
-                "value": "End-to-End Testing"
-              }
-            ]
-          }
-          EOF
-          echo "Created sample Allure results"
-        else
-          echo "Allure results found:"
-          ls -la TestResults/E2E/allure-results/
-        fi
+        dotnet test --filter Category=E2E --configuration Release --no-build --verbosity normal \
+        --logger "trx;LogFileName=e2e-test-results.trx" \
+        --logger "console;verbosity=normal" \
+        --results-directory TestResults/E2E
       working-directory: ./FlowerShop
+      continue-on-error: false
       
     - name: Stop application
       if: always()
@@ -431,7 +288,6 @@ jobs:
           echo "Forcing stop..."
           pkill -9 -f "dotnet.*run" || true
         fi
-        echo "Application stopped"
         
     - name: Upload E2E test results
       uses: actions/upload-artifact@v4
@@ -456,7 +312,6 @@ jobs:
         sleep 2
         PGPASSWORD=5432 psql -h localhost -U postgres -d postgres -c "DROP DATABASE IF EXISTS flowershoptest;"
         echo "Test database cleanup completed"
-
   allure-report:
     name: Generate Allure Report
     runs-on: ubuntu-latest
@@ -498,46 +353,23 @@ jobs:
         echo "Preparing Allure results..."
         mkdir -p combined-allure-results
         
-        echo "=== Artifacts structure ==="
-        find artifacts -type f -name "*.json" | head -20
-        find artifacts -type f -name "*.xml" | head -10
+        echo "Copying test results..."
+        find artifacts -name "*.xml" -exec cp {} combined-allure-results/ \; 2>/dev/null || true
+        find artifacts -name "*.json" -exec cp {} combined-allure-results/ \; 2>/dev/null || true
+        find artifacts -name "*.txt" -exec cp {} combined-allure-results/ \; 2>/dev/null || true
+        find artifacts -name "*.png" -exec cp {} combined-allure-results/ \; 2>/dev/null || true
+        find artifacts -name "*.jpg" -exec cp {} combined-allure-results/ \; 2>/dev/null || true
         
-        echo "Copying Allure JSON results..."
-        # Копируем Allure JSON файлы из всех поддиректорий
-        find artifacts -name "*.json" -type f -exec cp {} combined-allure-results/ \; 2>/dev/null || true
-        
-        echo "Copying other test files..."
-        find artifacts -name "*.xml" -type f -exec cp {} combined-allure-results/ \; 2>/dev/null || true
-        find artifacts -name "*.txt" -type f -exec cp {} combined-allure-results/ \; 2>/dev/null || true
-        find artifacts -name "*.png" -type f -exec cp {} combined-allure-results/ \; 2>/dev/null || true
-        find artifacts -name "*.jpg" -type f -exec cp {} combined-allure-results/ \; 2>/dev/null || true
-        
-        if [ ! "$(ls -A combined-allure-results/*.json 2>/dev/null)" ]; then
-          echo "No JSON test results found, creating sample data..."
-          cat > "combined-allure-results/sample-test-result.json" << 'EOF'
-          {
-            "name": "Sample Test Execution",
-            "status": "passed",
-            "start": 1698412800000,
-            "stop": 1698412801000,
-            "uuid": "sample-uuid-123",
-            "historyId": "sample-history-123",
-            "fullName": "FlowerShop.Tests.SampleTest",
-            "labels": [
-              {
-                "name": "suite",
-                "value": "All Tests"
-              },
-              {
-                "name": "feature",
-                "value": "Test Execution"
-              }
-            ]
-          }
-          EOF
+        if [ ! "$(ls -A combined-allure-results)" ]; then
+          echo "No test results found, creating placeholder..."
+          echo '<?xml version="1.0" encoding="UTF-8"?>' > combined-allure-results/placeholder-result.xml
+          echo '<testsuite name="No Tests Executed" tests="0" failures="0" errors="0" skipped="0" time="0">' >> combined-allure-results/placeholder-result.xml
+          echo '  <properties>' >> combined-allure-results/placeholder-result.xml
+          echo '    <property name="Allure" value="Report Generation"/>' >> combined-allure-results/placeholder-result.xml
+          echo '  </properties>' >> combined-allure-results/placeholder-result.xml
+          echo '</testsuite>' >> combined-allure-results/placeholder-result.xml
         fi
         
-        echo "Creating environment properties..."
         echo "OS=Ubuntu Latest" > combined-allure-results/environment.properties
         echo "DotNet.Version=${{ env.DOTNET_VERSION }}" >> combined-allure-results/environment.properties
         echo "GitHub.Runner=Ubuntu" >> combined-allure-results/environment.properties
@@ -548,7 +380,6 @@ jobs:
         
         echo "Allure results prepared:"
         ls -la combined-allure-results/
-        echo "Total JSON files: $(find combined-allure-results -name "*.json" -type f | wc -l)"
         echo "Total files: $(find combined-allure-results -type f | wc -l)"
         
     - name: Generate Allure Report
@@ -558,8 +389,6 @@ jobs:
         echo "Allure report generated successfully"
         echo "Report contents:"
         ls -la allure-report/
-        echo "HTML files:"
-        find allure-report -name "*.html" -type f | head -10
         
     - name: Upload Allure Report as Artifact
       uses: actions/upload-artifact@v4
@@ -597,7 +426,7 @@ jobs:
       run: |
         echo "=== Checking Allure report contents ==="
         ls -la ./public/ || echo "No public directory"
-        find ./public -name "*.html" -type f | head -5 || echo "No HTML files found"
+        find ./public -name "*.html" | head -5 || echo "No HTML files found"
         echo "=== File count ==="
         find ./public -type f | wc -l
         
