@@ -164,120 +164,160 @@ jobs:
         echo "Test database cleanup completed"
 
   e2e-tests:
-    name: Run E2E Tests
-    runs-on: ubuntu-latest
-    needs: integration-tests
-    if: needs.integration-tests.result == 'success'
-    
-    services:
-      postgres:
-        image: postgres:15
-        env:
-          POSTGRES_USER: postgres
-          POSTGRES_PASSWORD: 5432
-          POSTGRES_DB: postgres
-        options: >-
-          --health-cmd pg_isready
-          --health-interval 10s
-          --health-timeout 5s
-          --health-retries 5
-        ports:
-          - 5432:5432
+      name: Run E2E Tests
+      runs-on: ubuntu-latest
+      needs: integration-tests
+      if: needs.integration-tests.result == 'success'
+  
+      services:
+        postgres:
+          image: postgres:15
+          env:
+            POSTGRES_USER: postgres
+            POSTGRES_PASSWORD: 5432
+            POSTGRES_DB: postgres
+          options: >-
+            --health-cmd pg_isready
+            --health-interval 10s
+            --health-timeout 5s
+            --health-retries 5
+          ports:
+            - 5432:5432
 
-    steps:
-    - name: Checkout code
-      uses: actions/checkout@v4
+      steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+    
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v3
+        with:
+          dotnet-version: ${{ env.DOTNET_VERSION }}
       
-    - name: Setup .NET
-      uses: actions/setup-dotnet@v3
-      with:
-        dotnet-version: ${{ env.DOTNET_VERSION }}
-        
-    - name: Install PostgreSQL client
-      run: |
-        sudo apt-get update
-        sudo apt-get install -y postgresql-client
-        
-    - name: Wait for PostgreSQL
-      run: |
-        for i in {1..30}; do
-          if pg_isready -h localhost -p 5432 -U postgres; then
-            echo "PostgreSQL is ready"
-            break
+      - name: Install PostgreSQL client
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y postgresql-client
+      
+      - name: Wait for PostgreSQL
+        run: |
+          for i in {1..30}; do
+            if pg_isready -h localhost -p 5432 -U postgres; then
+              echo "PostgreSQL is ready"
+              break
+            fi
+            echo "Waiting for PostgreSQL... ($i/30)"
+            sleep 2
+          done
+      
+      - name: Initialize test database
+        run: |
+          PGPASSWORD=5432 psql -h localhost -U postgres -d postgres -c "CREATE DATABASE flowershoptest;"
+      
+      - name: Verify project structure
+        run: |
+          echo "=== Current directory ==="
+          pwd
+          ls -la
+          echo "=== FlowerShop directory ==="
+          ls -la FlowerShop/ || echo "FlowerShop directory not found"
+          echo "=== Looking for .csproj files ==="
+          find . -name "*.csproj" | head -10
+      
+      - name: Restore dependencies
+        run: dotnet restore
+        working-directory: ./FlowerShop
+    
+      - name: Build solution
+        run: dotnet build --no-restore --configuration Release
+        working-directory: ./FlowerShop
+    
+      - name: Build and run application for E2E tests
+        run: |
+          echo "Current directory: $(pwd)"
+          echo "Starting application from FlowerShop directory..."
+          cd FlowerShop
+          dotnet run --configuration Release --no-build &
+          echo "Application starting in background..."
+          # Даем приложению больше времени на запуск
+          sleep 25
+        working-directory: ./
+        env:
+          ASPNETCORE_ENVIRONMENT: Test
+          ConnectionStrings__DefaultConnection: "Host=localhost;Port=5432;Database=flowershoptest;Username=postgres;Password=5432"
+      
+      - name: Wait for application to start
+        run: |
+          echo "Waiting for application to start..."
+          for i in {1..40}; do
+            # Пробуем разные порты и endpoints
+            if curl -f http://localhost:5000/health 2>/dev/null || \
+               curl -f http://localhost:5000/api/health 2>/dev/null || \
+               curl -f http://localhost:5000/swagger 2>/dev/null || \
+               curl -f http://localhost:5000 2>/dev/null || \
+               curl -f http://localhost:5001/health 2>/dev/null || \
+               curl -f http://localhost:5001 2>/dev/null || \
+               curl -f http://localhost:8080/health 2>/dev/null || \
+               curl -f http://localhost:8080 2>/dev/null; then
+              echo "✅ Application is ready and responding"
+              break
+            fi
+            echo "Waiting for application... ($i/40)"
+            sleep 3
+          done
+      
+          # Дополнительная проверка - смотрим процессы
+          echo "=== Checking running processes ==="
+          ps aux | grep dotnet || echo "No dotnet processes found"
+      
+      - name: Run E2E tests with Allure
+        env:
+          TEST_CONNECTION_STRING: "Host=localhost;Port=5432;Database=flowershoptest;Username=postgres;Password=5432;Include Error Detail=true"
+          BASE_URL: "http://localhost:5000"
+          ALLURE_RESULTS_DIR: TestResults/E2E/allure-results
+        run: |
+          dotnet test --filter Category=E2E --configuration Release --no-build --verbosity normal \
+          --logger "trx;LogFileName=e2e-test-results.trx" \
+          --logger "console;verbosity=normal" \
+          --results-directory TestResults/E2E
+        working-directory: ./FlowerShop
+        continue-on-error: false
+    
+      - name: Stop application
+        if: always()
+        run: |
+          echo "Stopping application..."
+          # Более надежный способ остановки
+          pkill -f "dotnet.*run" || true
+          sleep 3
+          # Проверяем, что процессы остановились
+          if pgrep -f "dotnet.*run" > /dev/null; then
+            echo "Forcing stop..."
+            pkill -9 -f "dotnet.*run" || true
           fi
-          echo "Waiting for PostgreSQL... ($i/30)"
+      
+      - name: Upload E2E test results
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: e2e-test-results
+          path: FlowerShop/TestResults/E2E/
+          retention-days: 30
+      
+      - name: Upload Allure results for E2E tests
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: e2e-allure-results
+          path: FlowerShop/TestResults/E2E/allure-results/
+          retention-days: 30
+      
+      - name: Cleanup test database
+        if: always()
+        run: |
+          PGPASSWORD=5432 psql -h localhost -U postgres -d postgres -c "SELECT pg_terminate_backend(pid) FROM pg_stat_activity WHERE datname = 'flowershoptest' AND pid <> pg_backend_pid();"
           sleep 2
-        done
-        
-    - name: Initialize test database
-      run: |
-        PGPASSWORD=5432 psql -h localhost -U postgres -d postgres -c "CREATE DATABASE flowershoptest;"
-        
-    - name: Build and run application for E2E tests
-      run: |
-        dotnet build --configuration Release --no-restore
-        # Запускаем приложение в фоне для E2E тестов
-        dotnet run --project ./FlowerShop --configuration Release --no-build &
-        echo "Application starting..."
-        sleep 10
-      working-directory: ./
-      env:
-        ASPNETCORE_ENVIRONMENT: Test
-        ConnectionStrings__DefaultConnection: "Host=localhost;Port=5432;Database=flowershoptest;Username=postgres;Password=5432"
-        
-    - name: Wait for application to start
-      run: |
-        for i in {1..30}; do
-          if curl -f http://localhost:5000/health || curl -f http://localhost:5000/api/health || true; then
-            echo "Application is ready"
-            break
-          fi
-          echo "Waiting for application... ($i/30)"
-          sleep 5
-        done
-        
-    - name: Run E2E tests with Allure
-      env:
-        TEST_CONNECTION_STRING: "Host=localhost;Port=5432;Database=flowershoptest;Username=postgres;Password=5432;Include Error Detail=true"
-        BASE_URL: "http://localhost:5000"
-        ALLURE_RESULTS_DIR: TestResults/E2E/allure-results
-      run: |
-        dotnet test --filter Category=E2E --configuration Release --no-build --verbosity normal \
-        --logger "trx;LogFileName=e2e-test-results.trx" \
-        --logger "console;verbosity=normal" \
-        --results-directory TestResults/E2E
-      working-directory: ./FlowerShop
-      continue-on-error: false
-      
-    - name: Stop application
-      if: always()
-      run: |
-        pkill -f "dotnet run" || true
-        sleep 3
-        
-    - name: Upload E2E test results
-      uses: actions/upload-artifact@v4
-      if: always()
-      with:
-        name: e2e-test-results
-        path: FlowerShop/TestResults/E2E/
-        retention-days: 30
-        
-    - name: Upload Allure results for E2E tests
-      uses: actions/upload-artifact@v4
-      if: always()
-      with:
-        name: e2e-allure-results
-        path: FlowerShop/TestResults/E2E/allure-results/
-        retention-days: 30
-        
-    - name: Cleanup test database
-      if: always()
-      run: |
-        PGPASSWORD=5432 psql -h localhost -U postgres -d postgres -c "SELECT pg_terminate_backend(pid) FROM pg_stat_activity WHERE datname = 'flowershoptest' AND pid <> pg_backend_pid();"
-        sleep 2
-        PGPASSWORD=5432 psql -h localhost -U postgres -d postgres -c "DROP DATABASE IF EXISTS flowershoptest;"
-        echo "Test database cleanup completed"
+          PGPASSWORD=5432 psql -h localhost -U postgres -d postgres -c "DROP DATABASE IF EXISTS flowershoptest;"
+          echo "Test database cleanup completed"
 
   allure-report:
     name: Generate Allure Report
@@ -291,7 +331,7 @@ jobs:
     permissions:
       pages: write
       id-token: write
-      contents: write
+      contents: read
       
     steps:
     - name: Checkout code
@@ -310,9 +350,9 @@ jobs:
         
     - name: Install Allure Commandline
       run: |
-        sudo wget https://github.com/allure-framework/allure2/releases/download/${{ env.ALLURE_VERSION }}/allure-${{ env.ALLURE_VERSION }}.tgz
+        sudo wget -q https://github.com/allure-framework/allure2/releases/download/${{ env.ALLURE_VERSION }}/allure-${{ env.ALLURE_VERSION }}.tgz
         sudo tar -zxvf allure-${{ env.ALLURE_VERSION }}.tgz -C /opt/
-        sudo ln -s /opt/allure-${{ env.ALLURE_VERSION }}/bin/allure /usr/bin/allure
+        sudo ln -sf /opt/allure-${{ env.ALLURE_VERSION }}/bin/allure /usr/bin/allure
         allure --version
         
     - name: Prepare Allure results
@@ -321,11 +361,25 @@ jobs:
         mkdir -p combined-allure-results
         
         # Копируем результаты из всех тестов
-        find artifacts -name "*.xml" -exec cp {} combined-allure-results/ \;
-        find artifacts -name "*.json" -exec cp {} combined-allure-results/ \;
-        find artifacts -name "*.txt" -exec cp {} combined-allure-results/ \;
-        find artifacts -name "*.png" -exec cp {} combined-allure-results/ \;
-        find artifacts -name "*.jpg" -exec cp {} combined-allure-results/ \;
+        echo "Copying test results..."
+        find artifacts -name "*.xml" -exec cp {} combined-allure-results/ \; 2>/dev/null || true
+        find artifacts -name "*.json" -exec cp {} combined-allure-results/ \; 2>/dev/null || true
+        find artifacts -name "*.txt" -exec cp {} combined-allure-results/ \; 2>/dev/null || true
+        find artifacts -name "*.png" -exec cp {} combined-allure-results/ \; 2>/dev/null || true
+        find artifacts -name "*.jpg" -exec cp {} combined-allure-results/ \; 2>/dev/null || true
+        
+        # Если нет результатов, создаем заглушку
+        if [ ! "$(ls -A combined-allure-results)" ]; then
+          echo "No test results found, creating placeholder..."
+          cat > combined-allure-results/placeholder-result.xml << 'EOF'
+        <?xml version="1.0" encoding="UTF-8"?>
+        <testsuite name="No Tests Executed" tests="0" failures="0" errors="0" skipped="0" time="0">
+          <properties>
+            <property name="Allure" value="Report Generation"/>
+          </properties>
+        </testsuite>
+        EOF
+        fi
         
         # Создаем environment файл для Allure
         cat > combined-allure-results/environment.properties << EOF
@@ -344,37 +398,24 @@ jobs:
         
     - name: Generate Allure Report
       run: |
+        echo "Generating Allure report..."
         allure generate combined-allure-results --clean -o allure-report
-        echo "Allure report generated"
+        echo "Allure report generated successfully"
+        echo "Report contents:"
         ls -la allure-report/
-        
-    - name: List Allure report content
-      run: |
-        echo "=== Allure Report Structure ==="
-        find allure-report -type f -name "*.html" | head -10
-        echo "=== Total HTML files: ==="
-        find allure-report -name "*.html" | wc -l
         
     - name: Upload Allure Report as Artifact
       uses: actions/upload-artifact@v4
       with:
-        name: allure-report-full
+        name: allure-report
         path: allure-report/
         retention-days: 30
-        
-    - name: Setup GitHub Pages
-      uses: actions/configure-pages@v3
-      
-    - name: Upload to GitHub Pages
-      uses: actions/upload-pages-artifact@v2
-      with:
-        path: allure-report/
 
   deploy-pages:
-    name: Deploy Allure Report to GitHub Pages
+    name: Deploy to GitHub Pages
     runs-on: ubuntu-latest
     needs: allure-report
-    if: always()
+    if: success() && github.ref == 'refs/heads/main'
     
     permissions:
       pages: write
@@ -386,6 +427,23 @@ jobs:
       url: ${{ steps.deployment.outputs.page_url }}
       
     steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+      
+    - name: Download Allure report artifact
+      uses: actions/download-artifact@v4
+      with:
+        name: allure-report
+        path: ./public
+        
+    - name: Setup Pages
+      uses: actions/configure-pages@v3
+      
+    - name: Upload to Pages
+      uses: actions/upload-pages-artifact@v2
+      with:
+        path: ./public
+        
     - name: Deploy to GitHub Pages
       id: deployment
       uses: actions/deploy-pages@v2
@@ -449,8 +507,14 @@ jobs:
         if [[ "${{ needs.allure-report.result }}" == "success" ]]; then
           echo "**🎉 Allure Report Generated Successfully!**" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
-          echo "📖 **View Report:** ${{ needs.deploy-pages.outputs.page_url }}" >> $GITHUB_STEP_SUMMARY
-          echo "📦 **Download Artifact:** allure-report-full" >> $GITHUB_STEP_SUMMARY
+          echo "📖 **View Report:** Download 'allure-report' artifact" >> $GITHUB_STEP_SUMMARY
+          
+          # Добавляем ссылку на Pages только если деплой успешен
+          if [[ "${{ needs.deploy-pages.result }}" == "success" ]]; then
+            echo "🌐 **Live Report:** ${{ needs.deploy-pages.outputs.page_url }}" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "📦 **Download Artifact:** 'allure-report' from artifacts section" >> $GITHUB_STEP_SUMMARY
+          fi
         else
           echo "**❌ Allure Report Generation Failed**" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
