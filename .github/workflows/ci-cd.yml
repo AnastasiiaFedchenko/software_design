@@ -44,13 +44,13 @@ jobs:
       
     - name: Run unit tests with Allure
       run: |
-        dotnet test --filter Category=Unit --configuration Release --no-build --verbosity normal \
+        dotnet test ./Tests/Tests.csproj --configuration Release --verbosity normal \
         --logger "trx;LogFileName=unit-test-results.trx" \
         --logger "console;verbosity=normal" \
         --results-directory TestResults/Unit
       working-directory: ./FlowerShop
       env:
-        ALLURE_RESULTS_DIR: TestResults/Unit/allure-results
+        ALLURE_OUTPUT_DIR: TestResults/Unit/allure-results
       continue-on-error: false
       
     - name: Upload unit test results
@@ -127,16 +127,15 @@ jobs:
       run: dotnet build --no-restore --configuration Release
       working-directory: ./FlowerShop
       
-    - name: Run integration tests with Allure
-      env:
-        TEST_CONNECTION_STRING: "Host=localhost;Port=5432;Database=flowershoptest;Username=postgres;Password=5432;Include Error Detail=true"
-        ALLURE_RESULTS_DIR: TestResults/Integration/allure-results
+    - name: Run unit tests with Allure
       run: |
-        dotnet test --filter Category=Integration --configuration Release --no-build --verbosity normal \
-        --logger "trx;LogFileName=integration-test-results.trx" \
+        dotnet test ./Tests/Tests.csproj --configuration Release --verbosity normal \
+        --logger "trx;LogFileName=unit-test-results.trx" \
         --logger "console;verbosity=normal" \
-        --results-directory TestResults/Integration
+        --results-directory TestResults/Unit
       working-directory: ./FlowerShop
+      env:
+        ALLURE_OUTPUT_DIR: TestResults/Unit/allure-results
       continue-on-error: false
       
     - name: Upload integration test results
@@ -269,9 +268,9 @@ jobs:
       env:
         TEST_CONNECTION_STRING: "Host=localhost;Port=5432;Database=flowershoptest;Username=postgres;Password=5432;Include Error Detail=true"
         BASE_URL: "http://localhost:5000"
-        ALLURE_RESULTS_DIR: TestResults/E2E/allure-results
+        ALLURE_OUTPUT_DIR: TestResults/E2E/allure-results
       run: |
-        dotnet test --filter Category=E2E --configuration Release --no-build --verbosity normal \
+        dotnet test ./E2E.Tests/E2E.Tests.csproj --configuration Release --verbosity normal \
         --logger "trx;LogFileName=e2e-test-results.trx" \
         --logger "console;verbosity=normal" \
         --results-directory TestResults/E2E
