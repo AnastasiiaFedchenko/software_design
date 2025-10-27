@@ -368,29 +368,25 @@ jobs:
         find artifacts -name "*.png" -exec cp {} combined-allure-results/ \; 2>/dev/null || true
         find artifacts -name "*.jpg" -exec cp {} combined-allure-results/ \; 2>/dev/null || true
         
-        # Если нет результатов, создаем заглушку
+        # Если нет результатов, создаем простую заглушку без HEREDOC
         if [ ! "$(ls -A combined-allure-results)" ]; then
           echo "No test results found, creating placeholder..."
-          cat > combined-allure-results/placeholder-result.xml << 'EOF'
-            <?xml version="1.0" encoding="UTF-8"?>
-            <testsuite name="No Tests Executed" tests="0" failures="0" errors="0" skipped="0" time="0">
-              <properties>
-                <property name="Allure" value="Report Generation"/>
-              </properties>
-            </testsuite>
-            EOF
+          echo '<?xml version="1.0" encoding="UTF-8"?>' > combined-allure-results/placeholder-result.xml
+          echo '<testsuite name="No Tests Executed" tests="0" failures="0" errors="0" skipped="0" time="0">' >> combined-allure-results/placeholder-result.xml
+          echo '  <properties>' >> combined-allure-results/placeholder-result.xml
+          echo '    <property name="Allure" value="Report Generation"/>' >> combined-allure-results/placeholder-result.xml
+          echo '  </properties>' >> combined-allure-results/placeholder-result.xml
+          echo '</testsuite>' >> combined-allure-results/placeholder-result.xml
         fi
         
         # Создаем environment файл для Allure
-        cat > combined-allure-results/environment.properties << EOF
-        OS=Ubuntu Latest
-        DotNet.Version=${{ env.DOTNET_VERSION }}
-        GitHub.Runner=Ubuntu
-        Branch=${{ github.ref }}
-        Commit=${{ github.sha }}
-        Workflow=${{ github.workflow }}
-        Run.Number=${{ github.run_number }}
-        EOF
+        echo "OS=Ubuntu Latest" > combined-allure-results/environment.properties
+        echo "DotNet.Version=${{ env.DOTNET_VERSION }}" >> combined-allure-results/environment.properties
+        echo "GitHub.Runner=Ubuntu" >> combined-allure-results/environment.properties
+        echo "Branch=${{ github.ref }}" >> combined-allure-results/environment.properties
+        echo "Commit=${{ github.sha }}" >> combined-allure-results/environment.properties
+        echo "Workflow=${{ github.workflow }}" >> combined-allure-results/environment.properties
+        echo "Run.Number=${{ github.run_number }}" >> combined-allure-results/environment.properties
         
         echo "Allure results prepared:"
         ls -la combined-allure-results/
