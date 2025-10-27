@@ -1,35 +1,16 @@
-# Multi-stage Dockerfile for testing
-FROM mcr.microsoft.com/dotnet/sdk:7.0 AS base
+FROM mcr.microsoft.com/dotnet/sdk:7.0 AS testrunner
 WORKDIR /app
 
-# Stage 1: Restore dependencies
-FROM base AS restore
-WORKDIR /app
-COPY . .
-RUN dotnet restore FlowerShop.sln
+# Копируем все файлы проекта
+COPY . ./
 
-# Stage 2: Build application
-FROM restore AS build
-RUN dotnet build FlowerShop.sln --no-restore --configuration Release
+# Восстанавливаем зависимости
+RUN dotnet restore
 
-# Stage 3: Test runner
-FROM base AS test-runner
-WORKDIR /app
+# Собираем тестовые проекты
+RUN dotnet build -c Release --no-restore
 
-# Copy built application and test projects
-COPY --from=build /app ./
-
-# Create test results directory
+# Создаем директорию для результатов тестов
 RUN mkdir -p TestResults
 
-# Install dependencies for database tests if needed
-RUN apt-get update && apt-get install -y \
-    postgresql-client \
-    && rm -rf /var/lib/apt/lists/*
-
-# Script to run tests
-COPY scripts/run-tests.sh ./scripts/
-RUN chmod +x ./scripts/run-tests.sh
-
-# Default command
-CMD ["./scripts/run-tests.sh"]
+WORKDIR /app/FlowerShop

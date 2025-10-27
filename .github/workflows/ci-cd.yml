@@ -6,34 +6,44 @@ on:
   pull_request:
     branches: [ main, lab_test_1, lab_test_2_with_docker ]
 
-env:
-  DOTNET_VERSION: '7.0.x'
-  POSTGRES_VERSION: '15'
-  TEST_DB_NAME: 'flowershoptest'
-
 jobs:
-  unit-tests:
-    name: Run Unit Tests in Docker
+  build-and-test:
+    name: Build and Test with Docker
     runs-on: ubuntu-latest
     
     steps:
     - name: Checkout code
       uses: actions/checkout@v4
       
-    - name: Build Docker image for unit tests
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v3
+      
+    - name: Make scripts executable
+      run: chmod +x ./scripts/*.sh
+      
+    - name: Build Docker images
       run: |
-        docker build -f Dockerfile.test -t flower-shop-tests:latest \
-          --build-arg DOTNET_VERSION=${{ env.DOTNET_VERSION }} \
-          --target test-runner .
+        # Собираем базовый образ с .NET 7.0
+        docker build -t flowershop-base -f Dockerfile.base .
+        
+        # Собираем образ приложения
+        docker build -t flowershop-app -f Dockerfile .
+        
+        # Собираем образ для тестов
+        docker build -t flowershop-tests -f Dockerfile.tests .
+        
+        echo "Docker images built successfully"
       
     - name: Run unit tests in container
       run: |
+        mkdir -p TestResults/Unit
         docker run --rm \
-          -v $(pwd)/TestResults:/app/TestResults \
-          -e TEST_TYPE=Unit \
-          -e TEST_CATEGORY=Unit \
-          flower-shop-tests:latest
-        
+          -v $(pwd)/TestResults:/src/TestResults \
+          flowershop-tests \
+          dotnet test --filter Category=Unit --configuration Release --verbosity normal \
+          --logger "trx;LogFileName=unit-test-results.trx" \
+          --results-directory TestResults/Unit
+      
     - name: Upload unit test results
       uses: actions/upload-artifact@v4
       if: always()
@@ -43,68 +53,59 @@ jobs:
         retention-days: 30
 
   integration-tests:
-    name: Run Integration Tests with Database
+    name: Run Integration Tests in Docker
     runs-on: ubuntu-latest
-    needs: unit-tests
-    if: needs.unit-tests.result == 'success'
-
+    needs: build-and-test
+    if: needs.build-and-test.result == 'success'
+    
     steps:
     - name: Checkout code
       uses: actions/checkout@v4
       
-    - name: Build Docker image for integration tests
-      run: |
-        docker build -f Dockerfile.test -t flower-shop-tests:latest \
-          --build-arg DOTNET_VERSION=${{ env.DOTNET_VERSION }} \
-          --target test-runner .
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v3
       
-    - name: Start PostgreSQL container with initialization
+    - name: Build test image
       run: |
-        docker network create test-network || true
-        
-        # Запускаем PostgreSQL с предварительной инициализацией
-        docker run -d --name postgres-test --network test-network \
+        docker build -t flowershop-tests -f Dockerfile.tests .
+      
+    - name: Start PostgreSQL container
+      run: |
+        docker run -d --name test-postgres \
           -e POSTGRES_USER=postgres \
           -e POSTGRES_PASSWORD=5432 \
           -e POSTGRES_DB=postgres \
           -p 5432:5432 \
-          postgres:${{ env.POSTGRES_VERSION }}
+          postgres:15
           
-        # Ждем готовности PostgreSQL
-        docker run --rm --network test-network \
-          -e PGPASSWORD=5432 \
-          postgres:${{ env.POSTGRES_VERSION }} \
-          pg_isready -h postgres-test -U postgres -t 30
-      
-    - name: Initialize test database
-      run: |
+        # Ждем пока PostgreSQL запустится
+        echo "Waiting for PostgreSQL to start..."
+        for i in {1..30}; do
+          if docker exec test-postgres pg_isready -U postgres -h localhost; then
+            echo "PostgreSQL is ready"
+            break
+          fi
+          echo "Waiting for PostgreSQL... ($i/30)"
+          sleep 2
+        done
+        
+        sleep 5
+        
         # Создаем тестовую БД
-        docker run --rm --network test-network \
-          -e PGPASSWORD=5432 \
-          postgres:${{ env.POSTGRES_VERSION }} \
-          psql -h postgres-test -U postgres -d postgres -c "CREATE DATABASE ${{ env.TEST_DB_NAME }};"
-        
-        # Запускаем скрипты инициализации
-        docker run --rm --network test-network \
-          -v $(pwd)/scripts:/scripts \
-          -e PGPASSWORD=5432 \
-          postgres:${{ env.POSTGRES_VERSION }} \
-          bash -c "
-            for script in /scripts/init/*.sql; do
-              echo 'Running script: $script'
-              psql -h postgres-test -U postgres -d ${{ env.TEST_DB_NAME }} -f \$script
-            done
-          "
+        docker exec test-postgres psql -U postgres -d postgres -c "CREATE DATABASE flowershoptest;"
       
-    - name: Run integration tests in container
+    - name: Run integration tests
       run: |
-        docker run --rm --network test-network \
-          -v $(pwd)/TestResults:/app/TestResults \
-          -e TEST_TYPE=Integration \
-          -e TEST_CATEGORY=Integration \
-          -e TEST_CONNECTION_STRING="Host=postgres-test;Port=5432;Database=${{ env.TEST_DB_NAME }};Username=postgres;Password=5432;Include Error Detail=true" \
-          flower-shop-tests:latest
-        
+        mkdir -p TestResults/Integration
+        docker run --rm \
+          --link test-postgres:postgres \
+          -e TEST_CONNECTION_STRING="Host=postgres;Port=5432;Database=flowershoptest;Username=postgres;Password=5432;Include Error Detail=true" \
+          -v $(pwd)/TestResults:/src/TestResults \
+          flowershop-tests \
+          dotnet test --filter Category=Integration --configuration Release --verbosity normal \
+          --logger "trx;LogFileName=integration-test-results.trx" \
+          --results-directory TestResults/Integration
+      
     - name: Upload integration test results
       uses: actions/upload-artifact@v4
       if: always()
@@ -113,76 +114,88 @@ jobs:
         path: TestResults/Integration/
         retention-days: 30
         
-    - name: Cleanup database and containers
+    - name: Cleanup containers
       if: always()
       run: |
-        # Останавливаем и удаляем контейнеры
-        docker stop postgres-test || true
-        docker rm postgres-test || true
-        docker network rm test-network || true
-        echo "Database cleanup completed"
+        docker stop test-postgres || true
+        docker rm test-postgres || true
 
   e2e-tests:
-    name: Run E2E Tests with Database
+    name: Run E2E Tests in Docker
     runs-on: ubuntu-latest
     needs: integration-tests
     if: needs.integration-tests.result == 'success'
-
+    
     steps:
     - name: Checkout code
       uses: actions/checkout@v4
       
-    - name: Build Docker image for E2E tests
-      run: |
-        docker build -f Dockerfile.test -t flower-shop-tests:latest \
-          --build-arg DOTNET_VERSION=${{ env.DOTNET_VERSION }} \
-          --target test-runner .
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v3
       
-    - name: Start complete application stack
+    - name: Build application image
       run: |
-        docker network create test-network || true
-        
+        docker build -t flowershop-app -f Dockerfile .
+        docker build -t flowershop-tests -f Dockerfile.tests .
+      
+    - name: Start application stack
+      run: |
         # Запускаем PostgreSQL
-        docker run -d --name postgres-test --network test-network \
+        docker run -d --name e2e-postgres \
           -e POSTGRES_USER=postgres \
           -e POSTGRES_PASSWORD=5432 \
           -e POSTGRES_DB=postgres \
           -p 5432:5432 \
-          postgres:${{ env.POSTGRES_VERSION }}
+          postgres:15
           
-        # Ждем готовности PostgreSQL
-        docker run --rm --network test-network \
-          -e PGPASSWORD=5432 \
-          postgres:${{ env.POSTGRES_VERSION }} \
-          pg_isready -h postgres-test -U postgres -t 30
+        # Ждем запуска PostgreSQL
+        echo "Waiting for PostgreSQL to start..."
+        for i in {1..30}; do
+          if docker exec e2e-postgres pg_isready -U postgres -h localhost; then
+            echo "PostgreSQL is ready"
+            break
+          fi
+          echo "Waiting for PostgreSQL... ($i/30)"
+          sleep 2
+        done
         
-        # Инициализируем тестовую БД
-        docker run --rm --network test-network \
-          -e PGPASSWORD=5432 \
-          postgres:${{ env.POSTGRES_VERSION }} \
-          psql -h postgres-test -U postgres -d postgres -c "CREATE DATABASE ${{ env.TEST_DB_NAME }};"
+        sleep 5
         
-        # Запускаем скрипты инициализации
-        docker run --rm --network test-network \
-          -v $(pwd)/scripts:/scripts \
-          -e PGPASSWORD=5432 \
-          postgres:${{ env.POSTGRES_VERSION }} \
-          bash -c "
-            for script in /scripts/init/*.sql; do
-              echo 'Running script: $script'
-              psql -h postgres-test -U postgres -d ${{ env.TEST_DB_NAME }} -f \$script
-            done
-          "
+        # Создаем тестовую БД
+        docker exec e2e-postgres psql -U postgres -d postgres -c "CREATE DATABASE flowershoptest;"
+        
+        # Запускаем приложение
+        docker run -d --name flowershop-app \
+          --link e2e-postgres:postgres \
+          -e ConnectionStrings__DefaultConnection="Host=postgres;Port=5432;Database=flowershoptest;Username=postgres;Password=5432" \
+          -p 8080:8080 \
+          flowershop-app
+          
+        # Ждем запуска приложения
+        echo "Waiting for application to start..."
+        for i in {1..30}; do
+          if curl -f http://localhost:8080/health > /dev/null 2>&1; then
+            echo "Application is ready"
+            break
+          fi
+          echo "Waiting for application... ($i/30)"
+          sleep 5
+        done
       
-    - name: Run E2E tests in container
+    - name: Run E2E tests
       run: |
-        docker run --rm --network test-network \
-          -v $(pwd)/TestResults:/app/TestResults \
-          -e TEST_TYPE=E2E \
-          -e TEST_CATEGORY=E2E \
-          -e TEST_CONNECTION_STRING="Host=postgres-test;Port=5432;Database=${{ env.TEST_DB_NAME }};Username=postgres;Password=5432;Include Error Detail=true" \
-          flower-shop-tests:latest
-        
+        mkdir -p TestResults/E2E
+        docker run --rm \
+          --link e2e-postgres:postgres \
+          --link flowershop-app:app \
+          -e TEST_CONNECTION_STRING="Host=postgres;Port=5432;Database=flowershoptest;Username=postgres;Password=5432;Include Error Detail=true" \
+          -e API_BASE_URL="http://app:8080" \
+          -v $(pwd)/TestResults:/src/TestResults \
+          flowershop-tests \
+          dotnet test --filter Category=E2E --configuration Release --verbosity normal \
+          --logger "trx;LogFileName=e2e-test-results.trx" \
+          --results-directory TestResults/E2E
+      
     - name: Upload E2E test results
       uses: actions/upload-artifact@v4
       if: always()
@@ -191,20 +204,17 @@ jobs:
         path: TestResults/E2E/
         retention-days: 30
         
-    - name: Cleanup application stack
+    - name: Cleanup containers
       if: always()
       run: |
-        # Останавливаем и удаляем все контейнеры
-        docker stop postgres-test || true
-        docker rm postgres-test || true
-        docker network rm test-network || true
-        echo "Application stack cleanup completed"
+        docker stop flowershop-app e2e-postgres || true
+        docker rm flowershop-app e2e-postgres || true
 
   test-report:
     name: Generate Test Report
     runs-on: ubuntu-latest
     needs: 
-      - unit-tests
+      - build-and-test
       - integration-tests  
       - e2e-tests
     if: always()
@@ -227,12 +237,15 @@ jobs:
         
     - name: Create valid skipped test result files
       run: |
+        # Создаем корректные TRX файлы для пропущенных тестов с минимальным набором тестов
         mkdir -p artifacts/skipped
         
+        # Создаем директории для каждого типа тестов
         mkdir -p artifacts/unit-test-results
         mkdir -p artifacts/integration-test-results  
         mkdir -p artifacts/e2e-test-results
         
+        # Функция для создания валидного TRX файла с одним пропущенным тестом
         create_skipped_trx() {
           local test_type=$1
           local filename=$2
@@ -274,6 +287,7 @@ jobs:
         EOF
         }
         
+        # Создаем пропущенные файлы для jobs, которые не выполнились
         if [[ "${{ needs.integration-tests.result }}" != "success" ]]; then
           create_skipped_trx "Integration" "artifacts/integration-test-results/integration-test-results.trx"
           echo "Created valid skipped result for integration tests"
@@ -307,73 +321,95 @@ jobs:
       run: |
         echo "Skipping test report publication for fork PR due to security restrictions"
         echo "Test artifacts are available for download in the workflow run"
-        echo "Unit Tests: ${{ needs.unit-tests.result }}"
+        echo "Build & Unit Tests: ${{ needs.build-and-test.result }}"
         echo "Integration Tests: ${{ needs.integration-tests.result }}" 
         echo "E2E Tests: ${{ needs.e2e-tests.result }}"
         
     - name: Generate Detailed Test Summary
       if: always()
       run: |
-        echo "## Comprehensive Test Report" >> $GITHUB_STEP_SUMMARY
+        echo "## 🐳 Docker Test Report" >> $GITHUB_STEP_SUMMARY
         echo "" >> $GITHUB_STEP_SUMMARY
         
-        echo "### Job Execution Status" >> $GITHUB_STEP_SUMMARY
+        echo "### 🚀 Job Execution Status" >> $GITHUB_STEP_SUMMARY
         echo "" >> $GITHUB_STEP_SUMMARY
-        echo "| Test Stage | Status | Details |" >> $GITHUB_STEP_SUMMARY
-        echo "|------------|--------|---------|" >> $GITHUB_STEP_SUMMARY
+        echo "| Test Stage | Status | Environment | Details |" >> $GITHUB_STEP_SUMMARY
+        echo "|------------|--------|-------------|---------|" >> $GITHUB_STEP_SUMMARY
         
-        # Unit Tests
-        if [[ "${{ needs.unit-tests.result }}" == "success" ]]; then
-          echo "| Unit Tests | Success | All unit tests passed in Docker container |" >> $GITHUB_STEP_SUMMARY
-        elif [[ "${{ needs.unit-tests.result }}" == "failure" ]]; then
-          echo "| Unit Tests | Failed | Check unit test results for details |" >> $GITHUB_STEP_SUMMARY
+        # Build & Unit Tests
+        if [[ "${{ needs.build-and-test.result }}" == "success" ]]; then
+          echo "| 🔨 Build & Unit Tests | ✅ Success | Docker Container | All unit tests passed |" >> $GITHUB_STEP_SUMMARY
+        elif [[ "${{ needs.build-and-test.result }}" == "failure" ]]; then
+          echo "| 🔨 Build & Unit Tests | ❌ Failed | Docker Container | Check unit test results |" >> $GITHUB_STEP_SUMMARY
         else
-          echo "| Unit Tests | Unknown | Unexpected status |" >> $GITHUB_STEP_SUMMARY
+          echo "| 🔨 Build & Unit Tests | ⚠️ Unknown | Docker Container | Unexpected status |" >> $GITHUB_STEP_SUMMARY
         fi
         
         # Integration Tests
         if [[ "${{ needs.integration-tests.result }}" == "success" ]]; then
-          echo "| Integration Tests | Success | All integration tests passed with database |" >> $GITHUB_STEP_SUMMARY
+          echo "| 🧩 Integration Tests | ✅ Success | Docker + PostgreSQL | All integration tests passed |" >> $GITHUB_STEP_SUMMARY
         elif [[ "${{ needs.integration-tests.result }}" == "failure" ]]; then
-          echo "| Integration Tests | Failed | Check integration test results for details |" >> $GITHUB_STEP_SUMMARY
+          echo "| 🧩 Integration Tests | ❌ Failed | Docker + PostgreSQL | Check integration test results |" >> $GITHUB_STEP_SUMMARY
         elif [[ "${{ needs.integration-tests.result }}" == "skipped" ]]; then
-          echo "| Integration Tests | Skipped | Previous job failed, tests were not executed |" >> $GITHUB_STEP_SUMMARY
+          echo "| 🧩 Integration Tests | ⏭️ Skipped | Docker + PostgreSQL | Previous job failed |" >> $GITHUB_STEP_SUMMARY
         else
-          echo "| Integration Tests | Unknown | Unexpected status |" >> $GITHUB_STEP_SUMMARY
+          echo "| 🧩 Integration Tests | ⚠️ Unknown | Docker + PostgreSQL | Unexpected status |" >> $GITHUB_STEP_SUMMARY
         fi
         
         # E2E Tests
         if [[ "${{ needs.e2e-tests.result }}" == "success" ]]; then
-          echo "| E2E Tests | Success | All end-to-end tests passed with full application stack |" >> $GITHUB_STEP_SUMMARY
+          echo "| 🌐 E2E Tests | ✅ Success | Full Docker Stack | All end-to-end tests passed |" >> $GITHUB_STEP_SUMMARY
         elif [[ "${{ needs.e2e-tests.result }}" == "failure" ]]; then
-          echo "| E2E Tests | Failed | Check E2E test results for details |" >> $GITHUB_STEP_SUMMARY
+          echo "| 🌐 E2E Tests | ❌ Failed | Full Docker Stack | Check E2E test results |" >> $GITHUB_STEP_SUMMARY
         elif [[ "${{ needs.e2e-tests.result }}" == "skipped" ]]; then
-          echo "| E2E Tests | Skipped | Previous job failed, tests were not executed |" >> $GITHUB_STEP_SUMMARY
+          echo "| 🌐 E2E Tests | ⏭️ Skipped | Full Docker Stack | Previous job failed |" >> $GITHUB_STEP_SUMMARY
         else
-          echo "| E2E Tests | Unknown | Unexpected status |" >> $GITHUB_STEP_SUMMARY
+          echo "| 🌐 E2E Tests | ⚠️ Unknown | Full Docker Stack | Unexpected status |" >> $GITHUB_STEP_SUMMARY
         fi
         
         echo "" >> $GITHUB_STEP_SUMMARY
-        echo "### Pipeline Summary" >> $GITHUB_STEP_SUMMARY
+        echo "### 📦 Docker Images Built" >> $GITHUB_STEP_SUMMARY
+        echo "" >> $GITHUB_STEP_SUMMARY
+        echo "- 🐳 **flowershop-base** - Base .NET 7.0 SDK image with dependencies" >> $GITHUB_STEP_SUMMARY
+        echo "- 🐳 **flowershop-app** - Application runtime image" >> $GITHUB_STEP_SUMMARY
+        echo "- 🐳 **flowershop-tests** - Test runner image" >> $GITHUB_STEP_SUMMARY
+        echo "- 🐳 **postgres:15** - Database image" >> $GITHUB_STEP_SUMMARY
+        
+        echo "" >> $GITHUB_STEP_SUMMARY
+        echo "### 🔧 Test Artifacts" >> $GITHUB_STEP_SUMMARY
+        echo "" >> $GITHUB_STEP_SUMMARY
+        echo "All test results are available as downloadable artifacts:" >> $GITHUB_STEP_SUMMARY
+        echo "- 📄 **unit-test-results** - Unit test TRX files" >> $GITHUB_STEP_SUMMARY
+        echo "- 📄 **integration-test-results** - Integration test TRX files" >> $GITHUB_STEP_SUMMARY
+        echo "- 📄 **e2e-test-results** - E2E test TRX files" >> $GITHUB_STEP_SUMMARY
+        
+        echo "" >> $GITHUB_STEP_SUMMARY
+        echo "### 📈 Pipeline Summary" >> $GITHUB_STEP_SUMMARY
         echo "" >> $GITHUB_STEP_SUMMARY
         
+        # Добавляем информацию о доступности отчета
         if [[ "${{ github.event.pull_request.head.repo.full_name != github.repository && github.event_name == 'pull_request' }}" == "true" ]]; then
-          echo "> **Security Notice**: Detailed test reports are limited for pull requests from forks." >> $GITHUB_STEP_SUMMARY
+          echo "> 🔒 **Security Notice**: Detailed test reports are limited for pull requests from forks." >> $GITHUB_STEP_SUMMARY
           echo "> Test artifacts are available for download in the workflow run." >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
         fi
         
-        if [[ "${{ needs.unit-tests.result }}" == "success" && "${{ needs.integration-tests.result }}" == "success" && "${{ needs.e2e-tests.result }}" == "success" ]]; then
-          echo "** All tests passed successfully!** The application is ready for deployment." >> $GITHUB_STEP_SUMMARY
+        if [[ "${{ needs.build-and-test.result }}" == "success" && "${{ needs.integration-tests.result }}" == "success" && "${{ needs.e2e-tests.result }}" == "success" ]]; then
+          echo "🎉 **All Docker tests passed successfully!**" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "✅ The application has been successfully built and tested in Docker containers." >> $GITHUB_STEP_SUMMARY
+          echo "✅ All unit, integration, and end-to-end tests are passing." >> $GITHUB_STEP_SUMMARY
+          echo "✅ The application is ready for deployment." >> $GITHUB_STEP_SUMMARY
         else
-          echo "** Some tests failed or were skipped.** Please review the test results above." >> $GITHUB_STEP_SUMMARY
+          echo "⚠️ **Some tests failed or were skipped.**" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
           echo "**Next steps:**" >> $GITHUB_STEP_SUMMARY
-          echo "1. Check the detailed test reports in the artifacts" >> $GITHUB_STEP_SUMMARY
-          echo "2. Review failed tests and fix the issues" >> $GITHUB_STEP_SUMMARY
-          echo "3. Re-run the pipeline after fixes" >> $GITHUB_STEP_SUMMARY
+          echo "1. 📋 Check the detailed test reports in the artifacts section" >> $GITHUB_STEP_SUMMARY
+          echo "2. 🔍 Review failed tests and fix the issues" >> $GITHUB_STEP_SUMMARY
+          echo "3. 🔄 Re-run the pipeline after implementing fixes" >> $GITHUB_STEP_SUMMARY
+          echo "4. 🐳 Verify Docker container logs for any runtime issues" >> $GITHUB_STEP_SUMMARY
         fi
         
         echo "" >> $GITHUB_STEP_SUMMARY
         echo "---" >> $GITHUB_STEP_SUMMARY
-        echo "*Report generated automatically by GitHub Actions*" >> $GITHUB_STEP_SUMMARY
+        echo "*🐳 Docker-based test report generated automatically by GitHub Actions*" >> $GITHUB_STEP_SUMMARY

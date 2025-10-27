@@ -1,0 +1,11 @@
+FROM mcr.microsoft.com/dotnet/sdk:7.0 AS build
+WORKDIR /app
+
+# Копируем файлы решения и проектов
+COPY . ./
+
+# Восстанавливаем зависимости
+RUN dotnet restore
+
+# Собираем приложение
+RUN dotnet build -c Release --no-restore
