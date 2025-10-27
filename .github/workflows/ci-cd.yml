@@ -127,15 +127,16 @@ jobs:
       run: dotnet build --no-restore --configuration Release
       working-directory: ./FlowerShop
       
-    - name: Run unit tests with Allure
-      run: |
-        dotnet test ./Tests/Tests.csproj --configuration Release --verbosity normal \
-        --logger "trx;LogFileName=unit-test-results.trx" \
-        --logger "console;verbosity=normal" \
-        --results-directory TestResults/Unit
-      working-directory: ./FlowerShop
+    - name: Run integration tests with Allure
       env:
-        ALLURE_OUTPUT_DIR: TestResults/Unit/allure-results
+        TEST_CONNECTION_STRING: "Host=localhost;Port=5432;Database=flowershoptest;Username=postgres;Password=5432;Include Error Detail=true"
+        ALLURE_OUTPUT_DIR: TestResults/Integration/allure-results
+      run: |
+        dotnet test ./Integration.Tests/Integration.Tests.csproj --configuration Release --verbosity normal \
+        --logger "trx;LogFileName=integration-test-results.trx" \
+        --logger "console;verbosity=normal" \
+        --results-directory TestResults/Integration
+      working-directory: ./FlowerShop
       continue-on-error: false
       
     - name: Upload integration test results
@@ -161,6 +162,7 @@ jobs:
         sleep 2
         PGPASSWORD=5432 psql -h localhost -U postgres -d postgres -c "DROP DATABASE IF EXISTS flowershoptest;"
         echo "Test database cleanup completed"
+
   e2e-tests:
     name: Run E2E Tests
     runs-on: ubuntu-latest
@@ -311,6 +313,7 @@ jobs:
         sleep 2
         PGPASSWORD=5432 psql -h localhost -U postgres -d postgres -c "DROP DATABASE IF EXISTS flowershoptest;"
         echo "Test database cleanup completed"
+
   allure-report:
     name: Generate Allure Report
     runs-on: ubuntu-latest
@@ -334,6 +337,19 @@ jobs:
       with:
         path: artifacts
         
+    - name: Debug artifact structure
+      run: |
+        echo "=== Artifact structure ==="
+        find artifacts -type f -name "*.json" -o -name "*.xml" | head -20
+        echo "=== Unit test results ==="  
+        find artifacts/unit-test-results -type f | head -20
+        echo "=== Integration test results ==="
+        find artifacts/integration-test-results -type f | head -20
+        echo "=== E2E test results ==="
+        find artifacts/e2e-test-results -type f | head -20
+        echo "=== Allure results structure ==="
+        find artifacts -name "allure-results" -type d | head -10
+        
     - name: Setup Java for Allure
       uses: actions/setup-java@v3
       with:
@@ -352,34 +368,60 @@ jobs:
         echo "Preparing Allure results..."
         mkdir -p combined-allure-results
         
-        echo "Copying test results..."
-        find artifacts -name "*.xml" -exec cp {} combined-allure-results/ \; 2>/dev/null || true
-        find artifacts -name "*.json" -exec cp {} combined-allure-results/ \; 2>/dev/null || true
-        find artifacts -name "*.txt" -exec cp {} combined-allure-results/ \; 2>/dev/null || true
-        find artifacts -name "*.png" -exec cp {} combined-allure-results/ \; 2>/dev/null || true
-        find artifacts -name "*.jpg" -exec cp {} combined-allure-results/ \; 2>/dev/null || true
+        echo "Looking for Allure results in artifacts..."
         
-        if [ ! "$(ls -A combined-allure-results)" ]; then
-          echo "No test results found, creating placeholder..."
-          echo '<?xml version="1.0" encoding="UTF-8"?>' > combined-allure-results/placeholder-result.xml
-          echo '<testsuite name="No Tests Executed" tests="0" failures="0" errors="0" skipped="0" time="0">' >> combined-allure-results/placeholder-result.xml
-          echo '  <properties>' >> combined-allure-results/placeholder-result.xml
-          echo '    <property name="Allure" value="Report Generation"/>' >> combined-allure-results/placeholder-result.xml
-          echo '  </properties>' >> combined-allure-results/placeholder-result.xml
-          echo '</testsuite>' >> combined-allure-results/placeholder-result.xml
+        # Явно копируем из отдельных артефактов Allure
+        if [ -d "artifacts/unit-allure-results" ]; then
+          echo "Copying unit allure results..."
+          cp -r artifacts/unit-allure-results/* combined-allure-results/ 2>/dev/null || true
         fi
         
-        echo "OS=Ubuntu Latest" > combined-allure-results/environment.properties
-        echo "DotNet.Version=${{ env.DOTNET_VERSION }}" >> combined-allure-results/environment.properties
-        echo "GitHub.Runner=Ubuntu" >> combined-allure-results/environment.properties
-        echo "Branch=${{ github.ref }}" >> combined-allure-results/environment.properties
-        echo "Commit=${{ github.sha }}" >> combined-allure-results/environment.properties
-        echo "Workflow=${{ github.workflow }}" >> combined-allure-results/environment.properties
-        echo "Run.Number=${{ github.run_number }}" >> combined-allure-results/environment.properties
+        if [ -d "artifacts/integration-allure-results" ]; then
+          echo "Copying integration allure results..."
+          cp -r artifacts/integration-allure-results/* combined-allure-results/ 2>/dev/null || true
+        fi
         
-        echo "Allure results prepared:"
+        if [ -d "artifacts/e2e-allure-results" ]; then
+          echo "Copying E2E allure results..."
+          cp -r artifacts/e2e-allure-results/* combined-allure-results/ 2>/dev/null || true
+        fi
+        
+        # Также ищем в общих артефактах тестов
+        if [ -d "artifacts/unit-test-results/Unit/allure-results" ]; then
+          echo "Copying unit test allure results from test results..."
+          cp -r artifacts/unit-test-results/Unit/allure-results/* combined-allure-results/ 2>/dev/null || true
+        fi
+        
+        if [ -d "artifacts/integration-test-results/Integration/allure-results" ]; then
+          echo "Copying integration test allure results from test results..."
+          cp -r artifacts/integration-test-results/Integration/allure-results/* combined-allure-results/ 2>/dev/null || true
+        fi
+        
+        if [ -d "artifacts/e2e-test-results/E2E/allure-results" ]; then
+          echo "Copying E2E test allure results from test results..."
+          cp -r artifacts/e2e-test-results/E2E/allure-results/* combined-allure-results/ 2>/dev/null || true
+        fi
+        
+        # Проверка результатов
+        echo "Final Allure results:"
         ls -la combined-allure-results/
-        echo "Total files: $(find combined-allure-results -type f | wc -l)"
+        echo "File count: $(find combined-allure-results -type f | wc -l)"
+        echo "File types:"
+        find combined-allure-results -type f -name "*.*" | sed 's/.*\.//' | sort | uniq -c || echo "No files found"
+        
+        # Создаем environment.properties
+        echo "Creating environment properties..."
+        cat > combined-allure-results/environment.properties << EOF
+        OS=Ubuntu Latest
+        DotNet.Version=${{ env.DOTNET_VERSION }}
+        Allure.Version=${{ env.ALLURE_VERSION }}
+        GitHub.Runner=Ubuntu
+        Branch=${{ github.ref }}
+        Commit=${{ github.sha }}
+        Workflow=${{ github.workflow }}
+        Run.Number=${{ github.run_number }}
+        Test.Projects=Unit,Integration,E2E
+        EOF
         
     - name: Generate Allure Report
       run: |
