@@ -238,7 +238,6 @@ jobs:
         cd FlowerShop
         dotnet run --configuration Release --no-build &
         echo "Application starting in background..."
-        # Даем приложению больше времени на запуск
         sleep 25
       working-directory: ./
       env:
@@ -249,7 +248,6 @@ jobs:
       run: |
         echo "Waiting for application to start..."
         for i in {1..40}; do
-          # Пробуем разные порты и endpoints
           if curl -f http://localhost:5000/health 2>/dev/null || \
              curl -f http://localhost:5000/api/health 2>/dev/null || \
              curl -f http://localhost:5000/swagger 2>/dev/null || \
@@ -265,7 +263,6 @@ jobs:
           sleep 3
         done
         
-        # Дополнительная проверка - смотрим процессы
         echo "=== Checking running processes ==="
         ps aux | grep dotnet || echo "No dotnet processes found"
         
@@ -286,10 +283,8 @@ jobs:
       if: always()
       run: |
         echo "Stopping application..."
-        # Более надежный способ остановки
         pkill -f "dotnet.*run" || true
         sleep 3
-        # Проверяем, что процессы остановились
         if pgrep -f "dotnet.*run" > /dev/null; then
           echo "Forcing stop..."
           pkill -9 -f "dotnet.*run" || true
@@ -360,7 +355,6 @@ jobs:
         echo "Preparing Allure results..."
         mkdir -p combined-allure-results
         
-        # Копируем результаты из всех тестов
         echo "Copying test results..."
         find artifacts -name "*.xml" -exec cp {} combined-allure-results/ \; 2>/dev/null || true
         find artifacts -name "*.json" -exec cp {} combined-allure-results/ \; 2>/dev/null || true
@@ -368,7 +362,6 @@ jobs:
         find artifacts -name "*.png" -exec cp {} combined-allure-results/ \; 2>/dev/null || true
         find artifacts -name "*.jpg" -exec cp {} combined-allure-results/ \; 2>/dev/null || true
         
-        # Если нет результатов, создаем простую заглушку без HEREDOC
         if [ ! "$(ls -A combined-allure-results)" ]; then
           echo "No test results found, creating placeholder..."
           echo '<?xml version="1.0" encoding="UTF-8"?>' > combined-allure-results/placeholder-result.xml
@@ -379,7 +372,6 @@ jobs:
           echo '</testsuite>' >> combined-allure-results/placeholder-result.xml
         fi
         
-        # Создаем environment файл для Allure
         echo "OS=Ubuntu Latest" > combined-allure-results/environment.properties
         echo "DotNet.Version=${{ env.DOTNET_VERSION }}" >> combined-allure-results/environment.properties
         echo "GitHub.Runner=Ubuntu" >> combined-allure-results/environment.properties
@@ -473,7 +465,6 @@ jobs:
         echo "| Test Stage | Status | Details |" >> $GITHUB_STEP_SUMMARY
         echo "|------------|--------|---------|" >> $GITHUB_STEP_SUMMARY
         
-        # Unit Tests
         if [[ "${{ needs.unit-tests.result }}" == "success" ]]; then
           echo "| ✅ Unit Tests | ✅ Success | All unit tests passed |" >> $GITHUB_STEP_SUMMARY
         elif [[ "${{ needs.unit-tests.result }}" == "failure" ]]; then
@@ -482,7 +473,6 @@ jobs:
           echo "| ⚠️ Unit Tests | ❓ ${{ needs.unit-tests.result }} | Unexpected status |" >> $GITHUB_STEP_SUMMARY
         fi
         
-        # Integration Tests
         if [[ "${{ needs.integration-tests.result }}" == "success" ]]; then
           echo "| ✅ Integration Tests | ✅ Success | All integration tests passed |" >> $GITHUB_STEP_SUMMARY
         elif [[ "${{ needs.integration-tests.result }}" == "failure" ]]; then
@@ -493,7 +483,6 @@ jobs:
           echo "| ⚠️ Integration Tests | ❓ ${{ needs.integration-tests.result }} | Unexpected status |" >> $GITHUB_STEP_SUMMARY
         fi
         
-        # E2E Tests
         if [[ "${{ needs.e2e-tests.result }}" == "success" ]]; then
           echo "| ✅ E2E Tests | ✅ Success | All end-to-end tests passed |" >> $GITHUB_STEP_SUMMARY
         elif [[ "${{ needs.e2e-tests.result }}" == "failure" ]]; then
@@ -513,7 +502,6 @@ jobs:
           echo "" >> $GITHUB_STEP_SUMMARY
           echo "📖 **View Report:** Download 'allure-report' artifact" >> $GITHUB_STEP_SUMMARY
           
-          # Добавляем ссылку на Pages только если деплой успешен
           if [[ "${{ needs.deploy-pages.result }}" == "success" ]]; then
             echo "🌐 **Live Report:** ${{ needs.deploy-pages.outputs.page_url }}" >> $GITHUB_STEP_SUMMARY
           else
