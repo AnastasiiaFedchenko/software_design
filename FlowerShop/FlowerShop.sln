@@ -30,7 +30,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Элементы решен
 		allure-config.json = allure-config.json
 		AllureStartup.cs = AllureStartup.cs
 		Directory.Build.props = Directory.Build.props
-		E2E.Tests\E2ETests.cs = E2E.Tests\E2ETests.cs
 	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WebApp", "WebApp\WebApp.csproj", "{520C9A00-ADD4-4382-ABAA-EFC5083EECEC}"
