@@ -372,25 +372,25 @@ jobs:
         if [ ! "$(ls -A combined-allure-results)" ]; then
           echo "No test results found, creating placeholder..."
           cat > combined-allure-results/placeholder-result.xml << 'EOF'
-<?xml version="1.0" encoding="UTF-8"?>
-<testsuite name="No Tests Executed" tests="0" failures="0" errors="0" skipped="0" time="0">
-  <properties>
-    <property name="Allure" value="Report Generation"/>
-  </properties>
-</testsuite>
-EOF
+            <?xml version="1.0" encoding="UTF-8"?>
+            <testsuite name="No Tests Executed" tests="0" failures="0" errors="0" skipped="0" time="0">
+              <properties>
+                <property name="Allure" value="Report Generation"/>
+              </properties>
+            </testsuite>
+            EOF
         fi
         
         # Создаем environment файл для Allure
         cat > combined-allure-results/environment.properties << EOF
-OS=Ubuntu Latest
-DotNet.Version=${{ env.DOTNET_VERSION }}
-GitHub.Runner=Ubuntu
-Branch=${{ github.ref }}
-Commit=${{ github.sha }}
-Workflow=${{ github.workflow }}
-Run.Number=${{ github.run_number }}
-EOF
+        OS=Ubuntu Latest
+        DotNet.Version=${{ env.DOTNET_VERSION }}
+        GitHub.Runner=Ubuntu
+        Branch=${{ github.ref }}
+        Commit=${{ github.sha }}
+        Workflow=${{ github.workflow }}
+        Run.Number=${{ github.run_number }}
+        EOF
         
         echo "Allure results prepared:"
         ls -la combined-allure-results/
