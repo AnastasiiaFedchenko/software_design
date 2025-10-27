@@ -1,235 +1,204 @@
-name: .NET CI/CD Pipeline
+name: .NET CI/CD Pipeline with Docker
 
 on:
   push:
-    branches: [ main, lab_test_1 ]
+    branches: [ main, lab_test_1, lab_test_2_with_docker ]
   pull_request:
-    branches: [ main, lab_test_1 ]
+    branches: [ main, lab_test_1, lab_test_2_with_docker ]
+
+env:
+  DOTNET_VERSION: '7.0.x'
+  POSTGRES_VERSION: '15'
+  TEST_DB_NAME: 'flowershoptest'
 
 jobs:
   unit-tests:
-    name: Run Unit Tests
+    name: Run Unit Tests in Docker
     runs-on: ubuntu-latest
     
     steps:
     - name: Checkout code
       uses: actions/checkout@v4
       
-    - name: Setup .NET 7.0
-      uses: actions/setup-dotnet@v3
-      with:
-        dotnet-version: '7.0.x'
+    - name: Build Docker image for unit tests
+      run: |
+        docker build -f Dockerfile.test -t flower-shop-tests:latest \
+          --build-arg DOTNET_VERSION=${{ env.DOTNET_VERSION }} \
+          --target test-runner .
+      
+    - name: Run unit tests in container
+      run: |
+        docker run --rm \
+          -v $(pwd)/TestResults:/app/TestResults \
+          -e TEST_TYPE=Unit \
+          -e TEST_CATEGORY=Unit \
+          flower-shop-tests:latest
         
-    - name: Find solution and project files
-      run: |
-        echo "Solution files:"
-        find . -name "*.sln"
-        echo "Project files:"
-        find . -name "*.csproj"
-        echo "Test project files:"
-        find . -name "*Tests*.csproj"
-      
-    - name: Restore dependencies
-      run: dotnet restore
-      working-directory: ./FlowerShop
-      
-    - name: Build solution
-      run: dotnet build --no-restore --configuration Release
-      working-directory: ./FlowerShop
-      
-    - name: Run unit tests
-      run: |
-        dotnet test --filter Category=Unit --configuration Release --no-build --verbosity normal \
-        --logger "trx;LogFileName=unit-test-results.trx" \
-        --results-directory TestResults/Unit
-      working-directory: ./FlowerShop
-      continue-on-error: false
-      
     - name: Upload unit test results
       uses: actions/upload-artifact@v4
       if: always()
       with:
         name: unit-test-results
-        path: FlowerShop/TestResults/Unit/
+        path: TestResults/Unit/
         retention-days: 30
 
   integration-tests:
-    name: Run Integration Tests
+    name: Run Integration Tests with Database
     runs-on: ubuntu-latest
     needs: unit-tests
     if: needs.unit-tests.result == 'success'
-    services:
-      postgres:
-        image: postgres:15
-        env:
-          POSTGRES_USER: postgres
-          POSTGRES_PASSWORD: 5432
-          POSTGRES_DB: postgres
-        options: >-
-          --health-cmd pg_isready
-          --health-interval 10s
-          --health-timeout 5s
-          --health-retries 5
-        ports:
-          - 5432:5432
 
     steps:
     - name: Checkout code
       uses: actions/checkout@v4
       
-    - name: Setup .NET 7.0
-      uses: actions/setup-dotnet@v3
-      with:
-        dotnet-version: '7.0.x'
-        
-    - name: Install PostgreSQL client
+    - name: Build Docker image for integration tests
       run: |
-        sudo apt-get update
-        sudo apt-get install -y postgresql-client
-        
-    - name: Wait for PostgreSQL
+        docker build -f Dockerfile.test -t flower-shop-tests:latest \
+          --build-arg DOTNET_VERSION=${{ env.DOTNET_VERSION }} \
+          --target test-runner .
+      
+    - name: Start PostgreSQL container with initialization
       run: |
-        for i in {1..30}; do
-          if pg_isready -h localhost -p 5432 -U postgres; then
-            echo "PostgreSQL is ready"
-            break
-          fi
-          echo "Waiting for PostgreSQL... ($i/30)"
-          sleep 2
-        done
+        docker network create test-network || true
         
+        # Запускаем PostgreSQL с предварительной инициализацией
+        docker run -d --name postgres-test --network test-network \
+          -e POSTGRES_USER=postgres \
+          -e POSTGRES_PASSWORD=5432 \
+          -e POSTGRES_DB=postgres \
+          -p 5432:5432 \
+          postgres:${{ env.POSTGRES_VERSION }}
+          
+        # Ждем готовности PostgreSQL
+        docker run --rm --network test-network \
+          -e PGPASSWORD=5432 \
+          postgres:${{ env.POSTGRES_VERSION }} \
+          pg_isready -h postgres-test -U postgres -t 30
+      
     - name: Initialize test database
       run: |
-        PGPASSWORD=5432 psql -h localhost -U postgres -d postgres -c "CREATE DATABASE flowershoptest;"
+        # Создаем тестовую БД
+        docker run --rm --network test-network \
+          -e PGPASSWORD=5432 \
+          postgres:${{ env.POSTGRES_VERSION }} \
+          psql -h postgres-test -U postgres -d postgres -c "CREATE DATABASE ${{ env.TEST_DB_NAME }};"
         
-    - name: Restore dependencies
-      run: dotnet restore
-      working-directory: ./FlowerShop
+        # Запускаем скрипты инициализации
+        docker run --rm --network test-network \
+          -v $(pwd)/scripts:/scripts \
+          -e PGPASSWORD=5432 \
+          postgres:${{ env.POSTGRES_VERSION }} \
+          bash -c "
+            for script in /scripts/init/*.sql; do
+              echo 'Running script: $script'
+              psql -h postgres-test -U postgres -d ${{ env.TEST_DB_NAME }} -f \$script
+            done
+          "
       
-    - name: Build solution
-      run: dotnet build --no-restore --configuration Release
-      working-directory: ./FlowerShop
-      
-    - name: Run integration tests
-      env:
-        TEST_CONNECTION_STRING: "Host=localhost;Port=5432;Database=flowershoptest;Username=postgres;Password=5432;Include Error Detail=true"
+    - name: Run integration tests in container
       run: |
-        dotnet test --filter Category=Integration --configuration Release --no-build --verbosity normal \
-        --logger "trx;LogFileName=integration-test-results.trx" \
-        --results-directory TestResults/Integration
-      working-directory: ./FlowerShop
-      continue-on-error: false
-      
+        docker run --rm --network test-network \
+          -v $(pwd)/TestResults:/app/TestResults \
+          -e TEST_TYPE=Integration \
+          -e TEST_CATEGORY=Integration \
+          -e TEST_CONNECTION_STRING="Host=postgres-test;Port=5432;Database=${{ env.TEST_DB_NAME }};Username=postgres;Password=5432;Include Error Detail=true" \
+          flower-shop-tests:latest
+        
     - name: Upload integration test results
       uses: actions/upload-artifact@v4
       if: always()
       with:
         name: integration-test-results
-        path: FlowerShop/TestResults/Integration/
+        path: TestResults/Integration/
         retention-days: 30
         
-    - name: Cleanup test database
+    - name: Cleanup database and containers
       if: always()
       run: |
-        # Завершаем все активные соединения с тестовой БД
-        PGPASSWORD=5432 psql -h localhost -U postgres -d postgres -c "SELECT pg_terminate_backend(pid) FROM pg_stat_activity WHERE datname = 'flowershoptest' AND pid <> pg_backend_pid();"
-        
-        # Небольшая задержка для завершения процессов
-        sleep 2
-        
-        # Удаляем тестовую БД
-        PGPASSWORD=5432 psql -h localhost -U postgres -d postgres -c "DROP DATABASE IF EXISTS flowershoptest;"
-        
-        echo "Test database cleanup completed"
+        # Останавливаем и удаляем контейнеры
+        docker stop postgres-test || true
+        docker rm postgres-test || true
+        docker network rm test-network || true
+        echo "Database cleanup completed"
 
   e2e-tests:
-    name: Run E2E Tests
+    name: Run E2E Tests with Database
     runs-on: ubuntu-latest
     needs: integration-tests
     if: needs.integration-tests.result == 'success'
-    services:
-      postgres:
-        image: postgres:15
-        env:
-          POSTGRES_USER: postgres
-          POSTGRES_PASSWORD: 5432
-          POSTGRES_DB: postgres
-        options: >-
-          --health-cmd pg_isready
-          --health-interval 10s
-          --health-timeout 5s
-          --health-retries 5
-        ports:
-          - 5432:5432
 
     steps:
     - name: Checkout code
       uses: actions/checkout@v4
       
-    - name: Setup .NET 7.0
-      uses: actions/setup-dotnet@v3
-      with:
-        dotnet-version: '7.0.x'
-        
-    - name: Install PostgreSQL client
+    - name: Build Docker image for E2E tests
       run: |
-        sudo apt-get update
-        sudo apt-get install -y postgresql-client
-        
-    - name: Wait for PostgreSQL
-      run: |
-        for i in {1..30}; do
-          if pg_isready -h localhost -p 5432 -U postgres; then
-            echo "PostgreSQL is ready"
-            break
-          fi
-          echo "Waiting for PostgreSQL... ($i/30)"
-          sleep 2
-        done
-        
-    - name: Initialize test database
-      run: |
-        PGPASSWORD=5432 psql -h localhost -U postgres -d postgres -c "CREATE DATABASE flowershoptest;"
-        
-    - name: Restore dependencies
-      run: dotnet restore
-      working-directory: ./FlowerShop
+        docker build -f Dockerfile.test -t flower-shop-tests:latest \
+          --build-arg DOTNET_VERSION=${{ env.DOTNET_VERSION }} \
+          --target test-runner .
       
-    - name: Build solution
-      run: dotnet build --no-restore --configuration Release
-      working-directory: ./FlowerShop
-      
-    - name: Run E2E tests
-      env:
-        TEST_CONNECTION_STRING: "Host=localhost;Port=5432;Database=flowershoptest;Username=postgres;Password=5432;Include Error Detail=true"
+    - name: Start complete application stack
       run: |
-        dotnet test --filter Category=E2E --configuration Release --no-build --verbosity normal \
-        --logger "trx;LogFileName=e2e-test-results.trx" \
-        --results-directory TestResults/E2E
-      working-directory: ./FlowerShop
-      continue-on-error: false
+        docker network create test-network || true
+        
+        # Запускаем PostgreSQL
+        docker run -d --name postgres-test --network test-network \
+          -e POSTGRES_USER=postgres \
+          -e POSTGRES_PASSWORD=5432 \
+          -e POSTGRES_DB=postgres \
+          -p 5432:5432 \
+          postgres:${{ env.POSTGRES_VERSION }}
+          
+        # Ждем готовности PostgreSQL
+        docker run --rm --network test-network \
+          -e PGPASSWORD=5432 \
+          postgres:${{ env.POSTGRES_VERSION }} \
+          pg_isready -h postgres-test -U postgres -t 30
+        
+        # Инициализируем тестовую БД
+        docker run --rm --network test-network \
+          -e PGPASSWORD=5432 \
+          postgres:${{ env.POSTGRES_VERSION }} \
+          psql -h postgres-test -U postgres -d postgres -c "CREATE DATABASE ${{ env.TEST_DB_NAME }};"
+        
+        # Запускаем скрипты инициализации
+        docker run --rm --network test-network \
+          -v $(pwd)/scripts:/scripts \
+          -e PGPASSWORD=5432 \
+          postgres:${{ env.POSTGRES_VERSION }} \
+          bash -c "
+            for script in /scripts/init/*.sql; do
+              echo 'Running script: $script'
+              psql -h postgres-test -U postgres -d ${{ env.TEST_DB_NAME }} -f \$script
+            done
+          "
       
+    - name: Run E2E tests in container
+      run: |
+        docker run --rm --network test-network \
+          -v $(pwd)/TestResults:/app/TestResults \
+          -e TEST_TYPE=E2E \
+          -e TEST_CATEGORY=E2E \
+          -e TEST_CONNECTION_STRING="Host=postgres-test;Port=5432;Database=${{ env.TEST_DB_NAME }};Username=postgres;Password=5432;Include Error Detail=true" \
+          flower-shop-tests:latest
+        
     - name: Upload E2E test results
       uses: actions/upload-artifact@v4
       if: always()
       with:
         name: e2e-test-results
-        path: FlowerShop/TestResults/E2E/
+        path: TestResults/E2E/
         retention-days: 30
         
-    - name: Cleanup test database
+    - name: Cleanup application stack
       if: always()
       run: |
-        # Завершаем все активные соединения с тестовой БД
-        PGPASSWORD=5432 psql -h localhost -U postgres -d postgres -c "SELECT pg_terminate_backend(pid) FROM pg_stat_activity WHERE datname = 'flowershoptest' AND pid <> pg_backend_pid();"
-        
-        # Небольшая задержка для завершения процессов
-        sleep 2
-        
-        # Удаляем тестовую БД
-        PGPASSWORD=5432 psql -h localhost -U postgres -d postgres -c "DROP DATABASE IF EXISTS flowershoptest;"
-        
-        echo "Test database cleanup completed"
+        # Останавливаем и удаляем все контейнеры
+        docker stop postgres-test || true
+        docker rm postgres-test || true
+        docker network rm test-network || true
+        echo "Application stack cleanup completed"
 
   test-report:
     name: Generate Test Report
@@ -240,7 +209,6 @@ jobs:
       - e2e-tests
     if: always()
     
-    # Разрешаем запись на Check API только для внутренних PR
     permissions:
       checks: write
       actions: read
@@ -259,15 +227,12 @@ jobs:
         
     - name: Create valid skipped test result files
       run: |
-        # Создаем корректные TRX файлы для пропущенных тестов с минимальным набором тестов
         mkdir -p artifacts/skipped
         
-        # Создаем директории для каждого типа тестов
         mkdir -p artifacts/unit-test-results
         mkdir -p artifacts/integration-test-results  
         mkdir -p artifacts/e2e-test-results
         
-        # Функция для создания валидного TRX файла с одним пропущенным тестом
         create_skipped_trx() {
           local test_type=$1
           local filename=$2
@@ -309,7 +274,6 @@ jobs:
         EOF
         }
         
-        # Создаем пропущенные файлы для jobs, которые не выполнились
         if [[ "${{ needs.integration-tests.result }}" != "success" ]]; then
           create_skipped_trx "Integration" "artifacts/integration-test-results/integration-test-results.trx"
           echo "Created valid skipped result for integration tests"
@@ -360,7 +324,7 @@ jobs:
         
         # Unit Tests
         if [[ "${{ needs.unit-tests.result }}" == "success" ]]; then
-          echo "| Unit Tests | Success | All unit tests passed |" >> $GITHUB_STEP_SUMMARY
+          echo "| Unit Tests | Success | All unit tests passed in Docker container |" >> $GITHUB_STEP_SUMMARY
         elif [[ "${{ needs.unit-tests.result }}" == "failure" ]]; then
           echo "| Unit Tests | Failed | Check unit test results for details |" >> $GITHUB_STEP_SUMMARY
         else
@@ -369,7 +333,7 @@ jobs:
         
         # Integration Tests
         if [[ "${{ needs.integration-tests.result }}" == "success" ]]; then
-          echo "| Integration Tests | Success | All integration tests passed |" >> $GITHUB_STEP_SUMMARY
+          echo "| Integration Tests | Success | All integration tests passed with database |" >> $GITHUB_STEP_SUMMARY
         elif [[ "${{ needs.integration-tests.result }}" == "failure" ]]; then
           echo "| Integration Tests | Failed | Check integration test results for details |" >> $GITHUB_STEP_SUMMARY
         elif [[ "${{ needs.integration-tests.result }}" == "skipped" ]]; then
@@ -380,7 +344,7 @@ jobs:
         
         # E2E Tests
         if [[ "${{ needs.e2e-tests.result }}" == "success" ]]; then
-          echo "| E2E Tests | Success | All end-to-end tests passed |" >> $GITHUB_STEP_SUMMARY
+          echo "| E2E Tests | Success | All end-to-end tests passed with full application stack |" >> $GITHUB_STEP_SUMMARY
         elif [[ "${{ needs.e2e-tests.result }}" == "failure" ]]; then
           echo "| E2E Tests | Failed | Check E2E test results for details |" >> $GITHUB_STEP_SUMMARY
         elif [[ "${{ needs.e2e-tests.result }}" == "skipped" ]]; then
@@ -393,7 +357,6 @@ jobs:
         echo "### Pipeline Summary" >> $GITHUB_STEP_SUMMARY
         echo "" >> $GITHUB_STEP_SUMMARY
         
-        # Добавляем информацию о доступности отчета
         if [[ "${{ github.event.pull_request.head.repo.full_name != github.repository && github.event_name == 'pull_request' }}" == "true" ]]; then
           echo "> **Security Notice**: Detailed test reports are limited for pull requests from forks." >> $GITHUB_STEP_SUMMARY
           echo "> Test artifacts are available for download in the workflow run." >> $GITHUB_STEP_SUMMARY
@@ -401,9 +364,9 @@ jobs:
         fi
         
         if [[ "${{ needs.unit-tests.result }}" == "success" && "${{ needs.integration-tests.result }}" == "success" && "${{ needs.e2e-tests.result }}" == "success" ]]; then
-          echo "**All tests passed successfully!** The application is ready for deployment." >> $GITHUB_STEP_SUMMARY
+          echo "** All tests passed successfully!** The application is ready for deployment." >> $GITHUB_STEP_SUMMARY
         else
-          echo "**Some tests failed or were skipped.** Please review the test results above." >> $GITHUB_STEP_SUMMARY
+          echo "** Some tests failed or were skipped.** Please review the test results above." >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
           echo "**Next steps:**" >> $GITHUB_STEP_SUMMARY
           echo "1. Check the detailed test reports in the artifacts" >> $GITHUB_STEP_SUMMARY

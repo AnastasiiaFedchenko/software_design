@@ -9,10 +9,10 @@ namespace E2E.Tests
     public class DatabaseFixture : IDisposable
     {
         private const string TestDbName = "flowershoptest";
-        private const string MasterConnectionString = "Host=127.0.0.1;Port=5432;Database=postgres;Username=postgres;Password=5432;Include Error Detail=true";
+        private const string MasterConnectionString = "Host=0.0.0.0;Port=5432;Database=postgres;Username=postgres;Password=5432;Include Error Detail=true";
 
         public string TestConnectionString { get; } =
-            $"Host=127.0.0.1;Port=5432;Database={TestDbName};Username=postgres;Password=5432;Include Error Detail=true";
+            $"Host=0.0.0.0;Port=5432;Database={TestDbName};Username=postgres;Password=5432;Include Error Detail=true";
 
         public NpgsqlConnection Db { get; private set; }
 
