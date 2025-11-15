@@ -12,11 +12,11 @@ using ReceiptOfSale;
 using SegmentAnalysis;
 using Serilog;
 using UserValidation;
-using System.Security.Cryptography.X509Certificates;
-using Microsoft.AspNetCore.Diagnostics;
 using ConnectionToDB;
 using Microsoft.OpenApi.Models;
 using WebApp2.Application.Mappings;
+using Microsoft.AspNetCore.Diagnostics;
+using WebApp2.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -27,32 +27,40 @@ Log.Logger = new LoggerConfiguration()
 
 builder.Host.UseSerilog();
 
-// Конфигурация сервисов
-builder.Services.AddControllersWithViews();
-builder.Services.AddHttpContextAccessor();
-
-// Добавление API и Swagger
+// КОНФИГУРАЦИЯ СЕРВИСОВ
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
+
+// CORS
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowAll", policy =>
+    {
+        policy.AllowAnyOrigin()
+              .AllowAnyMethod()
+              .AllowAnyHeader();
+    });
+});
+
+// Swagger
 builder.Services.AddSwaggerGen(c =>
 {
-    c.SwaggerDoc("v2", new OpenApiInfo
+    c.SwaggerDoc("v1", new OpenApiInfo
     {
-        Title = "FlowerShop API v2",
-        Version = "v2"
+        Title = "FlowerShop API",
+        Version = "v1",
+        Description = "REST API для системы управления цветочным магазином"
     });
-    
-    // Проигнорировать проблемы с типами
+
     c.IgnoreObsoleteProperties();
     c.IgnoreObsoleteActions();
-    
-    // Простая схема именования
     c.CustomSchemaIds(x => x.FullName);
 });
 
 // AutoMapper
 builder.Services.AddAutoMapper(typeof(Program));
 
+// Сессии
 builder.Services.AddSession(options =>
 {
     options.Cookie.HttpOnly = true;
@@ -60,12 +68,15 @@ builder.Services.AddSession(options =>
     options.IdleTimeout = TimeSpan.FromMinutes(30);
 });
 
+builder.Services.AddHttpContextAccessor();
+
+// Конфигурация
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 var defaultLimit = builder.Configuration.GetValue<int>("AppSettings:DefaultPaginationLimit");
 var pythonPath = builder.Configuration["PythonSettings:PythonPath"];
 var scriptPath = builder.Configuration["PythonSettings:ScriptPath"];
 
-// Регистрация сервисов (оставляем как есть)
+// Регистрация сервисов
 builder.Services
     .AddSingleton<IUserRepo>(_ => new UserRepo(new NpgsqlConnectionFactory(connectionString)))
     .AddSingleton<IInventoryRepo>(_ => new InventoryRepo(new NpgsqlConnectionFactory(connectionString)))
@@ -77,18 +88,14 @@ builder.Services
     .AddTransient<IUserService, UserService>()
     .AddTransient<IAnalysisService, AnalysisService>()
     .AddScoped<ILoadService, LoadService>()
-    .AddTransient<IProductService, ProductService>();
+    .AddTransient<IProductService, ProductService>()
+    .AddSingleton<ICartStorageService, CartStorageService>(); ;
 
 builder.Services.Configure<FormOptions>(options =>
 {
-    options.MultipartBodyLengthLimit = 52428800; // 50MB
+    options.MultipartBodyLengthLimit = 52428800;
 });
 
-builder.Services.AddSession(options =>
-{
-    options.IdleTimeout = TimeSpan.FromMinutes(20);
-    options.Cookie.HttpOnly = true;
-});
 builder.Services.AddDistributedMemoryCache();
 
 builder.Services.Configure<HostOptions>(options =>
@@ -96,7 +103,8 @@ builder.Services.Configure<HostOptions>(options =>
     options.ShutdownTimeout = TimeSpan.FromMinutes(5);
 });
 
-builder.Services.AddControllersWithViews()
+// JSON опции
+builder.Services.AddControllers()
     .AddJsonOptions(options =>
     {
         options.JsonSerializerOptions.Converters.Add(new ProductJsonConverter());
@@ -106,8 +114,8 @@ builder.Services.AddControllersWithViews()
 builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
     .AddCookie(options =>
     {
-        options.LoginPath = "/Account/Login";
-        options.AccessDeniedPath = "/Home/AccessDenied";
+        options.LoginPath = "/api/v1/auth/login";
+        options.AccessDeniedPath = "/api/v1/auth/access-denied";
         options.Cookie.HttpOnly = true;
         options.ExpireTimeSpan = TimeSpan.FromMinutes(30);
     });
@@ -120,21 +128,20 @@ builder.Services.AddAuthorization(options =>
     options.AddPolicy("StorekeeperOnly", policy => policy.RequireClaim(ClaimTypes.Role, "Storekeeper"));
 });
 
-AppDomain.CurrentDomain.UnhandledException += (sender, e) =>
-{
-    var exception = e.ExceptionObject as Exception;
-    Log.Fatal(exception, "Необработанное исключение");
-};
-
 var app = builder.Build();
 
-// Конфигурация HTTP pipeline
-if (!app.Environment.IsDevelopment())
-{
-    app.UseExceptionHandler("/Home/Error");
-    app.UseHsts();
-}
+// CORS ДОЛЖЕН БЫТЬ ЗДЕСЬ
+app.UseCors("AllowAll");
 
+// Swagger
+app.UseSwagger();
+app.UseSwaggerUI(c =>
+{
+    c.SwaggerEndpoint("/swagger/v1/swagger.json", "FlowerShop API v1");
+    c.RoutePrefix = "swagger";
+});
+
+// Глобальная обработка ошибок
 app.UseExceptionHandler(errorApp =>
 {
     errorApp.Run(async context =>
@@ -144,18 +151,18 @@ app.UseExceptionHandler(errorApp =>
         logger.LogError(exception, "Глобальная ошибка");
 
         context.Response.StatusCode = 500;
-        await context.Response.WriteAsync("Произошла ошибка. Подробности в логах.");
+        context.Response.ContentType = "application/json";
+        await context.Response.WriteAsync(System.Text.Json.JsonSerializer.Serialize(new
+        {
+            error = "Внутренняя ошибка сервера",
+            message = app.Environment.IsDevelopment() ? exception?.Message : "Обратитесь к администратору"
+        }));
     });
 });
 
-// Включение Swagger в Development режиме
-if (app.Environment.IsDevelopment())
+if (!app.Environment.IsDevelopment())
 {
-    app.UseSwagger();
-    app.UseSwaggerUI(c =>
-    {
-        c.SwaggerEndpoint("/swagger/v2/swagger.json", "FlowerShop API v2");
-    });
+    app.UseHsts();
 }
 
 app.UseHttpsRedirection();
@@ -166,12 +173,17 @@ app.UseRouting();
 app.UseAuthentication();
 app.UseAuthorization();
 
-// Map API контроллеры
-app.MapControllers(); // Это для API контроллеров
+// Тестовые endpoints для проверки
+//app.MapGet("/", () => "FlowerShop API is running! " + DateTime.Now);
+//app.MapGet("/health", () => new { status = "Healthy", timestamp = DateTime.Now });
+//app.MapGet("/test", () => Results.Ok(new { message = "Test endpoint works!" }));
 
-// Map MVC контроллеры (легаси)
-app.MapControllerRoute(
-    name: "default",
-    pattern: "{controller=Account}/{action=Login}/{id?}");
+app.MapControllers();
+
+// Логирование запуска
+Console.WriteLine("=== APPLICATION STARTED ===");
+Console.WriteLine($"Swagger UI: https://localhost:7036/swagger");
+Console.WriteLine($"Health check: https://localhost:7036/health");
+Console.WriteLine($"Test endpoint: https://localhost:7036/test");
 
 app.Run();

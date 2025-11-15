@@ -4,7 +4,7 @@ using Domain.InputPorts;
 namespace WebApp2.Controllers.Api.V2
 {
     [ApiController]
-    [Route("api/v2/[controller]")]
+    [Route("/api/v1/analysis")]
     public class AnalysisController : ControllerBase
     {
         private readonly IAnalysisService _analysisService;

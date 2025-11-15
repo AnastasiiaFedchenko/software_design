@@ -1,140 +1,422 @@
-openapi: 3.0.3
+openapi: 3.0.1
 info:
-  title: WebApp2 API
-  description: REST API for WebApp2 project
-  version: 2.0.0
+  title: FlowerShop API
+  description: REST API для системы управления цветочным магазином
+  version: 1.0.0
+  contact:
+    name: Fedchenko Anastasiia
+    email: anastasiiafedchenko1504@gmail.com
+
 servers:
-  - url: http://localhost:5000
+  - url: https://api.flowershop.com/api/v1
+    description: Production server
+  - url: https://localhost:7036/api/v1
     description: Development server
+
 paths:
-  /api/v2/users:
-    get:
-      summary: Get all users
-      operationId: getUsers
-      tags:
-        - Users
+  # ========== АУТЕНТИФИКАЦИЯ ==========
+  /auth/login:
+    post:
+      summary: Вход в систему
+      tags: [Authentication]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LoginRequest'
       responses:
         '200':
-          description: Successful operation
+          description: Успешный вход
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LoginResponse'
+        '401':
+          description: Неверные учетные данные
+        '400':
+          description: Невалидные данные
+
+  /auth/logout:
+    post:
+      summary: Выход из системы
+      tags: [Authentication]
+      responses:
+        '200':
+          description: Успешный выход
+        '401':
+          description: Не авторизован
+
+  # ========== ТОВАРЫ ==========
+  /products:
+    get:
+      summary: Получить список товаров с пагинацией
+      tags: [Products]
+      parameters:
+        - name: skip
+          in: query
+          schema:
+            type: integer
+            minimum: 0
+            default: 0
+          description: Смещение 
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+            default: 20
+          description: Лимит
+      responses:
+        '200':
+          description: Успешное получение списка товаров
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Inventory'
+
+  /products/{productId}:
+    get:
+      summary: Получить информацию о товаре
+      tags: [Products]
+      parameters:
+        - name: productId
+          in: path
+          required: true
+          schema:
+            type: integer
+          description: ID товара
+      responses:
+        '200':
+          description: Информация о товаре
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Product'
+        '404':
+          description: Товар не найден
+
+  # ========== КОРЗИНА ==========
+  /cart:
+    get:
+      summary: Получить содержимое корзины
+      tags: [Cart]
+      responses:
+        '200':
+          description: Содержимое корзины
           content:
             application/json:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/User'
+                  $ref: '#/components/schemas/ReceiptLine'
+
     post:
-      summary: Create a new user
-      operationId: createUser
-      tags:
-        - Users
+      summary: Добавить товар в корзину
+      tags: [Cart]
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/CreateUserRequest'
+              $ref: '#/components/schemas/AddToCartRequest'
+      responses:
+        '200':
+          description: Товар добавлен в корзину
+        '404':
+          description: Товар не найден
+        '400':
+          description: Невалидные данные
+
+  /cart/products/{productId}:
+    patch:
+      summary: Обновить количество товара в корзине
+      tags: [Cart]
+      parameters:
+        - name: productId
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateCartRequest'
+      responses:
+        '200':
+          description: Количество обновлено
+        '404':
+          description: Товар не найден в корзине
+
+    delete:
+      summary: Удалить товар из корзины
+      tags: [Cart]
+      parameters:
+        - name: productId
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Товар удален из корзины
+        '404':
+          description: Товар не найден в корзине
+
+  # ========== ЗАКАЗЫ ==========
+  /orders:
+    post:
+      summary: Оформить заказ
+      tags: [Orders]
       responses:
         '201':
-          description: User created
+          description: Заказ успешно оформлен
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/User'
-  /api/v2/users/{id}:
+                $ref: '#/components/schemas/Receipt'
+        '400':
+          description: Корзина пуста или ошибка оформления
+
+  # ========== АДМИНИСТРИРОВАНИЕ ==========
+  /admin/forecast:
     get:
-      summary: Get user by ID
-      operationId: getUserById
-      tags:
-        - Users
-      parameters:
-        - name: id
-          in: path
-          required: true
-          schema:
-            type: integer
+      summary: Получить прогноз заказов (только для администраторов)
+      tags: [Admin]
       responses:
         '200':
-          description: Successful operation
+          description: Прогноз заказов
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/User'
-        '404':
-          description: User not found
-    put:
-      summary: Update user
-      operationId: updateUser
-      tags:
-        - Users
-      parameters:
-        - name: id
-          in: path
-          required: true
-          schema:
-            type: integer
+                $ref: '#/components/schemas/ForecastOfOrders'
+        '403':
+          description: Доступ запрещен
+
+  /admin/user-segmentation:
+    get:
+      summary: Получить сегментацию пользователей (только для администраторов)
+      tags: [Admin]
+      responses:
+        '200':
+          description: Сегментация пользователей
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/UserSegment'
+        '403':
+          description: Доступ запрещен
+
+  /products/loadings:
+    post:
+      summary: Загрузить партию товаров (только для администраторов и кладовщиков)
+      tags: [Admin]
       requestBody:
         required: true
         content:
-          application/json:
+          application/octet-stream: #application/octet-stream
             schema:
-              $ref: '#/components/schemas/UpdateUserRequest'
+              type: string
+              format: binary
+              description: Файл с данными о партии товаров
       responses:
         '200':
-          description: User updated
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/User'
-        '404':
-          description: User not found
-    delete:
-      summary: Delete user
-      operationId: deleteUser
-      tags:
-        - Users
-      parameters:
-        - name: id
-          in: path
-          required: true
-          schema:
-            type: integer
-      responses:
-        '204':
-          description: User deleted
-        '404':
-          description: User not found
+          description: Файл успешно загружен
+        '400':
+          description: Ошибка при обработке файла
+        '403':
+          description: Доступ запрещен
+
 components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
   schemas:
+    # ========== ЗАПРОСЫ ==========
+    LoginRequest:
+      type: object
+      required: [id, password]
+      properties:
+        id:
+          type: integer
+          format: int32
+          example: 123
+        password:
+          type: string
+          format: password
+          example: "myPassword123"
+
+    AddToCartRequest:
+      type: object
+      required: [productId, quantity]
+      properties:
+        productId:
+          type: integer
+          format: int32
+          example: 456
+        quantity:
+          type: integer
+          format: int32
+          minimum: 1
+          example: 2
+
+    UpdateCartRequest:
+      type: object
+      required: [newQuantity]
+      properties:
+        newQuantity:
+          type: integer
+          format: int32
+          minimum: 1
+          example: 3
+
+    # ========== ОТВЕТЫ ==========
+    LoginResponse:
+      type: object
+      properties:
+        userId:
+          type: integer
+          format: int32
+        role:
+          type: string
+          enum: [Administrator, Seller, Storekeeper]
+        token:
+          type: string
+          description: JWT токен для аутентификации
+
+    Product:
+      type: object
+      properties:
+        idNomenclature:
+          type: integer
+          format: int32
+        type:
+          type: string
+        country:
+          type: string
+        price:
+          type: number
+          format: double
+        amountInStock:
+          type: integer
+          format: int32
+
+    Inventory:
+      type: object
+      properties:
+        products:
+          type: array
+          items:
+            $ref: '#/components/schemas/InventoryItem'
+        totalAmount:
+          type: integer
+          format: int32
+
+    InventoryItem:
+      type: object
+      properties:
+        product:
+          $ref: '#/components/schemas/Product'
+        amount:
+          type: integer
+          format: int32
+
+    ReceiptLine:
+      type: object
+      properties:
+        product:
+          $ref: '#/components/schemas/Product'
+        amount:
+          type: integer
+          format: int32
+
+    Receipt:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int32
+        lines:
+          type: array
+          items:
+            $ref: '#/components/schemas/ReceiptLine'
+        totalAmount:
+          type: number
+          format: double
+        createdAt:
+          type: string
+          format: date-time
+
+    ForecastOfOrders:
+      type: object
+      properties:
+        amountOfOrders:
+          type: integer
+          format: int32
+        dailyForecast:
+          type: array
+          items:
+            $ref: '#/components/schemas/DailyForecast'
+        products:
+          type: array
+          items:
+            $ref: '#/components/schemas/ForecastProduct'
+
+    DailyForecast:
+      type: object
+      properties:
+        date:
+          type: string
+          format: date
+        day_of_week:
+          type: string
+        orders:
+          type: integer
+          format: int32
+
+    ForecastProduct:
+      type: object
+      properties:
+        product:
+          $ref: '#/components/schemas/Product'
+        amount:
+          type: integer
+          format: int32
+        amountInStock:
+          type: integer
+          format: int32
+
+    UserSegment:
+      type: object
+      properties:
+        type:
+          type: string
+        amount:
+          type: integer
+          format: int32
+        users:
+          type: array
+          items:
+            $ref: '#/components/schemas/User'
+
     User:
       type: object
       properties:
         id:
           type: integer
+          format: int32
+        role:
+          type: string
         name:
           type: string
-        email:
-          type: string
-      required:
-        - id
-        - name
-        - email
-    CreateUserRequest:
-      type: object
-      properties:
-        name:
-          type: string
-        email:
-          type: string
-      required:
-        - name
-        - email
-    UpdateUserRequest:
-      type: object
-      properties:
-        name:
-          type: string
-        email:
-          type: string
-      required:
-        - name
-        - email
+
+security:
+  - bearerAuth: []

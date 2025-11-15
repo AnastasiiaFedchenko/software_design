@@ -33,7 +33,6 @@ namespace E2E.Tests
         {
             _output.WriteLine($"Using test database: {_fixture.TestConnectionString}");
 
-            // Проверяем, запущено ли приложение
             try
             {
                 var response = await _client.GetAsync("/Account/Login");
@@ -86,7 +85,6 @@ namespace E2E.Tests
             Assert.Equal(HttpStatusCode.Redirect, response.StatusCode);
             Assert.Contains("/Admin/Index", response.Headers.Location?.ToString() ?? "");
 
-            // Сохраняем cookies для последующих запросов
             StoreCookies(response);
             _output.WriteLine("Admin login successful");
         }
@@ -105,14 +103,13 @@ namespace E2E.Tests
             // Сначала логинимся
             await LoginAsAdmin();
 
-            // Act - Получаем страницу с товарами
+            // Act
             var response = await _client.GetAsync("/Admin/Order");
 
             // Assert
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
             var content = await response.Content.ReadAsStringAsync();
 
-            // Проверяем что страница загрузилась
             Assert.Contains("Товары", content);
             Assert.Contains("Корзина", content);
             _output.WriteLine("Product browsing page loaded successfully");
@@ -129,20 +126,17 @@ namespace E2E.Tests
                 return;
             }
 
-            // Логинимся
             await LoginAsAdmin();
 
-            // Получаем доступный товар из тестовой БД
             var availableProductId = await GetAvailableProductIdFromTestDb();
             Assert.True(availableProductId > 0, "No available products in test database");
 
-            // Act - Добавляем товар в корзину
+            // Act
             var response = await _client.PostAsync($"/Admin/AddToCart?productId={availableProductId}&quantity=1", null);
 
             // Assert
             Assert.Equal(HttpStatusCode.Redirect, response.StatusCode);
 
-            // Проверяем что корзина обновилась
             var cartResponse = await _client.GetAsync("/Admin/Order");
             var cartContent = await cartResponse.Content.ReadAsStringAsync();
             Assert.Contains("Корзина", cartContent);
@@ -160,10 +154,8 @@ namespace E2E.Tests
                 return;
             }
 
-            // Логинимся
             await LoginAsAdmin();
 
-            // Получаем доступный товар из тестовой БД
             var availableProductId = await GetAvailableProductIdFromTestDb();
             Assert.True(availableProductId > 0, "No available products in test database");
 
@@ -205,7 +197,7 @@ namespace E2E.Tests
             fileContent.Headers.ContentType = new MediaTypeHeaderValue("text/plain");
             content.Add(fileContent, "batchFile", "test_batch.txt");
 
-            // Act - Загружаем файл
+            // Act 
             var response = await _client.PostAsync("/Admin/LoadBatch", content);
 
             // Assert
@@ -227,7 +219,7 @@ namespace E2E.Tests
             // Act - Пытаемся получить доступ к админке без авторизации
             var response = await _client.GetAsync("/Admin/Index");
 
-            // Assert - Должен быть редирект на логин
+            // Assert 
             Assert.Equal(HttpStatusCode.Redirect, response.StatusCode);
             Assert.Contains("/Account/Login", response.Headers.Location?.ToString() ?? "");
             _output.WriteLine("Access control working correctly - redirect to login when not authenticated");
@@ -260,10 +252,8 @@ namespace E2E.Tests
 
                 if (loginResponse.StatusCode == HttpStatusCode.Redirect)
                 {
-                    // Если продавец существует, проверяем его доступ
                     StoreCookies(loginResponse);
 
-                    // Продавец должен иметь доступ к своим страницам
                     var sellerPageResponse = await _client.GetAsync("/Seller/Index");
                     Assert.Equal(HttpStatusCode.OK, sellerPageResponse.StatusCode);
                     _output.WriteLine("Seller role access verified successfully");
@@ -300,7 +290,6 @@ namespace E2E.Tests
 
         private async Task<int> GetAvailableProductIdFromTestDb()
         {
-            // Используем тестовую БД для получения доступного товара
             using var connection = new Npgsql.NpgsqlConnection(_fixture.TestConnectionString);
             await connection.OpenAsync();
 
@@ -318,11 +307,9 @@ namespace E2E.Tests
 
         private async Task<string> GenerateTestBatchContent()
         {
-            // Генерируем тестовые данные на основе содержимого тестовой БД
             using var connection = new Npgsql.NpgsqlConnection(_fixture.TestConnectionString);
             await connection.OpenAsync();
 
-            // Получаем несколько ID товаров из тестовой БД
             using var cmd = new Npgsql.NpgsqlCommand(
                 @"SELECT id FROM nomenclature ORDER BY id LIMIT 5",
                 connection);
