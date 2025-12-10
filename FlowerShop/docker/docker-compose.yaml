@@ -1,0 +1,10 @@
+services:
+  caddy:
+    image: caddy:2-alpine
+    ports:
+      - "80:80"
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile
+      - ./static:/srv/static
+      - ./documentation:/srv/documentation
+      - ./management:/srv/management

@@ -1,0 +1,452 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Документация - Flower Shop</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .documentation {
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            overflow: hidden;
+            margin: 20px 0;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #2c3e50, #34495e);
+            color: white;
+            padding: 40px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            font-weight: 300;
+        }
+
+        .header .subtitle {
+            font-size: 1.2em;
+            opacity: 0.9;
+            font-weight: 300;
+        }
+
+        .content {
+            padding: 40px;
+        }
+
+        .section {
+            margin-bottom: 40px;
+            padding-bottom: 30px;
+            border-bottom: 1px solid #e9ecef;
+        }
+
+        .section:last-child {
+            border-bottom: none;
+        }
+
+        h2 {
+            color: #2c3e50;
+            font-size: 1.8em;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #3498db;
+        }
+
+        h3 {
+            color: #34495e;
+            font-size: 1.4em;
+            margin: 25px 0 15px 0;
+        }
+
+        p {
+            margin-bottom: 15px;
+            font-size: 1.1em;
+        }
+
+        ul, ol {
+            margin: 15px 0;
+            padding-left: 30px;
+        }
+
+        li {
+            margin-bottom: 8px;
+            font-size: 1.1em;
+        }
+
+        .card {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 25px;
+            margin: 20px 0;
+            border-left: 4px solid #3498db;
+        }
+
+        .role-card {
+            background: white;
+            border: 1px solid #e9ecef;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 15px 0;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+        }
+
+        .role-card h4 {
+            color: #2c3e50;
+            margin-bottom: 10px;
+            font-size: 1.3em;
+        }
+
+        .image-container {
+            text-align: center;
+            margin: 25px 0;
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+        }
+
+        .image-container img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 8px;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+        }
+
+        .image-caption {
+            margin-top: 10px;
+            font-style: italic;
+            color: #6c757d;
+            font-size: 0.9em;
+        }
+
+        .scenario {
+            background: #e8f4f8;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 15px 0;
+            border-left: 4px solid #2980b9;
+        }
+
+        .scenario ol {
+            margin: 0;
+        }
+
+        .tech-stack {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin: 20px 0;
+        }
+
+        .tech-item {
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            text-align: center;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+            border: 1px solid #e9ecef;
+        }
+
+        .navigation {
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            margin-top: 30px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+        }
+
+        .nav-links {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+
+        .nav-links a {
+            display: inline-block;
+            padding: 10px 20px;
+            background: #3498db;
+            color: white;
+            text-decoration: none;
+            border-radius: 25px;
+            transition: all 0.3s ease;
+            font-weight: 500;
+        }
+
+        .nav-links a:hover {
+            background: #2980b9;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(52, 152, 219, 0.3);
+        }
+
+        code {
+            background: #2c3e50;
+            color: #ecf0f1;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-family: 'Courier New', monospace;
+        }
+
+        @media (max-width: 768px) {
+            .content {
+                padding: 20px;
+            }
+            
+            .header {
+                padding: 30px 20px;
+            }
+            
+            .header h1 {
+                font-size: 2em;
+            }
+            
+            .nav-links {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .nav-links a {
+                width: 200px;
+                text-align: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="documentation">
+            <div class="header">
+                <h1>Анализ клиентской базы и динамики продаж в цветочном магазине</h1>
+                <div class="subtitle">WebLab #1 - Полная документация проекта</div>
+            </div>
+
+            <div class="content">
+                <div class="section">
+                    <h2>Идея проекта</h2>
+                    <p>Программное обеспечение для цветочного магазина с двумя типами пользователей: клиенты и администраторы. Оба имеют базовые функции, а администратору доступны дополнительные статистические данные, полученные с помощью методов машинного обучения.</p>
+                </div>
+
+                <div class="section">
+                    <h2>Предметная область и обоснование целесообразности</h2>
+                    <p>Проект сосредоточен на изучении поведения клиентов и продаж в контексте розничной торговли цветами. В данной области ключевыми сущностями являются клиенты, товары и продажи.</p>
+                    
+                    <div class="card">
+                        <h3>Ключевые сущности системы</h3>
+                        <ul>
+                            <li><strong>Клиенты</strong> - покупатели, которые взаимодействуют с магазином</li>
+                            <li><strong>Товары</strong> - ассортимент, предлагаемый магазином</li>
+                            <li><strong>Продажи</strong> - информация о покупках и заказах</li>
+                        </ul>
+                    </div>
+
+                    <p>Одной из основных проблем, с которой сталкиваются цветочные магазины, является недостаток информации о предпочтениях клиентов и тенденциях продаж.</p>
+                    
+                    <div class="card">
+                        <h3>Решаемые проблемы</h3>
+                        <ul>
+                            <li>Неэффективное управление запасами</li>
+                            <li>Недостаточная маркетинговая стратегия</li>
+                            <li>Упущенные возможности для увеличения прибыли</li>
+                        </ul>
+                    </div>
+
+                    <h3>Аналитические возможности системы</h3>
+                    <div class="tech-stack">
+                        <div class="tech-item">
+                            <strong>Прогнозирование заказов</strong>
+                            <p>На основе исторических данных</p>
+                        </div>
+                        <div class="tech-item">
+                            <strong>Сегментация клиентов</strong>
+                            <p>По поведению и предпочтениям</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <h2>Описание акторов (ролей)</h2>
+                    
+                    <div class="role-card">
+                        <h4>👤 Клиент</h4>
+                        <p>Основной пользователь системы, который взаимодействует с цветочным магазином. Клиенты могут просматривать ассортимент товаров и делать покупки.</p>
+                    </div>
+
+                    <div class="role-card">
+                        <h4>⚙️ Администратор</h4>
+                        <p>Пользователь, ответственный за управление магазином и анализ данных. Администраторы имеют доступ к функционалу, позволяющему управлять товарами, обрабатывать заказы и анализировать статистику продаж и клиентского поведения.</p>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <h2>Use-case диаграмма</h2>
+                    <div class="image-container">
+                        <img src="https://github.com/user-attachments/assets/f8c72720-64f0-4b15-9a99-1332de5a44a0" alt="Use-case диаграмма">
+                        <div class="image-caption">Диаграмма прецедентов использования системы</div>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <h2>ER-диаграмма сущностей</h2>
+                    <div class="image-container">
+                        <img src="https://github.com/user-attachments/assets/dc70e1bf-0c38-4373-8fb7-c0e8b75ff503" alt="ER-диаграмма">
+                        <div class="image-caption">Entity-Relationship диаграмма базы данных</div>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <h2>Пользовательские сценарии</h2>
+
+                    <div class="scenario">
+                        <h3>🛒 Основной пользовательский сценарий клиента: покупка товара</h3>
+                        <ol>
+                            <li>Авторизация как клиента</li>
+                            <li>Просмотр каталога товаров</li>
+                            <li>Добавление конкретного товара в корзину</li>
+                            <li>Изменение количества конкретного товара в корзине</li>
+                            <li>Удаление конкретного товара в корзине</li>
+                            <li>При необходимости повтор в любом порядке пунктов 3, 4 или 5</li>
+                            <li>Покупка товаров, находящихся на данный момент в корзине</li>
+                        </ol>
+                    </div>
+
+                    <div class="scenario">
+                        <h3>📦 Первый сценарий администратора: обновление списка товаров</h3>
+                        <ol>
+                            <li>Авторизация как администратора</li>
+                            <li>Просмотр доступных товаров</li>
+                            <li>Загрузка информации о новой поставке</li>
+                            <li>Просмотр доступных товаров после внесённых изменений</li>
+                        </ol>
+                    </div>
+
+                    <div class="scenario">
+                        <h3>📊 Второй сценарий администратора: планирование поставок</h3>
+                        <ol>
+                            <li>Авторизация как администратора</li>
+                            <li>Просмотр прогноза по количеству заказов на ближайшую неделю</li>
+                            <li>Просмотр доступных товаров</li>
+                        </ol>
+                        <p><em>Прогноз включает график заказов по дням и анализ популярных товаров</em></p>
+                    </div>
+
+                    <div class="scenario">
+                        <h3>🎯 Третий сценарий администратора: анализ клиентской базы</h3>
+                        <ol>
+                            <li>Авторизация как администратора</li>
+                            <li>Просмотр сегментации клиентов по возвращаемости</li>
+                        </ol>
+                        
+                        <h4>Сегменты клиентов:</h4>
+                        <ul>
+                            <li><strong>Регулярные покупатели</strong> - часто возвращаются</li>
+                            <li><strong>Редкие покупатели</strong> - заказы время от времени</li>
+                            <li><strong>Новые клиенты</strong> - первая покупка</li>
+                            <li><strong>Ушедшие клиенты</strong> - давно не делали заказы</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <h2>Формализация бизнес-правил</h2>
+                    
+                    <div class="image-container">
+                        <img src="https://github.com/user-attachments/assets/f50c47ed-5b46-46ca-b0c8-a0a9bb454e50" alt="BPMN добавление товара в корзину">
+                        <div class="image-caption">BPMN: Добавление товара в корзину</div>
+                    </div>
+
+                    <div class="image-container">
+                        <img src="https://github.com/user-attachments/assets/daf963ec-acb9-4431-a352-470c460005ab" alt="BPMN изменение количества товара">
+                        <div class="image-caption">BPMN: Изменение количества товара в корзине</div>
+                    </div>
+
+                    <div class="image-container">
+                        <img src="https://github.com/user-attachments/assets/aa4b15af-760d-47dc-b65d-484c31ccd183" alt="BPMN удаление товара">
+                        <div class="image-caption">BPMN: Удаление товара из корзины</div>
+                    </div>
+
+                    <div class="image-container">
+                        <img src="https://github.com/user-attachments/assets/fe08f93d-2c99-4f41-b8dd-39f9882d7b9f" alt="BPMN загрузка поставки">
+                        <div class="image-caption">BPMN: Загрузка поставки</div>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <h2>Технологический стек</h2>
+                    
+                    <div class="card">
+                        <h3>Основные технологии</h3>
+                        <div class="tech-stack">
+                            <div class="tech-item">
+                                <strong>ASP.NET</strong>
+                                <p>C#</p>
+                            </div>
+                            <div class="tech-item">
+                                <strong>Web MPA</strong>
+                                <p>Multi-Page Application</p>
+                            </div>
+                            <div class="tech-item">
+                                <strong>Python</strong>
+                                <p>Машинное обучение</p>
+                            </div>
+                            <div class="tech-item">
+                                <strong>Дополнительные средства</strong>
+                                <p>UI/UX улучшения</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <h2>Архитектура системы</h2>
+                    
+                    <div class="image-container">
+                        <img src="https://github.com/user-attachments/assets/eb020483-eb9c-4a77-b987-548283789c8e" alt="Верхнеуровневое разбиение">
+                        <div class="image-caption">Верхнеуровневое разбиение на компоненты</div>
+                    </div>
+
+                    <div class="image-container">
+                        <img src="https://github.com/user-attachments/assets/5a98e56a-3227-4327-af83-8509e710821f" alt="UML диаграмма классов">
+                        <div class="image-caption">UML диаграмма классов системы</div>
+                    </div>
+
+                    <div class="image-container">
+                        <img src="https://github.com/user-attachments/assets/f9ea1241-5484-4d96-8eef-1d8f3045674c" alt="Схема БД">
+                        <div class="image-caption">Схема базы данных</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="navigation">
+                <div class="nav-links">
+                    <a href="/">🏠 Главная страница</a>
+                    <a href="/management">⚙️ Панель управления</a>
+                    <a href="/api/v1">🔌 API v1 + Swagger</a>
+                    <a href="/legacy">🔄 Legacy приложение</a>
+                    <a href="/status">📊 Статус сервера</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

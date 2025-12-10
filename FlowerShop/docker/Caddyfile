@@ -1,0 +1,73 @@
+:80 {
+    bind 0.0.0.0
+
+    # API v1 to Swagger
+    handle /api/v1 {
+        redir http://localhost:5000/swagger/index.html 302
+    }
+
+    handle /api/v1/* {
+        reverse_proxy http://localhost:5000/
+    }
+
+
+    # Legacy
+    handle /legacy/* {
+        rewrite * /{path.1}
+        reverse_proxy http://localhost:5001
+    }
+
+    handle /legacy {
+        rewrite * /
+        reverse_proxy http://localhost:5001
+    }
+
+
+    # Документация - с указанием кодировки
+    # Управление
+    handle /documentation {
+        root * D:/bmstu/PPO/software_design/FlowerShop/docker/documentation
+        file_server
+        try_files {path} index.html
+    }
+    # Статика
+    handle /static/* {
+        root * D:/bmstu/PPO/software_design/FlowerShop/docker/static
+        file_server
+    }
+
+    # Главная страница
+    handle / {
+        root * D:/bmstu/PPO/software_design/FlowerShop/docker/static
+        file_server
+        try_files {path} index.html
+    }
+
+    # Зарезервированный путь
+    handle /reserved/* {
+        rewrite * /
+    }
+
+    # Админка БД
+    handle /admin/* {
+        rewrite * /{path.3}
+        reverse_proxy http://localhost:8080
+    }
+
+    handle /admin {
+        rewrite * /
+        reverse_proxy http://localhost:8080
+    }
+
+    # Статус сервера
+    handle /status {
+        respond "Caddy Server Status: OK\nTime: {http.time.now.format}\nHost: {http.request.host}"
+    }
+
+    # Управление
+    handle /management {
+        root * D:/bmstu/PPO/software_design/FlowerShop/docker/management
+        file_server
+        try_files {path} index.html
+    }
+}
