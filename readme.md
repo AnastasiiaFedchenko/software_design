@@ -90,3 +90,5 @@
 ## Схема БД
 ![BD_3](https://github.com/user-attachments/assets/b83fb4f4-bcf0-4a2e-a086-3af308894381)
 
+## Дизайн Web приложения
+https://www.figma.com/board/OZiPMYEMDvUljLY8VQzxok/MoodBoard?node-id=0-1&t=7mKuQI0jMzVnZ9J9-1 
