@@ -1,17 +1,35 @@
 <!DOCTYPE html>
-<html>
+<html lang="ru">
 <head>
-    <title>Flower Shop</title>
+    <meta charset="UTF-8">
+    <title>Цветочный магазин</title>
+    <style>
+        body {
+            text-align: center;
+            padding: 50px;
+            font-family: Arial, sans-serif;
+        }
+        img {
+            max-width: 500px;
+            height: auto;
+            border: 2px solid #e91e63;
+            border-radius: 10px;
+        }
+        h1 {
+            color: #e91e63;
+        }
+    </style>
 </head>
 <body>
     <h1>Цветочный магазин</h1>
-    <p>Добро пожаловать в наше приложение!</p>
     
-    <h2>Основные разделы:</h2>
-    <ul>
-        <li><a href="/api/v1">API v1 + Swagger</a></li>
-        <li><a href="/legacy">Legacy приложение</a></li>
-        <li><a href="/management">Панель управления</a></li>
-    </ul>
+    <!-- ВАЖНО: Используйте /photo.jpg (абсолютный путь) -->
+    <img src="/photo.jpg" alt="Цветочный магазин">
+    
+    <!-- Информация -->
+    <div style="margin-top: 30px; color: #666;">
+        <p>API доступно по адресу: <a href="/api/v1">/api/v1</a></p>
+        <p>Зарезервированный путь: <code>/reserved/*</code></p>
+    </div>
 </body>
 </html>

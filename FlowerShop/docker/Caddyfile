@@ -1,15 +1,38 @@
 :80 {
     bind 0.0.0.0
 
+    # Главная страница
+    handle / {
+        root * D:/bmstu/PPO/software_design/FlowerShop/docker/static
+        file_server
+        try_files {path} index.html
+    }
+
+    # Зарезервированный путь
+    handle /reserved/* {
+        root * D:/bmstu/PPO/software_design/FlowerShop/docker/static
+        file_server
+        try_files {path} index.html
+    }
+    
     # API v1 to Swagger
     handle /api/v1 {
         redir http://localhost:5000/swagger/index.html 302
     }
 
+    # API v1 обработка - ОТЛАДКА
     handle /api/v1/* {
-        reverse_proxy http://localhost:5000/
+    	# Получаем путь после /api/v1
+    	@api_path {
+        	path_regexp /api/v1/(?P<rest>.*)
+    	}
+    
+    	handle @api_path {
+        	# Используем захваченную часть
+        	rewrite * /api/{re.rest}
+        	reverse_proxy http://localhost:5000
+    	}
     }
-
 
     # Legacy
     handle /legacy/* {
@@ -22,30 +45,11 @@
         reverse_proxy http://localhost:5001
     }
 
-
-    # Документация - с указанием кодировки
-    # Управление
+    # Документация
     handle /documentation {
         root * D:/bmstu/PPO/software_design/FlowerShop/docker/documentation
         file_server
         try_files {path} index.html
-    }
-    # Статика
-    handle /static/* {
-        root * D:/bmstu/PPO/software_design/FlowerShop/docker/static
-        file_server
-    }
-
-    # Главная страница
-    handle / {
-        root * D:/bmstu/PPO/software_design/FlowerShop/docker/static
-        file_server
-        try_files {path} index.html
-    }
-
-    # Зарезервированный путь
-    handle /reserved/* {
-        rewrite * /
     }
 
     # Админка БД
@@ -61,7 +65,9 @@
 
     # Статус сервера
     handle /status {
-        respond "Caddy Server Status: OK\nTime: {http.time.now.format}\nHost: {http.request.host}"
+    	root * D:/bmstu/PPO/software_design/FlowerShop/docker/status
+    	try_files /index.html
+    	file_server
     }
 
     # Управление
@@ -69,5 +75,12 @@
         root * D:/bmstu/PPO/software_design/FlowerShop/docker/management
         file_server
         try_files {path} index.html
+    }
+
+    # ========== ВСЕ ОСТАЛЬНЫЕ СТАТИЧЕСКИЕ ФАЙЛЫ ==========
+    # Этот обработчик ДОЛЖЕН БЫТЬ ПОСЛЕДНИМ
+    handle {
+        root * D:/bmstu/PPO/software_design/FlowerShop/docker/static
+        file_server
     }
 }
