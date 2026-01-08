@@ -16,65 +16,86 @@ namespace WebApp2.Services
     public class CartStorageService : ICartStorageService
     {
         private static readonly Dictionary<int, List<CartItem>> _userCarts = new();
+        private static readonly object _sync = new();
 
         public List<CartItem> GetCart(int userId)
         {
-            return _userCarts.ContainsKey(userId) ? _userCarts[userId] : new List<CartItem>();
+            lock (_sync)
+            {
+                return _userCarts.ContainsKey(userId)
+                    ? new List<CartItem>(_userCarts[userId])
+                    : new List<CartItem>();
+            }
         }
 
         public void AddToCart(int userId, CartItem item)
         {
-            if (!_userCarts.ContainsKey(userId))
+            lock (_sync)
             {
-                _userCarts[userId] = new List<CartItem>();
-            }
+                if (!_userCarts.ContainsKey(userId))
+                {
+                    _userCarts[userId] = new List<CartItem>();
+                }
 
-            var existingItem = _userCarts[userId].FirstOrDefault(x => x.ProductId == item.ProductId);
-            if (existingItem != null)
-            {
-                existingItem.Quantity += item.Quantity;
-            }
-            else
-            {
-                _userCarts[userId].Add(item);
+                var existingItem = _userCarts[userId].FirstOrDefault(x => x.ProductId == item.ProductId);
+                if (existingItem != null)
+                {
+                    existingItem.Quantity += item.Quantity;
+                }
+                else
+                {
+                    _userCarts[userId].Add(item);
+                }
             }
         }
 
         public void UpdateCartItem(int userId, int productId, int quantity)
         {
-            if (_userCarts.ContainsKey(userId))
+            lock (_sync)
             {
-                var existingItem = _userCarts[userId].FirstOrDefault(x => x.ProductId == productId);
-                if (existingItem != null)
+                if (_userCarts.ContainsKey(userId))
                 {
-                    existingItem.Quantity = quantity;
+                    var existingItem = _userCarts[userId].FirstOrDefault(x => x.ProductId == productId);
+                    if (existingItem != null)
+                    {
+                        existingItem.Quantity = quantity;
+                    }
                 }
             }
         }
 
         public void RemoveFromCart(int userId, int productId)
         {
-            if (_userCarts.ContainsKey(userId))
+            lock (_sync)
             {
-                var itemToRemove = _userCarts[userId].FirstOrDefault(x => x.ProductId == productId);
-                if (itemToRemove != null)
+                if (_userCarts.ContainsKey(userId))
                 {
-                    _userCarts[userId].Remove(itemToRemove);
+                    var itemToRemove = _userCarts[userId].FirstOrDefault(x => x.ProductId == productId);
+                    if (itemToRemove != null)
+                    {
+                        _userCarts[userId].Remove(itemToRemove);
+                    }
                 }
             }
         }
 
         public void ClearCart(int userId)
         {
-            if (_userCarts.ContainsKey(userId))
+            lock (_sync)
             {
-                _userCarts[userId].Clear();
+                if (_userCarts.ContainsKey(userId))
+                {
+                    _userCarts[userId].Clear();
+                }
             }
         }
 
         public bool CartExists(int userId)
         {
-            return _userCarts.ContainsKey(userId) && _userCarts[userId].Any();
+            lock (_sync)
+            {
+                return _userCarts.ContainsKey(userId) && _userCarts[userId].Any();
+            }
         }
     }
 }

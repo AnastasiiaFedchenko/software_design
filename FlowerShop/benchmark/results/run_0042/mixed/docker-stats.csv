@@ -1,0 +1,23 @@
+timestamp,container,cpu_percent,mem_usage,mem_percent,net_io,block_io
+2026-01-06T20:28:33Z,flowershop_api,38.15%,95.48MiB / 7.625GiB,1.22%,927kB / 2.31MB,0B / 0B
+2026-01-06T20:28:33Z,flowershop_db,1.45%,106.1MiB / 7.625GiB,1.36%,1.78MB / 586kB,0B / 0B
+2026-01-06T20:28:37Z,flowershop_api,5.58%,99.45MiB / 7.625GiB,1.27%,1.05MB / 2.43MB,0B / 0B
+2026-01-06T20:28:37Z,flowershop_db,1.45%,107.5MiB / 7.625GiB,1.38%,1.82MB / 599kB,0B / 0B
+2026-01-06T20:28:39Z,flowershop_api,5.11%,104.4MiB / 7.625GiB,1.34%,1.18MB / 2.56MB,0B / 0B
+2026-01-06T20:28:39Z,flowershop_db,1.54%,106.9MiB / 7.625GiB,1.37%,1.87MB / 620kB,0B / 0B
+2026-01-06T20:28:42Z,flowershop_api,4.71%,107.2MiB / 7.625GiB,1.37%,1.26MB / 2.64MB,0B / 0B
+2026-01-06T20:28:42Z,flowershop_db,1.39%,106.9MiB / 7.625GiB,1.37%,1.91MB / 634kB,0B / 0B
+2026-01-06T20:28:45Z,flowershop_api,5.63%,112.8MiB / 7.625GiB,1.44%,1.42MB / 2.81MB,0B / 0B
+2026-01-06T20:28:45Z,flowershop_db,1.50%,106.7MiB / 7.625GiB,1.37%,1.96MB / 654kB,0B / 0B
+2026-01-06T20:28:48Z,flowershop_api,5.07%,115.9MiB / 7.625GiB,1.48%,1.51MB / 2.89MB,0B / 0B
+2026-01-06T20:28:48Z,flowershop_db,1.78%,106.7MiB / 7.625GiB,1.37%,2.03MB / 682kB,0B / 0B
+2026-01-06T20:28:51Z,flowershop_api,6.49%,121.8MiB / 7.625GiB,1.56%,1.68MB / 3.06MB,0B / 0B
+2026-01-06T20:28:51Z,flowershop_db,1.48%,106.7MiB / 7.625GiB,1.37%,2.07MB / 696kB,0B / 0B
+2026-01-06T20:28:55Z,flowershop_api,4.22%,125.4MiB / 7.625GiB,1.61%,1.81MB / 3.19MB,0B / 0B
+2026-01-06T20:28:55Z,flowershop_db,1.46%,106.9MiB / 7.625GiB,1.37%,2.12MB / 716kB,0B / 0B
+2026-01-06T20:28:58Z,flowershop_api,6.28%,130.2MiB / 7.625GiB,1.67%,1.93MB / 3.31MB,0B / 0B
+2026-01-06T20:28:58Z,flowershop_db,1.68%,106.7MiB / 7.625GiB,1.37%,2.19MB / 744kB,0B / 0B
+2026-01-06T20:29:00Z,flowershop_api,3.95%,134.6MiB / 7.625GiB,1.72%,2.06MB / 3.44MB,0B / 0B
+2026-01-06T20:29:00Z,flowershop_db,1.37%,107.6MiB / 7.625GiB,1.38%,2.24MB / 765kB,0B / 0B
+2026-01-06T20:29:03Z,flowershop_api,1.44%,135.8MiB / 7.625GiB,1.74%,2.1MB / 3.48MB,0B / 0B
+2026-01-06T20:29:03Z,flowershop_db,0.07%,107.8MiB / 7.625GiB,1.38%,2.26MB / 772kB,0B / 0B

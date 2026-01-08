@@ -1,0 +1,31 @@
+services:
+  db:
+    image: postgres:15
+    container_name: flowershop_db
+    environment:
+      POSTGRES_DB: FlowerShopPPO
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    volumes:
+      - db_data:/var/lib/postgresql/data
+      - ./db/init.sql:/docker-entrypoint-initdb.d/01-init.sql:ro
+    ports:
+      - "5432:5432"
+
+  api:
+    image: ${APP_IMAGE:-flowershop-api:dev}
+    build:
+      context: ..
+      dockerfile: benchmark/Dockerfile.webapp2
+    container_name: flowershop_api
+    environment:
+      ConnectionStrings__DefaultConnection: Host=db;Port=5432;Database=FlowerShopPPO;Username=postgres;Password=postgres
+      ASPNETCORE_URLS: http://0.0.0.0:8080
+      ASPNETCORE_ENVIRONMENT: Production
+    depends_on:
+      - db
+    ports:
+      - "8080:8080"
+
+volumes:
+  db_data:

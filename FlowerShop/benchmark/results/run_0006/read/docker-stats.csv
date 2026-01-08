@@ -1,0 +1,23 @@
+timestamp,container,cpu_percent,mem_usage,mem_percent,net_io,block_io
+2026-01-06T17:40:04Z,flowershop_api,83.99%,62.12MiB / 7.625GiB,0.80%,86.3kB / 167kB,0B / 0B
+2026-01-06T17:40:04Z,flowershop_db,5.46%,102.7MiB / 7.625GiB,1.31%,189kB / 81.2kB,0B / 0B
+2026-01-06T17:40:08Z,flowershop_api,4.10%,64.89MiB / 7.625GiB,0.83%,166kB / 387kB,0B / 0B
+2026-01-06T17:40:08Z,flowershop_db,4.97%,102.6MiB / 7.625GiB,1.31%,361kB / 135kB,0B / 0B
+2026-01-06T17:40:11Z,flowershop_api,6.00%,67.13MiB / 7.625GiB,0.86%,247kB / 606kB,0B / 0B
+2026-01-06T17:40:11Z,flowershop_db,5.79%,102.7MiB / 7.625GiB,1.32%,475kB / 171kB,0B / 0B
+2026-01-06T17:40:13Z,flowershop_api,5.42%,70.33MiB / 7.625GiB,0.90%,327kB / 826kB,0B / 0B
+2026-01-06T17:40:13Z,flowershop_db,6.22%,102.6MiB / 7.625GiB,1.31%,646kB / 224kB,0B / 0B
+2026-01-06T17:40:16Z,flowershop_api,5.73%,73.38MiB / 7.625GiB,0.94%,408kB / 1.05MB,0B / 0B
+2026-01-06T17:40:16Z,flowershop_db,7.16%,102.6MiB / 7.625GiB,1.31%,818kB / 278kB,0B / 0B
+2026-01-06T17:40:19Z,flowershop_api,5.39%,78.18MiB / 7.625GiB,1.00%,489kB / 1.27MB,0B / 0B
+2026-01-06T17:40:19Z,flowershop_db,8.14%,102.6MiB / 7.625GiB,1.31%,932kB / 314kB,0B / 0B
+2026-01-06T17:40:22Z,flowershop_api,5.58%,81.18MiB / 7.625GiB,1.04%,569kB / 1.49MB,0B / 0B
+2026-01-06T17:40:22Z,flowershop_db,6.53%,104.3MiB / 7.625GiB,1.34%,1.16MB / 385kB,0B / 0B
+2026-01-06T17:40:25Z,flowershop_api,5.23%,84.85MiB / 7.625GiB,1.09%,675kB / 1.78MB,0B / 0B
+2026-01-06T17:40:25Z,flowershop_db,6.59%,104.4MiB / 7.625GiB,1.34%,1.33MB / 439kB,0B / 0B
+2026-01-06T17:40:29Z,flowershop_api,4.25%,86.74MiB / 7.625GiB,1.11%,729kB / 1.93MB,0B / 0B
+2026-01-06T17:40:29Z,flowershop_db,4.97%,104.4MiB / 7.625GiB,1.34%,1.5MB / 492kB,0B / 0B
+2026-01-06T17:40:31Z,flowershop_api,6.36%,87.98MiB / 7.625GiB,1.13%,783kB / 2.07MB,0B / 0B
+2026-01-06T17:40:31Z,flowershop_db,6.33%,105.7MiB / 7.625GiB,1.35%,1.62MB / 528kB,0B / 0B
+2026-01-06T17:40:34Z,flowershop_api,3.91%,90.62MiB / 7.625GiB,1.16%,839kB / 2.22MB,0B / 0B
+2026-01-06T17:40:34Z,flowershop_db,0.07%,104.3MiB / 7.625GiB,1.34%,1.73MB / 564kB,0B / 0B

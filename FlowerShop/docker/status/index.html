@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Статус сервера - FlowerShop</title>
+    <style>
+        /* Основные стили */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        
+        .status-card {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            max-width: 600px;
+            width: 100%;
+            text-align: center;
+        }
+        
+        /* Шапка */
+        .header {
+            margin-bottom: 40px;
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .logo-icon {
+            color: #4CAF50;
+            font-size: 2.5em;
+        }
+        
+        h1 {
+            color: #333;
+            font-size: 2.2em;
+            margin-bottom: 10px;
+        }
+        
+        .subtitle {
+            color: #666;
+            font-size: 1.1em;
+            opacity: 0.9;
+        }
+        
+        /* Статус */
+        .status-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            padding: 12px 30px;
+            border-radius: 50px;
+            background: #e8f5e9;
+            margin-bottom: 30px;
+        }
+        
+        .status-dot {
+            width: 12px;
+            height: 12px;
+            background: #4CAF50;
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.1); opacity: 0.7; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+        
+        .status-text {
+            color: #2e7d32;
+            font-weight: 600;
+            font-size: 1.2em;
+        }
+        
+        /* Информация */
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .info-item {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+            border-left: 4px solid #4CAF50;
+        }
+        
+        .info-label {
+            color: #666;
+            font-size: 0.9em;
+            margin-bottom: 8px;
+            display: block;
+        }
+        
+        .info-value {
+            color: #333;
+            font-weight: 600;
+            font-size: 1.1em;
+        }
+        
+        /* Маршруты */
+        .routes {
+            background: #f0f7ff;
+            padding: 25px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+        }
+        
+        .routes h3 {
+            color: #2196F3;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+        
+        .route-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            justify-content: center;
+        }
+        
+        .route-tag {
+            background: white;
+            color: #2196F3;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 0.9em;
+            border: 2px solid #e3f2fd;
+            transition: all 0.3s;
+        }
+        
+        .route-tag:hover {
+            background: #2196F3;
+            color: white;
+            transform: translateY(-2px);
+        }
+        
+        /* Футер */
+        .footer {
+            color: #666;
+            font-size: 0.9em;
+            padding-top: 20px;
+            border-top: 1px solid #eee;
+        }
+        
+        /* Адаптивность */
+        @media (max-width: 600px) {
+            .status-card {
+                padding: 25px;
+            }
+            
+            h1 {
+                font-size: 1.8em;
+            }
+            
+            .info-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="status-card">
+        <div class="header">
+            <div class="logo">
+                <div class="logo-icon">🌺</div>
+                <h1>FlowerShop API Gateway</h1>
+            </div>
+            <div class="subtitle">Мониторинг состояния сервера</div>
+        </div>
+        
+        <div class="status-badge">
+            <div class="status-dot"></div>
+            <div class="status-text">СЕРВЕР РАБОТАЕТ</div>
+        </div>
+        
+        <div class="info-grid">
+            <div class="info-item">
+                <span class="info-label">Статус</span>
+                <div class="info-value">Online</div>
+            </div>
+            <div class="info-item">
+                <span class="info-label">Хост</span>
+                <div class="info-value" id="hostname">flower-shop.local</div>
+            </div>
+            <div class="info-item">
+                <span class="info-label">Версия</span>
+                <div class="info-value">v1.0.0</div>
+            </div>
+            <div class="info-item">
+                <span class="info-label">Обновлено</span>
+                <div class="info-value" id="timestamp">только что</div>
+            </div>
+        </div>
+        
+        <div class="routes">
+            <h3>📁 Доступные маршруты</h3>
+            <div class="route-tags">
+                <a href="/api/v1" class="route-tag">/api/v1</a>
+                <a href="/legacy" class="route-tag">/legacy</a>
+                <a href="/admin" class="route-tag">/admin</a>
+                <a href="/documentation" class="route-tag">/documentation</a>
+                <a href="/management" class="route-tag">/management</a>
+            </div>
+        </div>
+        
+        <div class="footer">
+            <p>© 2024 FlowerShop Gateway | Все системы работают стабильно</p>
+            <p style="margin-top: 10px; font-size: 0.8em; color: #999;">
+                Последняя проверка: <span id="currentTime"></span>
+            </p>
+        </div>
+    </div>
+
+    <script>
+        // Динамическое обновление времени
+        function updateTime() {
+            const now = new Date();
+            const timeString = now.toLocaleTimeString('ru-RU');
+            const dateString = now.toLocaleDateString('ru-RU');
+            document.getElementById('currentTime').textContent = 
+                `${dateString} ${timeString}`;
+        }
+        
+        // Обновление hostname
+        document.getElementById('hostname').textContent = window.location.hostname;
+        
+        // Обновление времени при загрузке
+        updateTime();
+        
+        // Обновляем время каждую минуту
+        setInterval(updateTime, 60000);
+    </script>
+</body>
+</html>
