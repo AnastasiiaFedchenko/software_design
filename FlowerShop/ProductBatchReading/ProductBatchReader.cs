@@ -32,56 +32,12 @@ namespace ProductBatchReading
 
             using (var reader = _streamReaderFactory(stream))
             {
-                var batchIdLine = reader.ReadLine();
-                if (string.IsNullOrEmpty(batchIdLine))
-                    throw new InvalidDataException("Batch ID line is missing");
+                int batchId = ReadInt(reader, "Batch ID");
+                int productsCount = ReadInt(reader, "Products count");
+                int supplier = ReadInt(reader, "Supplier");
+                int responsible = ReadInt(reader, "Responsible");
 
-                var productsCountLine = reader.ReadLine();
-                if (string.IsNullOrEmpty(productsCountLine))
-                    throw new InvalidDataException("Products count line is missing");
-                
-                var supplierLine = reader.ReadLine();
-                if (string.IsNullOrEmpty(supplierLine))
-                    throw new InvalidDataException("Supplier line is missing");
-
-                var responsibleLine = reader.ReadLine();
-                if (string.IsNullOrEmpty(responsibleLine))
-                    throw new InvalidDataException("Responsible line is missing");
-
-
-                if (!int.TryParse(batchIdLine, out var batchId))
-                    throw new InvalidDataException("Invalid Batch ID format");
-
-                if (!int.TryParse(productsCountLine, out var productsCount))
-                    throw new InvalidDataException("Invalid Products Count format");
-                
-                if (!int.TryParse(supplierLine, out var supplier))
-                    throw new InvalidDataException("Invalid Batch ID format");
-
-                if (!int.TryParse(responsibleLine, out var responsible))
-                    throw new InvalidDataException("Invalid Batch ID format");
-
-                // Чтение продуктов
-                var products = new List<ProductInfo>();
-                for (int i = 0; i < productsCount; i++)
-                {
-                    var productLine = reader.ReadLine();
-                    if (string.IsNullOrEmpty(productLine))
-                        throw new InvalidDataException($"Missing product line {i + 1}");
-
-                    try
-                    {
-                        products.Add(ParseProductLine(productLine));
-                    }
-                    catch (Exception ex) when (
-                        ex is FormatException ||
-                        ex is ArgumentNullException ||
-                        ex is InvalidDataException)
-                    {
-                        throw new InvalidDataException($"Invalid product data at line {i + 4}: {ex.Message}", ex);
-                    }
-                }
-
+                var products = ReadProducts(reader, productsCount);
                 return new ProductBatch(batchId, supplier, responsible, products);
             }
         }
@@ -108,6 +64,83 @@ namespace ProductBatchReading
                 );
 
                 return product;
+            }
+            catch (FormatException ex)
+            {
+                throw new InvalidDataException($"Invalid number format in product line: {ex.Message}", ex);
+            }
+            catch (Exception ex)
+            {
+                throw new InvalidDataException($"Error parsing product line: {ex.Message}", ex);
+            }
+        }
+
+        private static int ReadInt(StreamReader reader, string label)
+        {
+            var line = reader.ReadLine();
+            if (string.IsNullOrEmpty(line))
+            {
+                throw new InvalidDataException($"{label} line is missing");
+            }
+
+            if (!int.TryParse(line, out var value))
+            {
+                throw new InvalidDataException($"Invalid {label} format");
+            }
+
+            return value;
+        }
+
+        private static List<ProductInfo> ReadProducts(StreamReader reader, int productsCount)
+        {
+            var products = new List<ProductInfo>();
+            for (int i = 0; i < productsCount; i++)
+            {
+                var productLine = reader.ReadLine();
+                if (string.IsNullOrEmpty(productLine))
+                {
+                    throw new InvalidDataException($"Missing product line {i + 1}");
+                }
+
+                try
+                {
+                    products.Add(ParseProductLineStatic(productLine));
+                }
+                catch (Exception ex) when (
+                    ex is FormatException ||
+                    ex is ArgumentNullException ||
+                    ex is InvalidDataException)
+                {
+                    throw new InvalidDataException($"Invalid product data at line {i + 4}: {ex.Message}", ex);
+                }
+            }
+
+            return products;
+        }
+
+        private static ProductInfo ParseProductLineStatic(string line)
+        {
+            if (string.IsNullOrEmpty(line))
+            {
+                throw new InvalidDataException("Product line is empty");
+            }
+
+            var parts = line.Split(';');
+            if (parts.Length != 5)
+            {
+                throw new InvalidDataException("Product line must contain exactly 7 parts separated by ';'");
+            }
+
+            try
+            {
+                return new ProductInfo(
+                    int.Parse(parts[0]),
+                    DateTime.Parse(parts[1]),
+                    DateTime.Parse(parts[2]),
+                    int.Parse(parts[4]),
+                    double.Parse(parts[3], System.Globalization.NumberStyles.Any,
+                                           System.Globalization.CultureInfo.InvariantCulture)
+                );
             }
             catch (FormatException ex)
             {

@@ -339,111 +339,29 @@ class Menu
                     _logger.LogInformation("0. Выход из меню заказа");
 
                     return;
-                case "1": // 1. Показать доступные товары
+                case "1":
                     _logger.LogInformation("1. Показать доступные товары");
-
-                    string choice2;
-                    int skip = 0;
-                    do
-                    {
-                        Inventory inventory_temp = productService.GetAllAvailableProducts(limit, skip);
-                        foreach (var pL in inventory_temp.Products)
-                        {
-                            Console.WriteLine($"Товар: {pL.Product.IdNomenclature} {pL.Product.Type}, " +
-                                            $"{pL.Product.Country}, количество: {pL.Amount}, " +
-                                            $"цена: {pL.Product.Price}");
-                        }
-                        Console.WriteLine(new string('_', 70));
-                        skip += limit;
-                        if (inventory_temp.TotalAmount < limit)
-                        {
-                            Console.WriteLine("Выведены все доступные товары.");
-                            choice2 = "0";
-                        }
-                        else
-                        {
-                            Console.Write("Продолжить вывод доступных товаров? (0 - остановиться, 1 - продолжить): ");
-                            choice2 = Console.ReadLine();
-                        }
-                    } while (choice2 == "1");
+                    ShowAvailableProducts(limit);
                     break;
-                case "2": // 2. Добавить товар в корзину
+                case "2":
                     _logger.LogInformation("2. Добавить товар в корзину");
-
-                    Console.Write("Введите id товара для добавления в корзину: ");
-                    int productID = int.Parse(Console.ReadLine());
-                    Product temp = productService.GetInfoOnProduct(productID);
-                    if (temp == null)
-                        Console.WriteLine("Продукта с таким Id нет в наличие.");
-                    else
-                    {
-                        Console.Write("Введите количество товара для добавления в корзину: ");
-                        int amount = int.Parse(Console.ReadLine());
-                        if (amount > temp.AmountInStock)
-                            Console.WriteLine("Доступно только " + temp.AmountInStock);
-                        else
-                        {
-                            items.Add(new ReceiptLine(temp, amount));
-                            Console.WriteLine("Товар добавлен в корзину.");
-                        }
-                    }
+                    AddItemToCart(items);
                     break;
-                case "3": // 3. Изменить количество товара в корзине
+                case "3":
                     _logger.LogInformation("3. Изменить количество товара в корзине");
-
-                    Console.Write("Введите id товара для изменения количества в корзине: ");
-                    int productID2 = int.Parse(Console.ReadLine());
-                    for (int i = 0; i < items.Count; i++)
-                    {
-                        if (items[i].Product.IdNomenclature == productID2)
-                        {
-                            Console.Write("Введите новое количество товара: ");
-                            int amount2 = int.Parse(Console.ReadLine());
-                            if (amount2 > items[i].Product.AmountInStock)
-                                Console.WriteLine("Доступно только " + items[i].Product.AmountInStock);
-                            else
-                            {
-                                items[i].Amount = amount2;
-                                Console.WriteLine("Количество товара изменено.");
-                            }
-                        }
-                    }
+                    UpdateCartItem(items);
                     break;
-                case "4": // 4. Удалить товар из корзины
+                case "4":
                     _logger.LogInformation("4. Удалить товар из корзины");
-
-                    Console.Write("Введите id товара для удаления из корзины: ");
-                    int productID3 = int.Parse(Console.ReadLine());
-                    for (int i = 0; i < items.Count; i++)
-                    {
-                        if (items[i].Product.IdNomenclature == productID3)
-                        {
-                            items.RemoveAt(i);
-                            Console.WriteLine("Товар удалён из корзины.");
-                            i--;
-                        }
-                    }
+                    RemoveCartItem(items);
                     break;
-                case "5": // 5. Показать содержание корзины
+                case "5":
                     _logger.LogInformation("5. Показать содержание корзины");
-
-                    Console.WriteLine("Корзина:");
-                    foreach (var item in items)
-                        Console.WriteLine($"{item.Product.IdNomenclature} {item.Product.Type}, " +
-                                            $"{item.Product.Country}, количество: {item.Amount}, " +
-                                            $"цена за шт.: {item.Product.Price}");
-                    if (items.Count == 0)
-                        Console.WriteLine("Корзина пуста.");
+                    ShowCart(items);
                     break;
-                case "6": // 6. Заказать
+                case "6":
                     _logger.LogInformation("6. Заказать");
-
-                    Receipt receipt = productService.MakePurchase(items, customerID);
-                    items = new List<ReceiptLine>();
-                    if (receipt.Id == -1)
-                        Console.WriteLine($"Произошли проблемы при оформлении товара.");
-                    else
-                        Console.WriteLine($"Заказ оформлен. Номер чека {receipt.Id}");
+                    PlaceOrder(customerID, ref items);
                     break;
                 default:
                     Console.WriteLine("Неверный выбор. Попробуйте еще раз.");
@@ -452,6 +370,126 @@ class Menu
                     Console.ReadKey();
                     break;
             }
+        }
+    }
+
+    private static void ShowAvailableProducts(int limit)
+    {
+        string choice2;
+        int skip = 0;
+        do
+        {
+            Inventory inventoryTemp = productService.GetAllAvailableProducts(limit, skip);
+            foreach (var pL in inventoryTemp.Products)
+            {
+                Console.WriteLine($"Товар: {pL.Product.IdNomenclature} {pL.Product.Type}, " +
+                                  $"{pL.Product.Country}, количество: {pL.Amount}, " +
+                                  $"цена: {pL.Product.Price}");
+            }
+            Console.WriteLine(new string('_', 70));
+            skip += limit;
+            if (inventoryTemp.TotalAmount < limit)
+            {
+                Console.WriteLine("Выведены все доступные товары.");
+                choice2 = "0";
+            }
+            else
+            {
+                Console.Write("Продолжить вывод доступных товаров? (0 - остановиться, 1 - продолжить): ");
+                choice2 = Console.ReadLine();
+            }
+        } while (choice2 == "1");
+    }
+
+    private static void AddItemToCart(List<ReceiptLine> items)
+    {
+        Console.Write("Введите id товара для добавления в корзину: ");
+        int productId = int.Parse(Console.ReadLine());
+        Product temp = productService.GetInfoOnProduct(productId);
+        if (temp == null)
+        {
+            Console.WriteLine("Продукта с таким Id нет в наличие.");
+            return;
+        }
+
+        Console.Write("Введите количество товара для добавления в корзину: ");
+        int amount = int.Parse(Console.ReadLine());
+        if (amount > temp.AmountInStock)
+        {
+            Console.WriteLine("Доступно только " + temp.AmountInStock);
+            return;
+        }
+
+        items.Add(new ReceiptLine(temp, amount));
+        Console.WriteLine("Товар добавлен в корзину.");
+    }
+
+    private static void UpdateCartItem(List<ReceiptLine> items)
+    {
+        Console.Write("Введите id товара для изменения количества в корзине: ");
+        int productId = int.Parse(Console.ReadLine());
+        for (int i = 0; i < items.Count; i++)
+        {
+            if (items[i].Product.IdNomenclature != productId)
+            {
+                continue;
+            }
+
+            Console.Write("Введите новое количество товара: ");
+            int amount2 = int.Parse(Console.ReadLine());
+            if (amount2 > items[i].Product.AmountInStock)
+            {
+                Console.WriteLine("Доступно только " + items[i].Product.AmountInStock);
+                return;
+            }
+
+            items[i].Amount = amount2;
+            Console.WriteLine("Количество товара изменено.");
+            return;
+        }
+    }
+
+    private static void RemoveCartItem(List<ReceiptLine> items)
+    {
+        Console.Write("Введите id товара для удаления из корзины: ");
+        int productId = int.Parse(Console.ReadLine());
+        for (int i = 0; i < items.Count; i++)
+        {
+            if (items[i].Product.IdNomenclature == productId)
+            {
+                items.RemoveAt(i);
+                Console.WriteLine("Товар удалён из корзины.");
+                i--;
+            }
+        }
+    }
+
+    private static void ShowCart(List<ReceiptLine> items)
+    {
+        Console.WriteLine("Корзина:");
+        foreach (var item in items)
+        {
+            Console.WriteLine($"{item.Product.IdNomenclature} {item.Product.Type}, " +
+                              $"{item.Product.Country}, количество: {item.Amount}, " +
+                              $"цена за шт.: {item.Product.Price}");
+        }
+        if (items.Count == 0)
+        {
+            Console.WriteLine("Корзина пуста.");
+        }
+    }
+
+    private static void PlaceOrder(int customerID, ref List<ReceiptLine> items)
+    {
+        Receipt receipt = productService.MakePurchase(items, customerID);
+        items = new List<ReceiptLine>();
+        if (receipt.Id == -1)
+        {
+            Console.WriteLine("Произошли проблемы при оформлении товара.");
+        }
+        else
+        {
+            Console.WriteLine($"Заказ оформлен. Номер чека {receipt.Id}");
         }
     }
 

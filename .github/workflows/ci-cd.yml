@@ -42,6 +42,18 @@ jobs:
       run: dotnet build --no-restore --configuration Release
       working-directory: ./FlowerShop
       
+    - name: Restore dotnet tools
+      run: dotnet tool restore
+      working-directory: ./FlowerShop
+      
+    - name: Code style check
+      run: dotnet format --verify-no-changes
+      working-directory: ./FlowerShop
+      
+    - name: Static analysis (Cyclomatic/Halstead)
+      run: dotnet run --project tools/StaticAnalysis -- --max-cyclomatic 10 --out-dir analysis
+      working-directory: ./FlowerShop
+      
     - name: Run unit tests with Allure
       run: |
         dotnet test ./Tests/Tests.csproj --configuration Release --verbosity normal \

@@ -28,7 +28,7 @@ namespace Domain
     public class ForecastOfOrders
     {
         public int AmountOfOrders { get; set; }
-        
+
         public List<ProductLine> Products { get; set; }
         public List<DailyForecast> DailyForecast { get; set; }
         public ForecastOfOrders(int amount_of_orders, List<ProductLine> products)
