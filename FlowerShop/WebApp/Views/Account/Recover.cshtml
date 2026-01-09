@@ -1,20 +1,21 @@
-﻿@{
-    ViewData["Title"] = "Вход в систему";
+@{
+    ViewData["Title"] = "Восстановление доступа";
 }
 
 <div class="row justify-content-center">
-    <div class="col-md-4">
-        <h2 class="text-center mb-4">Вход в систему</h2>
-        <form asp-action="Login" method="post">
+    <div class="col-md-5">
+        <h2 class="text-center mb-4">Восстановление доступа</h2>
+
+        <form asp-action="Recover" method="post">
             <div class="form-group">
                 <label for="id">ID пользователя:</label>
                 <input type="number" class="form-control" id="id" name="id" required>
             </div>
             <div class="form-group">
-                <label for="password">Пароль:</label>
-                <input type="password" class="form-control" id="password" name="password" required>
+                <label for="recoveryCode">Код восстановления:</label>
+                <input type="text" class="form-control" id="recoveryCode" name="recoveryCode" required>
             </div>
-            <button type="submit" class="btn btn-primary w-100 mt-3">Войти</button>
+            <button type="submit" class="btn btn-primary w-100 mt-3">Восстановить</button>
         </form>
 
         @if (ViewData.ModelState.ErrorCount > 0)
@@ -27,8 +28,9 @@
             </div>
         }
 
-        <div class="mt-3 text-center">
-            <a asp-action="Recover">Восстановить доступ</a>
-        </div>
+        @if (ViewBag.Message != null)
+        {
+            <div class="alert alert-success mt-3">@ViewBag.Message</div>
+        }
     </div>
 </div>

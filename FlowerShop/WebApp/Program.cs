@@ -1,4 +1,4 @@
-using System.Security.Claims;
+п»їusing System.Security.Claims;
 using Domain;
 using Domain.InputPorts;
 using Domain.OutputPorts;
@@ -15,17 +15,18 @@ using UserValidation;
 using System.Security.Cryptography.X509Certificates;
 using Microsoft.AspNetCore.Diagnostics;
 using ConnectionToDB;
+using WebApp.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Настройка Serilog
+// РќР°СЃС‚СЂРѕР№РєР° Serilog
 Log.Logger = new LoggerConfiguration()
     .ReadFrom.Configuration(builder.Configuration)
     .CreateLogger();
 
 builder.Host.UseSerilog();
 
-// Конфигурация сервисов
+// РљРѕРЅС„РёРіСѓСЂР°С†РёСЏ СЃРµСЂРІРёСЃРѕРІ
 builder.Services.AddControllersWithViews();
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddSession(options =>
@@ -35,12 +36,13 @@ builder.Services.AddSession(options =>
     options.IdleTimeout = TimeSpan.FromMinutes(30);
 });
 
-var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
+var connectionString = builder.Configuration.GetConnectionString("DefaultConnection")
+    ?? builder.Configuration["TEST_CONNECTION_STRING"];
 var defaultLimit = builder.Configuration.GetValue<int>("AppSettings:DefaultPaginationLimit");
 var pythonPath = builder.Configuration["PythonSettings:PythonPath"];
 var scriptPath = builder.Configuration["PythonSettings:ScriptPath"];
 
-// Регистрация сервисов
+// Р РµРіРёСЃС‚СЂР°С†РёСЏ СЃРµСЂРІРёСЃРѕРІ
 builder.Services
     .AddSingleton<IUserRepo>(_ => new UserRepo(new NpgsqlConnectionFactory(connectionString)))
     .AddSingleton<IInventoryRepo>(_ => new InventoryRepo(new NpgsqlConnectionFactory(connectionString)))
@@ -57,17 +59,17 @@ builder.Services
 /*builder.Services.Configure<IISServerOptions>(options =>
 {
     options.MaxRequestBodySize = 50 * 1024 * 1024; // 50MB
-    options.AllowSynchronousIO = true; // Если нужно
+    options.AllowSynchronousIO = true; // Р•СЃР»Рё РЅСѓР¶РЅРѕ
 });
 
 builder.WebHost.ConfigureKestrel(serverOptions =>
 {
     serverOptions.ConfigureHttpsDefaults(httpsOptions =>
     {
-        // Используем встроенный сертификат разработки
+        // РСЃРїРѕР»СЊР·СѓРµРј РІСЃС‚СЂРѕРµРЅРЅС‹Р№ СЃРµСЂС‚РёС„РёРєР°С‚ СЂР°Р·СЂР°Р±РѕС‚РєРё
         httpsOptions.ServerCertificate = new X509Certificate2(
             Path.Combine("..", "..", "..", "..", "localhost.pfx"), 
-            "123456" // Пароль для сертификата разработки
+            "123456" // РџР°СЂРѕР»СЊ РґР»СЏ СЃРµСЂС‚РёС„РёРєР°С‚Р° СЂР°Р·СЂР°Р±РѕС‚РєРё
         );
     });
 });*/
@@ -95,7 +97,7 @@ builder.Services.AddControllersWithViews()
         options.JsonSerializerOptions.Converters.Add(new ProductJsonConverter());
     });
 
-// Настройка аутентификации
+// РќР°СЃС‚СЂРѕР№РєР° Р°СѓС‚РµРЅС‚РёС„РёРєР°С†РёРё
 builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
     .AddCookie(options =>
     {
@@ -105,7 +107,7 @@ builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationSc
         options.ExpireTimeSpan = TimeSpan.FromMinutes(30);
     });
 
-// Настройка авторизации
+// РќР°СЃС‚СЂРѕР№РєР° Р°РІС‚РѕСЂРёР·Р°С†РёРё
 builder.Services.AddAuthorization(options =>
 {
     options.AddPolicy("AdminOnly", policy => policy.RequireClaim(ClaimTypes.Role, "Administrator"));
@@ -113,15 +115,20 @@ builder.Services.AddAuthorization(options =>
     options.AddPolicy("StorekeeperOnly", policy => policy.RequireClaim(ClaimTypes.Role, "Storekeeper"));
 });
 
+builder.Services.Configure<AuthSettings>(builder.Configuration.GetSection("AuthSettings"));
+builder.Services.AddSingleton<AuthStateService>();
+builder.Services.Configure<EmailSettings>(builder.Configuration.GetSection("EmailSettings"));
+builder.Services.AddSingleton<IEmailSender, SmtpEmailSender>();
+
 AppDomain.CurrentDomain.UnhandledException += (sender, e) =>
 {
     var exception = e.ExceptionObject as Exception;
-    Log.Fatal(exception, "Необработанное исключение");
+    Log.Fatal(exception, "РќРµРѕР±СЂР°Р±РѕС‚Р°РЅРЅРѕРµ РёСЃРєР»СЋС‡РµРЅРёРµ");
 };
 
 var app = builder.Build();
 
-// Конфигурация HTTP pipeline
+// РљРѕРЅС„РёРіСѓСЂР°С†РёСЏ HTTP pipeline
 if (!app.Environment.IsDevelopment())
 {
     app.UseExceptionHandler("/Home/Error");
@@ -133,10 +140,10 @@ app.UseExceptionHandler(errorApp =>
     {
         var exception = context.Features.Get<IExceptionHandlerFeature>()?.Error;
         var logger = context.RequestServices.GetRequiredService<ILogger<Program>>();
-        logger.LogError(exception, "Глобальная ошибка");
+        logger.LogError(exception, "Р“Р»РѕР±Р°Р»СЊРЅР°СЏ РѕС€РёР±РєР°");
 
         context.Response.StatusCode = 500;
-        await context.Response.WriteAsync("Произошла ошибка. Подробности в логах.");
+        await context.Response.WriteAsync("РџСЂРѕРёР·РѕС€Р»Р° РѕС€РёР±РєР°. РџРѕРґСЂРѕР±РЅРѕСЃС‚Рё РІ Р»РѕРіР°С….");
     });
 });
 
@@ -153,3 +160,5 @@ app.MapControllerRoute(
     pattern: "{controller=Account}/{action=Login}/{id?}");
 
 app.Run();
+
+public partial class Program { }

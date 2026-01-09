@@ -1,0 +1,35 @@
+@{
+    ViewData["Title"] = "Двухфакторная проверка";
+}
+
+<div class="row justify-content-center">
+    <div class="col-md-5">
+        <h2 class="text-center mb-4">Подтверждение входа</h2>
+        <p>Введите код, отправленный на вашу почту или устройство.</p>
+
+        <form asp-action="TwoFactor" method="post">
+            <div class="form-group">
+                <label for="code">Код подтверждения:</label>
+                <input type="text" class="form-control" id="code" name="code" required>
+            </div>
+            <button type="submit" class="btn btn-primary w-100 mt-3">Подтвердить</button>
+        </form>
+
+        @if (ViewData.ModelState.ErrorCount > 0)
+        {
+            <div class="alert alert-danger mt-3">
+                @foreach (var error in ViewData.ModelState.Values.SelectMany(v => v.Errors))
+                {
+                    <div>@error.ErrorMessage</div>
+                }
+            </div>
+        }
+
+        @if (ViewBag.TwoFactorCode != null)
+        {
+            <div class="alert alert-info mt-3">
+                Код (для тестов): <span id="twofactor-code">@ViewBag.TwoFactorCode</span>
+            </div>
+        }
+    </div>
+</div>

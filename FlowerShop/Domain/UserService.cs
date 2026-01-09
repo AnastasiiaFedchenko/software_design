@@ -43,5 +43,41 @@ namespace Domain
                 throw;
             }
         }
+
+        public bool ChangePassword(int id, string currentPassword, string newPassword)
+        {
+            _logger.LogInformation("Запрос на смену пароля для пользователя {UserId}", id);
+
+            if (string.IsNullOrWhiteSpace(currentPassword) || string.IsNullOrWhiteSpace(newPassword))
+            {
+                _logger.LogWarning("Пустой пароль при смене пароля пользователя {UserId}", id);
+                return false;
+            }
+
+            if (currentPassword == newPassword)
+            {
+                _logger.LogWarning("Новый пароль совпадает с текущим для пользователя {UserId}", id);
+                return false;
+            }
+
+            try
+            {
+                var result = _userRepo.ChangePassword(id, currentPassword, newPassword);
+                if (result)
+                {
+                    _logger.LogInformation("Пароль пользователя {UserId} успешно изменен", id);
+                }
+                else
+                {
+                    _logger.LogWarning("Смена пароля пользователя {UserId} не выполнена", id);
+                }
+                return result;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Ошибка при смене пароля пользователя {UserId}", id);
+                throw;
+            }
+        }
     }
 }

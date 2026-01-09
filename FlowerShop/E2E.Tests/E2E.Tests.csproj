@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>net7.0</TargetFramework>
@@ -8,6 +8,7 @@
     <IsTestProject>true</IsTestProject>
     <PreserveCompilationContext>true</PreserveCompilationContext>
     <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
+    <UserSecretsId>083635f9-6c2e-492b-87f6-718c2234297a</UserSecretsId>
   </PropertyGroup>
 
   <ItemGroup>
@@ -29,6 +30,10 @@
     <PackageReference Include="Microsoft.AspNetCore.Mvc.Testing" Version="7.0.0" />
     <PackageReference Include="Allure.Xunit" Version="2.9.5" />
     <PackageReference Include="Moq" Version="4.20.70" />
+    <PackageReference Include="LightBDD.XUnit2" Version="3.0.0" />
+    <PackageReference Include="LightBDD.Core" Version="3.0.0" />
+    <PackageReference Include="MailKit" Version="4.6.0" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.UserSecrets" Version="7.0.0" />
   </ItemGroup>
 
   <!-- ДОБАВЛЕННАЯ ССЫЛКА НА ВЕБ-ПРИЛОЖЕНИЕ -->

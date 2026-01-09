@@ -271,6 +271,8 @@ jobs:
       env:
         ASPNETCORE_ENVIRONMENT: Test
         ConnectionStrings__DefaultConnection: "Host=localhost;Port=5432;Database=flowershoptest;Username=postgres;Password=5432"
+        AuthSettings__ShowTwoFactorCode: "true"
+        AuthSettings__ShowRecoveryCode: "true"
         
     - name: Wait for application to start
       run: |
@@ -298,6 +300,9 @@ jobs:
       env:
         TEST_CONNECTION_STRING: "Host=localhost;Port=5432;Database=flowershoptest;Username=postgres;Password=5432;Include Error Detail=true"
         BASE_URL: "http://localhost:5000"
+        E2E_USER_ID: "9001"
+        E2E_USER_PASSWORD: ${{ secrets.E2E_USER_PASSWORD }}
+        E2E_NEW_PASSWORD: ${{ secrets.E2E_NEW_PASSWORD }}
       run: |
         dotnet test ./E2E.Tests/E2E.Tests.csproj --configuration Release --verbosity normal \
         --logger "trx;LogFileName=e2e-test-results.trx" \
@@ -305,6 +310,121 @@ jobs:
         --results-directory TestResults/E2E
       working-directory: ./FlowerShop
       continue-on-error: false
+
+  auth-e2e-tests:
+    name: Run Auth E2E Tests (BDD)
+    runs-on: ubuntu-latest
+    needs: integration-tests
+    if: needs.integration-tests.result == 'success'
+    
+    services:
+      postgres:
+        image: postgres:15
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: 5432
+          POSTGRES_DB: postgres
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 5432:5432
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v3
+      with:
+        dotnet-version: ${{ env.DOTNET_VERSION }}
+        
+    - name: Install PostgreSQL client
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y postgresql-client
+        
+    - name: Wait for PostgreSQL
+      run: |
+        for i in {1..30}; do
+          if pg_isready -h localhost -p 5432 -U postgres; then
+            echo "PostgreSQL is ready"
+            break
+          fi
+          echo "Waiting for PostgreSQL... ($i/30)"
+          sleep 2
+        done
+        
+    - name: Initialize test database
+      run: |
+        PGPASSWORD=5432 psql -h localhost -U postgres -d postgres -c "CREATE DATABASE flowershoptest;"
+        
+    - name: Restore dependencies
+      run: dotnet restore
+      working-directory: ./FlowerShop
+      
+    - name: Build solution
+      run: dotnet build --no-restore --configuration Release
+      working-directory: ./FlowerShop
+      
+    - name: Build and run application for Auth E2E tests
+      run: |
+        echo "Starting application from FlowerShop directory..."
+        cd FlowerShop
+        dotnet run --configuration Release --no-build &
+        sleep 25
+      working-directory: ./
+      env:
+        ASPNETCORE_ENVIRONMENT: Test
+        ConnectionStrings__DefaultConnection: "Host=localhost;Port=5432;Database=flowershoptest;Username=postgres;Password=5432"
+        AuthSettings__ShowTwoFactorCode: "false"
+        AuthSettings__ShowRecoveryCode: "false"
+        EmailSettings__SmtpHost: ${{ secrets.SMTP_HOST }}
+        EmailSettings__SmtpPort: ${{ secrets.SMTP_PORT }}
+        EmailSettings__SmtpUser: ${{ secrets.SMTP_USER }}
+        EmailSettings__SmtpPassword: ${{ secrets.SMTP_PASSWORD }}
+        EmailSettings__FromEmail: ${{ secrets.SMTP_FROM }}
+        EmailSettings__AdminEmail: ${{ secrets.E2E_EMAIL_USER }}
+        
+    - name: Run Auth BDD E2E tests
+      env:
+        TEST_CONNECTION_STRING: "Host=localhost;Port=5432;Database=flowershoptest;Username=postgres;Password=5432;Include Error Detail=true"
+        BASE_URL: "http://localhost:5000"
+        E2E_USER_ID: "9001"
+        E2E_USER_PASSWORD: ${{ secrets.E2E_USER_PASSWORD }}
+        E2E_NEW_PASSWORD: ${{ secrets.E2E_NEW_PASSWORD }}
+        E2E_EMAIL_USER: ${{ secrets.E2E_EMAIL_USER }}
+        E2E_EMAIL_PASSWORD: ${{ secrets.E2E_EMAIL_PASSWORD }}
+        E2E_EMAIL_HOST: ${{ secrets.E2E_EMAIL_HOST }}
+        E2E_EMAIL_PORT: ${{ secrets.E2E_EMAIL_PORT }}
+        E2E_EMAIL_SSL: ${{ secrets.E2E_EMAIL_SSL }}
+      run: |
+        dotnet test ./E2E.Tests/E2E.Tests.csproj --configuration Release --verbosity normal \
+        --filter "FullyQualifiedName~AuthenticationBddTests" \
+        --logger "trx;LogFileName=auth-e2e-test-results.trx" \
+        --logger "console;verbosity=normal" \
+        --results-directory TestResults/AuthE2E
+      working-directory: ./FlowerShop
+      continue-on-error: false
+      
+    - name: Stop application
+      if: always()
+      run: |
+        pkill -f "dotnet.*run" || true
+        sleep 3
+        if pgrep -f "dotnet.*run" > /dev/null; then
+          pkill -9 -f "dotnet.*run" || true
+        fi
+        
+    - name: Upload Auth E2E test results
+      uses: actions/upload-artifact@v4
+      if: always()
+      with:
+        name: auth-e2e-test-results
+        path: FlowerShop/TestResults/AuthE2E/
+        retention-days: 30
       
     - name: Stop application
       if: always()
@@ -347,6 +467,7 @@ jobs:
     needs: 
       - unit-tests
       - integration-tests  
+      - auth-e2e-tests
       - e2e-tests
     if: always()
     

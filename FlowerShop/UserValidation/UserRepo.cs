@@ -24,7 +24,7 @@ namespace UserValidation
             using (var connection = _connectionFactory.CreateOpenConnection())
             {
                 var query = @"
-                SELECT type 
+                SELECT type::text 
                 FROM ""user"" 
                 WHERE id = @id AND password = @password;";
 
@@ -58,6 +58,40 @@ namespace UserValidation
                             _ => null // Неизвестная роль
                         };
                     }
+                }
+            }
+        }
+
+        public bool ChangePassword(int id, string currentPassword, string newPassword)
+        {
+            using (var connection = _connectionFactory.CreateOpenConnection())
+            {
+                var query = @"
+                UPDATE ""user""
+                SET password = @newPassword
+                WHERE id = @id AND password = @currentPassword;";
+
+                using (var command = connection.CreateCommand())
+                {
+                    command.CommandText = query;
+
+                    var idParam = command.CreateParameter();
+                    idParam.ParameterName = "@id";
+                    idParam.Value = id;
+                    command.Parameters.Add(idParam);
+
+                    var currentParam = command.CreateParameter();
+                    currentParam.ParameterName = "@currentPassword";
+                    currentParam.Value = currentPassword;
+                    command.Parameters.Add(currentParam);
+
+                    var newParam = command.CreateParameter();
+                    newParam.ParameterName = "@newPassword";
+                    newParam.Value = newPassword;
+                    command.Parameters.Add(newParam);
+
+                    var rows = command.ExecuteNonQuery();
+                    return rows > 0;
                 }
             }
         }
