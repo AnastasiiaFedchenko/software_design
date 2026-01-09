@@ -392,6 +392,7 @@ jobs:
       env:
         TEST_CONNECTION_STRING: "Host=localhost;Port=5432;Database=flowershoptest;Username=postgres;Password=5432;Include Error Detail=true"
         BASE_URL: "http://localhost:5000"
+        E2E_USE_FACTORY: "true"
         E2E_USER_ID: "9001"
         E2E_USER_PASSWORD: ${{ secrets.E2E_USER_PASSWORD }}
         E2E_NEW_PASSWORD: ${{ secrets.E2E_NEW_PASSWORD }}
