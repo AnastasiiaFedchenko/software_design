@@ -52,17 +52,7 @@ namespace E2E.Tests
                 .AddUserSecrets<AuthenticationBddTests>(optional: true)
                 .AddEnvironmentVariables()
                 .Build();
-            _useFactory = string.Equals(_config["E2E_USE_FACTORY"], "true", StringComparison.OrdinalIgnoreCase)
-                || (string.IsNullOrEmpty(_config["BASE_URL"]) && string.IsNullOrEmpty(_config["CI"]));
-            _baseUrl = _config["BASE_URL"] ?? _baseUrl;
-            _userId = int.TryParse(_config["E2E_USER_ID"], out var id) ? id : 9001;
-            _password = GetRequiredSetting("E2E_USER_PASSWORD");
-            _newPassword = GetRequiredSetting("E2E_NEW_PASSWORD");
-            _imapUser = _config["E2E_EMAIL_USER"];
-            _imapPassword = _config["E2E_EMAIL_PASSWORD"];
-            _imapHost = _config["E2E_EMAIL_HOST"] ?? _imapHost;
-            _imapPort = int.TryParse(_config["E2E_EMAIL_PORT"], out var port) ? port : _imapPort;
-            _imapUseSsl = !string.Equals(_config["E2E_EMAIL_SSL"], "false", StringComparison.OrdinalIgnoreCase);
+            InitializeSettings();
 
             var handler = new HttpClientHandler
             {
@@ -98,6 +88,21 @@ namespace E2E.Tests
 
             EnsureUserExists();
             return Task.CompletedTask;
+        }
+
+        private void InitializeSettings()
+        {
+            _useFactory = string.Equals(_config["E2E_USE_FACTORY"], "true", StringComparison.OrdinalIgnoreCase)
+                || (string.IsNullOrEmpty(_config["BASE_URL"]) && string.IsNullOrEmpty(_config["CI"]));
+            _baseUrl = _config["BASE_URL"] ?? _baseUrl;
+            _userId = int.TryParse(_config["E2E_USER_ID"], out var id) ? id : 9001;
+            _password = GetRequiredSetting("E2E_USER_PASSWORD");
+            _newPassword = GetRequiredSetting("E2E_NEW_PASSWORD");
+            _imapUser = _config["E2E_EMAIL_USER"];
+            _imapPassword = _config["E2E_EMAIL_PASSWORD"];
+            _imapHost = _config["E2E_EMAIL_HOST"] ?? _imapHost;
+            _imapPort = int.TryParse(_config["E2E_EMAIL_PORT"], out var port) ? port : _imapPort;
+            _imapUseSsl = !string.Equals(_config["E2E_EMAIL_SSL"], "false", StringComparison.OrdinalIgnoreCase);
         }
 
         public Task DisposeAsync()
