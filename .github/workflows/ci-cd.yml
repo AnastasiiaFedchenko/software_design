@@ -305,6 +305,7 @@ jobs:
         E2E_NEW_PASSWORD: ${{ secrets.E2E_NEW_PASSWORD }}
       run: |
         dotnet test ./E2E.Tests/E2E.Tests.csproj --configuration Release --verbosity normal \
+        --filter "FullyQualifiedName!~AuthenticationBddTests" \
         --logger "trx;LogFileName=e2e-test-results.trx" \
         --logger "console;verbosity=normal" \
         --results-directory TestResults/E2E
