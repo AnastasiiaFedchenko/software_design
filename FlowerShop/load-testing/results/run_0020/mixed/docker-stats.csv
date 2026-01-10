@@ -1,0 +1,23 @@
+timestamp,container,cpu_percent,mem_usage,mem_percent,net_io,block_io
+2026-01-06T18:37:03Z,flowershop_api,39.42%,116.4MiB / 7.625GiB,1.49%,927kB / 2.31MB,0B / 0B
+2026-01-06T18:37:03Z,flowershop_db,1.44%,90.64MiB / 7.625GiB,1.16%,1.78MB / 586kB,0B / 0B
+2026-01-06T18:37:06Z,flowershop_api,5.22%,121.4MiB / 7.625GiB,1.55%,1.05MB / 2.44MB,0B / 0B
+2026-01-06T18:37:06Z,flowershop_db,1.01%,91.13MiB / 7.625GiB,1.17%,1.84MB / 606kB,0B / 0B
+2026-01-06T18:37:09Z,flowershop_api,3.96%,126.7MiB / 7.625GiB,1.62%,1.22MB / 2.6MB,0B / 0B
+2026-01-06T18:37:09Z,flowershop_db,1.21%,91.31MiB / 7.625GiB,1.17%,1.89MB / 627kB,0B / 0B
+2026-01-06T18:37:12Z,flowershop_api,5.50%,129.6MiB / 7.625GiB,1.66%,1.3MB / 2.69MB,0B / 0B
+2026-01-06T18:37:12Z,flowershop_db,1.36%,91.35MiB / 7.625GiB,1.17%,1.93MB / 641kB,0B / 0B
+2026-01-06T18:37:15Z,flowershop_api,4.82%,134.4MiB / 7.625GiB,1.72%,1.43MB / 2.81MB,0B / 0B
+2026-01-06T18:37:15Z,flowershop_db,2.27%,91.25MiB / 7.625GiB,1.17%,1.98MB / 661kB,0B / 0B
+2026-01-06T18:37:17Z,flowershop_api,4.41%,138.5MiB / 7.625GiB,1.77%,1.55MB / 2.94MB,0B / 0B
+2026-01-06T18:37:17Z,flowershop_db,1.58%,91.25MiB / 7.625GiB,1.17%,2.01MB / 675kB,0B / 0B
+2026-01-06T18:37:21Z,flowershop_api,6.80%,142.9MiB / 7.625GiB,1.83%,1.68MB / 3.07MB,0B / 0B
+2026-01-06T18:37:21Z,flowershop_db,2.65%,91.12MiB / 7.625GiB,1.17%,2.09MB / 703kB,0B / 0B
+2026-01-06T18:37:24Z,flowershop_api,6.42%,146.9MiB / 7.625GiB,1.88%,1.81MB / 3.19MB,0B / 0B
+2026-01-06T18:37:24Z,flowershop_db,1.96%,91.12MiB / 7.625GiB,1.17%,2.12MB / 716kB,0B / 0B
+2026-01-06T18:37:27Z,flowershop_api,5.92%,149.9MiB / 7.625GiB,1.92%,1.89MB / 3.28MB,0B / 0B
+2026-01-06T18:37:27Z,flowershop_db,1.93%,92.48MiB / 7.625GiB,1.18%,2.19MB / 744kB,0B / 0B
+2026-01-06T18:37:30Z,flowershop_api,4.23%,156MiB / 7.625GiB,2.00%,2.06MB / 3.44MB,0B / 0B
+2026-01-06T18:37:30Z,flowershop_db,1.30%,92.03MiB / 7.625GiB,1.18%,2.24MB / 765kB,0B / 0B
+2026-01-06T18:37:33Z,flowershop_api,1.81%,157.9MiB / 7.625GiB,2.02%,2.1MB / 3.49MB,0B / 0B
+2026-01-06T18:37:33Z,flowershop_db,0.08%,92.28MiB / 7.625GiB,1.18%,2.26MB / 772kB,0B / 0B

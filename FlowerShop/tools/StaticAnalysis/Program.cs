@@ -69,7 +69,7 @@ static IEnumerable<string> EnumerateSourceFiles(string rootPath)
 {
     var excluded = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
     {
-        "bin", "obj", "TestResults", "Migrations", ".git", "benchmark"
+        "bin", "obj", "TestResults", "Migrations", ".git", "load-testing"
     };
 
     return Directory.EnumerateFiles(rootPath, "*.cs", SearchOption.AllDirectories)

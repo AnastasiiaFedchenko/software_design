@@ -1,0 +1,23 @@
+timestamp,container,cpu_percent,mem_usage,mem_percent,net_io,block_io
+2026-01-06T22:49:25Z,flowershop_api,35.47%,97.82MiB / 7.625GiB,1.25%,924kB / 2.31MB,0B / 0B
+2026-01-06T22:49:25Z,flowershop_db,1.38%,86.61MiB / 7.625GiB,1.11%,1.77MB / 578kB,0B / 0B
+2026-01-06T22:49:27Z,flowershop_api,11.71%,101MiB / 7.625GiB,1.29%,1.01MB / 2.39MB,0B / 0B
+2026-01-06T22:49:27Z,flowershop_db,2.81%,87.36MiB / 7.625GiB,1.12%,1.82MB / 598kB,0B / 0B
+2026-01-06T22:49:31Z,flowershop_api,6.76%,106.8MiB / 7.625GiB,1.37%,1.17MB / 2.56MB,0B / 0B
+2026-01-06T22:49:31Z,flowershop_db,1.62%,87.21MiB / 7.625GiB,1.12%,1.85MB / 612kB,0B / 0B
+2026-01-06T22:49:34Z,flowershop_api,8.10%,112.6MiB / 7.625GiB,1.44%,1.34MB / 2.73MB,0B / 0B
+2026-01-06T22:49:34Z,flowershop_db,1.48%,87.2MiB / 7.625GiB,1.12%,1.93MB / 640kB,0B / 0B
+2026-01-06T22:49:38Z,flowershop_api,4.15%,115.5MiB / 7.625GiB,1.48%,1.43MB / 2.81MB,0B / 0B
+2026-01-06T22:49:38Z,flowershop_db,1.16%,87.21MiB / 7.625GiB,1.12%,1.98MB / 660kB,0B / 0B
+2026-01-06T22:49:40Z,flowershop_api,3.65%,119.5MiB / 7.625GiB,1.53%,1.55MB / 2.94MB,0B / 0B
+2026-01-06T22:49:40Z,flowershop_db,1.00%,87.21MiB / 7.625GiB,1.12%,2.03MB / 681kB,0B / 0B
+2026-01-06T22:49:43Z,flowershop_api,6.89%,122.3MiB / 7.625GiB,1.57%,1.63MB / 3.02MB,0B / 0B
+2026-01-06T22:49:43Z,flowershop_db,1.98%,87.21MiB / 7.625GiB,1.12%,2.07MB / 695kB,0B / 0B
+2026-01-06T22:49:45Z,flowershop_api,3.75%,127.8MiB / 7.625GiB,1.64%,1.8MB / 3.19MB,0B / 0B
+2026-01-06T22:49:45Z,flowershop_db,2.30%,87.32MiB / 7.625GiB,1.12%,2.12MB / 716kB,0B / 0B
+2026-01-06T22:49:49Z,flowershop_api,6.11%,132.1MiB / 7.625GiB,1.69%,1.93MB / 3.31MB,0B / 0B
+2026-01-06T22:49:49Z,flowershop_db,1.95%,88.17MiB / 7.625GiB,1.13%,2.19MB / 743kB,0B / 0B
+2026-01-06T22:49:52Z,flowershop_api,4.76%,136.9MiB / 7.625GiB,1.75%,2.05MB / 3.44MB,0B / 0B
+2026-01-06T22:49:52Z,flowershop_db,1.38%,88.11MiB / 7.625GiB,1.13%,2.23MB / 757kB,0B / 0B
+2026-01-06T22:49:55Z,flowershop_api,1.89%,137.9MiB / 7.625GiB,1.77%,2.1MB / 3.48MB,0B / 0B
+2026-01-06T22:49:55Z,flowershop_db,0.11%,88.86MiB / 7.625GiB,1.14%,2.26MB / 771kB,0B / 0B

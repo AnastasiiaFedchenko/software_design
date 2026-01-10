@@ -1,0 +1,176 @@
+{
+    "metrics": {
+        "http_req_blocked": {
+            "p(99)": 0.520789,
+            "avg": 0.07405033333333333,
+            "min": 0,
+            "max": 11.197,
+            "p(50)": 0,
+            "p(75)": 0,
+            "p(90)": 0,
+            "p(95)": 0
+        },
+        "http_req_sending": {
+            "min": 0,
+            "max": 1.5102,
+            "p(50)": 0,
+            "p(75)": 0,
+            "p(90)": 0,
+            "p(95)": 0.2125,
+            "p(99)": 0.6234109999999999,
+            "avg": 0.029991600000000004
+        },
+        "http_req_duration{expected_response:true}": {
+            "min": 1.2278,
+            "max": 62.5921,
+            "p(50)": 4.34725,
+            "p(75)": 6.260325,
+            "p(90)": 8.6149,
+            "p(95)": 10.247549999999997,
+            "p(99)": 23.2675,
+            "avg": 5.4074687333333324
+        },
+        "vus": {
+            "max": 10,
+            "value": 10,
+            "min": 10
+        },
+        "data_received": {
+            "rate": 19429.473408669353,
+            "count": 600600
+        },
+        "http_req_connecting": {
+            "p(95)": 0,
+            "p(99)": 0,
+            "avg": 0.005799333333333333,
+            "min": 0,
+            "max": 2.0208,
+            "p(50)": 0,
+            "p(75)": 0,
+            "p(90)": 0
+        },
+        "http_req_waiting": {
+            "avg": 5.298402933333333,
+            "min": 1.2278,
+            "max": 60.9674,
+            "p(50)": 4.2306,
+            "p(75)": 6.143125,
+            "p(90)": 8.4746,
+            "p(95)": 10.0815,
+            "p(99)": 22.7131
+        },
+        "vus_max": {
+            "value": 10,
+            "min": 10,
+            "max": 10
+        },
+        "data_sent": {
+            "count": 892200,
+            "rate": 28862.764194496835
+        },
+        "checks": {
+            "fails": 0,
+            "passes": 1500,
+            "value": 1
+        },
+        "iteration_duration": {
+            "p(99)": 1143.139923,
+            "avg": 1030.3396049999994,
+            "min": 1016.6096,
+            "max": 1144.0549,
+            "p(50)": 1026.09055,
+            "p(75)": 1029.546275,
+            "p(90)": 1035.0649,
+            "p(95)": 1036.156855
+        },
+        "http_req_duration": {
+            "avg": 5.4074687333333324,
+            "min": 1.2278,
+            "max": 62.5921,
+            "p(50)": 4.34725,
+            "p(75)": 6.260325,
+            "p(90)": 8.6149,
+            "p(95)": 10.247549999999997,
+            "p(99)": 23.2675
+        },
+        "http_req_receiving": {
+            "p(90)": 0.504,
+            "p(95)": 0.5316,
+            "p(99)": 1.0098,
+            "avg": 0.07907420000000004,
+            "min": 0,
+            "max": 4.4266,
+            "p(50)": 0,
+            "p(75)": 0
+        },
+        "http_reqs": {
+            "count": 1500,
+            "rate": 48.52515836331008
+        },
+        "http_req_failed": {
+            "passes": 0,
+            "fails": 1500,
+            "thresholds": {
+                "rate<0.02": false
+            },
+            "value": 0
+        },
+        "http_req_tls_handshaking": {
+            "avg": 0,
+            "min": 0,
+            "max": 0,
+            "p(50)": 0,
+            "p(75)": 0,
+            "p(90)": 0,
+            "p(95)": 0,
+            "p(99)": 0
+        },
+        "iterations": {
+            "count": 300,
+            "rate": 9.705031672662015
+        }
+    },
+    "root_group": {
+        "id": "d41d8cd98f00b204e9800998ecf8427e",
+        "groups": {},
+        "checks": {
+                "login ok": {
+                    "passes": 300,
+                    "fails": 0,
+                    "name": "login ok",
+                    "path": "::login ok",
+                    "id": "0ddcda49e3a8b9d6d2e015dafbaafe65"
+                },
+                "cart add ok": {
+                    "fails": 0,
+                    "name": "cart add ok",
+                    "path": "::cart add ok",
+                    "id": "3476b21dcb095c2f01deccc20115d127",
+                    "passes": 300
+                },
+                "cart get ok": {
+                    "id": "9d960ca6baf25ee48d3f3c991473fca0",
+                    "passes": 300,
+                    "fails": 0,
+                    "name": "cart get ok",
+                    "path": "::cart get ok"
+                },
+                "cart update ok": {
+                    "name": "cart update ok",
+                    "path": "::cart update ok",
+                    "id": "07ee78e8bcccf32bc9963f8d3c17eecf",
+                    "passes": 300,
+                    "fails": 0
+                },
+                "cart remove ok": {
+                    "name": "cart remove ok",
+                    "path": "::cart remove ok",
+                    "id": "31001ad0f6cf28a008d3b28f557b05a9",
+                    "passes": 300,
+                    "fails": 0
+                }
+            },
+        "name": "",
+        "path": ""
+    }
+}

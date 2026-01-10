@@ -1,0 +1,21 @@
+timestamp,container,cpu_percent,mem_usage,mem_percent,net_io,block_io
+2026-01-06T22:36:32Z,flowershop_api,5.65%,104.1MiB / 7.625GiB,1.33%,971kB / 2.35MB,0B / 0B
+2026-01-06T22:36:32Z,flowershop_db,1.13%,110.2MiB / 7.625GiB,1.41%,1.77MB / 580kB,0B / 0B
+2026-01-06T22:36:35Z,flowershop_api,6.82%,106.6MiB / 7.625GiB,1.37%,1.05MB / 2.43MB,0B / 0B
+2026-01-06T22:36:35Z,flowershop_db,1.59%,111.7MiB / 7.625GiB,1.43%,1.82MB / 600kB,0B / 0B
+2026-01-06T22:36:38Z,flowershop_api,9.42%,111.6MiB / 7.625GiB,1.43%,1.18MB / 2.56MB,0B / 0B
+2026-01-06T22:36:38Z,flowershop_db,1.90%,111.1MiB / 7.625GiB,1.42%,1.87MB / 621kB,0B / 0B
+2026-01-06T22:36:41Z,flowershop_api,7.47%,115.9MiB / 7.625GiB,1.48%,1.3MB / 2.68MB,0B / 0B
+2026-01-06T22:36:41Z,flowershop_db,1.01%,111.1MiB / 7.625GiB,1.42%,1.91MB / 635kB,0B / 0B
+2026-01-06T22:36:44Z,flowershop_api,3.98%,119.4MiB / 7.625GiB,1.53%,1.43MB / 2.81MB,0B / 0B
+2026-01-06T22:36:44Z,flowershop_db,1.23%,111.2MiB / 7.625GiB,1.42%,1.96MB / 655kB,0B / 0B
+2026-01-06T22:36:47Z,flowershop_api,5.78%,124.4MiB / 7.625GiB,1.59%,1.56MB / 2.93MB,0B / 0B
+2026-01-06T22:36:47Z,flowershop_db,1.31%,111.1MiB / 7.625GiB,1.42%,2.03MB / 683kB,0B / 0B
+2026-01-06T22:36:50Z,flowershop_api,5.73%,129.9MiB / 7.625GiB,1.66%,1.72MB / 3.1MB,0B / 0B
+2026-01-06T22:36:50Z,flowershop_db,2.41%,111.1MiB / 7.625GiB,1.42%,2.09MB / 704kB,0B / 0B
+2026-01-06T22:36:54Z,flowershop_api,5.20%,132.8MiB / 7.625GiB,1.70%,1.81MB / 3.19MB,0B / 0B
+2026-01-06T22:36:54Z,flowershop_db,1.82%,111MiB / 7.625GiB,1.42%,2.16MB / 731kB,0B / 0B
+2026-01-06T22:36:57Z,flowershop_api,4.75%,139MiB / 7.625GiB,1.78%,1.97MB / 3.35MB,0B / 0B
+2026-01-06T22:36:57Z,flowershop_db,1.25%,112MiB / 7.625GiB,1.43%,2.21MB / 752kB,0B / 0B
+2026-01-06T22:37:00Z,flowershop_api,5.33%,141.6MiB / 7.625GiB,1.81%,2.06MB / 3.44MB,0B / 0B
+2026-01-06T22:37:00Z,flowershop_db,1.20%,112MiB / 7.625GiB,1.43%,2.26MB / 772kB,0B / 0B
