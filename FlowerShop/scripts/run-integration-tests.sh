@@ -4,6 +4,13 @@
 echo "Running Integration Tests..."
 echo "Note: Make sure PostgreSQL is running on localhost:5432"
 
+if [ -z "$FLOWERSHOP_TELEMETRY_ENABLED" ]; then
+    export FLOWERSHOP_TELEMETRY_ENABLED=true
+fi
+export FLOWERSHOP_TELEMETRY_SERVICE="FlowerShop.Tests.Integration"
+export FLOWERSHOP_TELEMETRY_TRACE_PATH="analysis/telemetry/tests-Integration-traces.jsonl"
+export FLOWERSHOP_TELEMETRY_METRICS_PATH="analysis/telemetry/tests-Integration-metrics.jsonl"
+
 # Check if PostgreSQL is running
 if ! pg_isready -h localhost -p 5432 -U postgres > /dev/null 2>&1; then
     echo "PostgreSQL is not running on localhost:5432"

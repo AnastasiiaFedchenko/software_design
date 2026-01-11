@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Collections.Generic;
 using Domain.InputPorts;
 using Domain.OutputPorts;
@@ -25,6 +26,9 @@ namespace Domain
 
         public ForecastOfOrders GetForecastOfOrders()
         {
+            using var activity = Diagnostics.ActivitySource.StartActivity("AnalysisService.GetForecastOfOrders");
+            Diagnostics.RecordOperation("AnalysisService.GetForecastOfOrders");
+
             _logger.LogInformation("Запрос прогноза заказов");
 
             try
@@ -40,6 +44,7 @@ namespace Domain
             }
             catch (Exception ex)
             {
+                activity?.SetStatus(ActivityStatusCode.Error, ex.Message);
                 _logger.LogError(ex, "Ошибка при получении прогноза заказов");
                 throw;
             }
@@ -47,6 +52,9 @@ namespace Domain
 
         public List<UserSegment> GetUserSegmentation()
         {
+            using var activity = Diagnostics.ActivitySource.StartActivity("AnalysisService.GetUserSegmentation");
+            Diagnostics.RecordOperation("AnalysisService.GetUserSegmentation");
+
             _logger.LogInformation("Запрос сегментации пользователей");
 
             try
@@ -61,6 +69,7 @@ namespace Domain
             }
             catch (Exception ex)
             {
+                activity?.SetStatus(ActivityStatusCode.Error, ex.Message);
                 _logger.LogError(ex, "Ошибка при получении сегментации пользователей");
                 throw;
             }

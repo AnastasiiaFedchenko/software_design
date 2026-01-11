@@ -39,6 +39,7 @@
     <ProjectReference Include="..\ReceiptOfSale\ReceiptOfSale.csproj" />
     <ProjectReference Include="..\DataBaseConnection\ConnectionToDB.csproj" />
     <ProjectReference Include="..\Forecast\ForecastAnalysis.csproj" />
+    <ProjectReference Include="..\Observability\Observability.csproj" />
     
   </ItemGroup>
 

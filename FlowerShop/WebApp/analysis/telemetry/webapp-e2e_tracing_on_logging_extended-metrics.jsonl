@@ -1,0 +1,1 @@
+{"TimestampUtc":"2026-01-11T15:27:48.1911908+00:00","Name":"domain.operations","Unit":"","MetricType":"LongSum","Value":"5","Tags":{"operation":"UserService.CheckPasswordAndGetUserType"}}

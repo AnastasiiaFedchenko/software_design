@@ -169,6 +169,9 @@ insert into "user" (id, name, type, password)
 values (1, 'Ангелина Альбертовна Матвеева', 'администратор', 'pass1');
 
 insert into "user" (id, name, type, password)
+values (2, 'Тестовый Продавец', 'продавец', 'pass2');
+
+insert into "user" (id, name, type, password)
 values (62,	'Агафонов Никандр Ефимович', 'кладовщик', 'pass62');
 
 insert into counterpart (id, name, type, legal_status, legal_address, contact_person, phone)

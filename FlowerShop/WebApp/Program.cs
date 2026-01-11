@@ -16,13 +16,32 @@ using System.Security.Cryptography.X509Certificates;
 using Microsoft.AspNetCore.Diagnostics;
 using ConnectionToDB;
 using WebApp.Services;
+using Observability;
 
 var builder = WebApplication.CreateBuilder(args);
 
+var loggingProfile = builder.Configuration["LoggingProfile"]
+                     ?? Environment.GetEnvironmentVariable("FLOWERSHOP_LOGGING_PROFILE");
+
 // Настройка Serilog
-Log.Logger = new LoggerConfiguration()
-    .ReadFrom.Configuration(builder.Configuration)
-    .CreateLogger();
+var loggerConfiguration = new LoggerConfiguration()
+    .ReadFrom.Configuration(builder.Configuration);
+
+if (string.Equals(loggingProfile, "Extended", StringComparison.OrdinalIgnoreCase))
+{
+    loggerConfiguration
+        .MinimumLevel.Debug()
+        .MinimumLevel.Override("Microsoft", Serilog.Events.LogEventLevel.Information)
+        .MinimumLevel.Override("System", Serilog.Events.LogEventLevel.Information)
+        .Enrich.FromLogContext()
+        .Enrich.WithMachineName()
+        .Enrich.WithEnvironmentName()
+        .Enrich.WithProcessId()
+        .Enrich.WithThreadId()
+        .Enrich.WithProperty("LoggingProfile", "Extended");
+}
+
+Log.Logger = loggerConfiguration.CreateLogger();
 
 builder.Host.UseSerilog();
 
@@ -96,6 +115,16 @@ builder.Services.AddControllersWithViews()
     {
         options.JsonSerializerOptions.Converters.Add(new ProductJsonConverter());
     });
+
+var telemetrySettings = TelemetrySettings.FromConfiguration(builder.Configuration, "FlowerShop.WebApp");
+TelemetryBootstrap.ConfigureOpenTelemetry(
+    builder.Services,
+    telemetrySettings,
+    new[] { Domain.Diagnostics.ActivitySourceName },
+    new[] { Domain.Diagnostics.MeterName },
+    includeAspNetCore: true,
+    includeHttpClient: true,
+    includeRuntimeMetrics: true);
 
 // Настройка аутентификации
 builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)

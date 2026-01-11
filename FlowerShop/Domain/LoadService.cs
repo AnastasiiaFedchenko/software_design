@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
@@ -26,6 +27,9 @@ namespace Domain
 
         public bool LoadProductBatch(Stream stream)
         {
+            using var activity = Diagnostics.ActivitySource.StartActivity("LoadService.LoadProductBatch");
+            Diagnostics.RecordOperation("LoadService.LoadProductBatch");
+
             if (stream == null)
             {
                 _logger.LogError("Попытка загрузить пустой файл");
@@ -64,6 +68,7 @@ namespace Domain
             }
             catch (Exception ex)
             {
+                activity?.SetStatus(ActivityStatusCode.Error, ex.Message);
                 _logger.LogError(ex, "Ошибка при загрузке партии товаров");
                 throw;
             }

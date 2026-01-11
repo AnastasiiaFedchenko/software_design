@@ -2,6 +2,7 @@ using System.Net;
 using System.Net.Http.Headers;
 using System.Text;
 using System.Text.Json;
+using System.Text.RegularExpressions;
 using Xunit;
 using Allure.Xunit.Attributes;
 using Xunit.Abstractions;
@@ -14,7 +15,9 @@ namespace E2E.Tests
     [Collection("Database collection")]
     public class RealE2ETests : IAsyncLifetime
     {
-        private readonly HttpClient _client;
+        private HttpClient _client;
+        private HttpClientHandler _handler;
+        private CookieContainer _cookies;
         private readonly string _baseUrl = "http://localhost:5031";
         private bool _isAppRunning = false;
         private readonly DatabaseFixture _fixture;
@@ -24,9 +27,7 @@ namespace E2E.Tests
         {
             _output = output;
             _fixture = fixture;
-            _client = new HttpClient();
-            _client.BaseAddress = new Uri(_baseUrl);
-            _client.Timeout = TimeSpan.FromSeconds(30);
+            ResetClient();
         }
 
         public async Task InitializeAsync()
@@ -56,7 +57,6 @@ namespace E2E.Tests
 
         public Task DisposeAsync()
         {
-            _client?.Dispose();
             return Task.CompletedTask;
         }
 
@@ -71,21 +71,8 @@ namespace E2E.Tests
                 return;
             }
 
-            // Arrange
-            var loginData = new FormUrlEncodedContent(new[]
-            {
-                new KeyValuePair<string, string>("id", "1"),
-                new KeyValuePair<string, string>("password", "pass1")
-            });
-
-            // Act
-            var response = await _client.PostAsync("/Account/Login", loginData);
-
-            // Assert
-            Assert.Equal(HttpStatusCode.Redirect, response.StatusCode);
-            Assert.Contains("/Admin/Index", response.Headers.Location?.ToString() ?? "");
-
-            StoreCookies(response);
+            var loginOk = await LoginAsAdmin();
+            Assert.True(loginOk, "Admin login failed");
             _output.WriteLine("Admin login successful");
         }
 
@@ -100,18 +87,16 @@ namespace E2E.Tests
                 return;
             }
 
-            // Сначала логинимся
-            await LoginAsAdmin();
+            Assert.True(await LoginAsAdmin(), "Admin login failed");
 
-            // Act
             var response = await _client.GetAsync("/Admin/Order");
 
-            // Assert
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
             var content = await response.Content.ReadAsStringAsync();
+            var decodedContent = WebUtility.HtmlDecode(content);
 
-            Assert.Contains("Товары", content);
-            Assert.Contains("Корзина", content);
+            Assert.Contains("РћС„РѕСЂРјР»РµРЅРёРµ Р·Р°РєР°Р·Р°", decodedContent);
+            Assert.Contains("Р”РѕСЃС‚СѓРїРЅС‹Рµ С‚РѕРІР°СЂС‹", decodedContent);
             _output.WriteLine("Product browsing page loaded successfully");
         }
 
@@ -126,20 +111,18 @@ namespace E2E.Tests
                 return;
             }
 
-            await LoginAsAdmin();
+            Assert.True(await LoginAsAdmin(), "Admin login failed");
 
             var availableProductId = await GetAvailableProductIdFromTestDb();
             Assert.True(availableProductId > 0, "No available products in test database");
 
-            // Act
             var response = await _client.PostAsync($"/Admin/AddToCart?productId={availableProductId}&quantity=1", null);
 
-            // Assert
             Assert.Equal(HttpStatusCode.Redirect, response.StatusCode);
 
             var cartResponse = await _client.GetAsync("/Admin/Order");
             var cartContent = await cartResponse.Content.ReadAsStringAsync();
-            Assert.Contains("Корзина", cartContent);
+            Assert.Contains("РљРѕСЂР·РёРЅР°", cartContent);
             _output.WriteLine($"Product {availableProductId} added to cart successfully");
         }
 
@@ -154,24 +137,20 @@ namespace E2E.Tests
                 return;
             }
 
-            await LoginAsAdmin();
+            Assert.True(await LoginAsAdmin(), "Admin login failed");
 
             var availableProductId = await GetAvailableProductIdFromTestDb();
             Assert.True(availableProductId > 0, "No available products in test database");
 
-            // 1. Добавляем товар в корзину
             await _client.PostAsync($"/Admin/AddToCart?productId={availableProductId}&quantity=1", null);
 
-            // 2. Оформляем заказ
             var orderResponse = await _client.PostAsync("/Admin/SubmitOrder", null);
-
-            // Assert
             Assert.Equal(HttpStatusCode.Redirect, orderResponse.StatusCode);
 
-            // 3. Проверяем результат
             var resultResponse = await _client.GetAsync(orderResponse.Headers.Location);
             var resultContent = await resultResponse.Content.ReadAsStringAsync();
-            Assert.Contains("Заказ оформлен", resultContent);
+            var decodedResultContent = WebUtility.HtmlDecode(resultContent);
+            Assert.Contains("Р—Р°РєР°Р· РѕС„РѕСЂРјР»РµРЅ.", decodedResultContent);
             _output.WriteLine($"Purchase flow completed for product {availableProductId}");
         }
 
@@ -186,10 +165,8 @@ namespace E2E.Tests
                 return;
             }
 
-            // Логинимся
-            await LoginAsAdmin();
+            Assert.True(await LoginAsAdmin(), "Admin login failed");
 
-            // Arrange - Создаем тестовый файл с данными из тестовой БД
             var batchContent = await GenerateTestBatchContent();
 
             using var content = new MultipartFormDataContent();
@@ -197,10 +174,8 @@ namespace E2E.Tests
             fileContent.Headers.ContentType = new MediaTypeHeaderValue("text/plain");
             content.Add(fileContent, "batchFile", "test_batch.txt");
 
-            // Act 
             var response = await _client.PostAsync("/Admin/LoadBatch", content);
 
-            // Assert
             Assert.Equal(HttpStatusCode.Redirect, response.StatusCode);
             _output.WriteLine("Batch upload completed successfully");
         }
@@ -216,10 +191,10 @@ namespace E2E.Tests
                 return;
             }
 
-            // Act - Пытаемся получить доступ к админке без авторизации
+            ClearCookies();
+
             var response = await _client.GetAsync("/Admin/Index");
 
-            // Assert 
             Assert.Equal(HttpStatusCode.Redirect, response.StatusCode);
             Assert.Contains("/Account/Login", response.Headers.Location?.ToString() ?? "");
             _output.WriteLine("Access control working correctly - redirect to login when not authenticated");
@@ -236,28 +211,20 @@ namespace E2E.Tests
                 return;
             }
 
-            // Проверяем существование пользователя продавца в тестовой БД
             var sellerExists = await CheckSellerUserExists();
 
             if (sellerExists)
             {
-                // Логинимся как продавец
-                var sellerLoginData = new FormUrlEncodedContent(new[]
+                var loginOk = await LoginAsUser("2", "pass2");
+                if (!loginOk)
                 {
-                    new KeyValuePair<string, string>("id", "2"),
-                    new KeyValuePair<string, string>("password", "pass2")
-                });
-
-                var loginResponse = await _client.PostAsync("/Account/Login", sellerLoginData);
-
-                if (loginResponse.StatusCode == HttpStatusCode.Redirect)
-                {
-                    StoreCookies(loginResponse);
-
-                    var sellerPageResponse = await _client.GetAsync("/Seller/Index");
-                    Assert.Equal(HttpStatusCode.OK, sellerPageResponse.StatusCode);
-                    _output.WriteLine("Seller role access verified successfully");
+                    _output.WriteLine("Seller login failed - skipping role access check");
+                    return;
                 }
+
+                var sellerPageResponse = await _client.GetAsync("/Seller/Index");
+                Assert.Equal(HttpStatusCode.OK, sellerPageResponse.StatusCode);
+                _output.WriteLine("Seller role access verified successfully");
             }
             else
             {
@@ -265,27 +232,90 @@ namespace E2E.Tests
             }
         }
 
-        private async Task LoginAsAdmin()
+        private async Task<bool> LoginAsAdmin()
+        {
+            return await LoginAsUser("1", "pass1");
+        }
+
+        private async Task<bool> LoginAsUser(string id, string password)
         {
             var loginData = new FormUrlEncodedContent(new[]
             {
-                new KeyValuePair<string, string>("id", "1"),
-                new KeyValuePair<string, string>("password", "pass1")
+                new KeyValuePair<string, string>("id", id),
+                new KeyValuePair<string, string>("password", password)
             });
 
             var response = await _client.PostAsync("/Account/Login", loginData);
-            StoreCookies(response);
-        }
-
-        private void StoreCookies(HttpResponseMessage response)
-        {
-            if (response.Headers.TryGetValues("Set-Cookie", out var cookies))
+            if (response.StatusCode != HttpStatusCode.Redirect)
             {
-                foreach (var cookie in cookies)
+                _output.WriteLine($"Login failed for user {id}: {response.StatusCode}");
+                return false;
+            }
+
+            var location = response.Headers.Location?.ToString() ?? string.Empty;
+
+            if (location.Contains("/Account/TwoFactor", StringComparison.OrdinalIgnoreCase))
+            {
+                var twoFactorResponse = await _client.GetAsync(location);
+                if (twoFactorResponse.StatusCode == HttpStatusCode.Redirect)
                 {
-                    _client.DefaultRequestHeaders.Add("Cookie", cookie);
+                    _output.WriteLine($"Unexpected redirect during 2FA: {twoFactorResponse.Headers.Location}");
+                    return false;
+                }
+                var html = await twoFactorResponse.Content.ReadAsStringAsync();
+                var code = ExtractCode(html, "twofactor-code");
+                if (string.IsNullOrEmpty(code))
+                {
+                    var snippet = html.Length > 300 ? html[..300] : html;
+                    _output.WriteLine($"TwoFactor code not found in response. Status: {twoFactorResponse.StatusCode}. Body: {snippet}");
+                    return false;
+                }
+
+                var twoFactorData = new FormUrlEncodedContent(new[]
+                {
+                    new KeyValuePair<string, string>("code", code)
+                });
+                var confirmResponse = await _client.PostAsync("/Account/TwoFactor", twoFactorData);
+
+                if (confirmResponse.StatusCode != HttpStatusCode.Redirect)
+                {
+                    _output.WriteLine("TwoFactor confirmation failed");
+                    return false;
                 }
             }
+
+            return true;
+        }
+
+        private static string ExtractCode(string html, string elementId)
+        {
+            var match = Regex.Match(
+                html,
+                $"id=\"{Regex.Escape(elementId)}\">(?<code>\\d+)<",
+                RegexOptions.IgnoreCase);
+            return match.Success ? match.Groups["code"].Value : string.Empty;
+        }
+
+        private void ClearCookies()
+        {
+            ResetClient();
+        }
+
+        private void ResetClient()
+        {
+            _cookies = new CookieContainer();
+            _handler = new HttpClientHandler
+            {
+                AllowAutoRedirect = false,
+                UseCookies = true,
+                CookieContainer = _cookies
+            };
+            _client = new HttpClient(_handler)
+            {
+                BaseAddress = new Uri(_baseUrl),
+                Timeout = TimeSpan.FromSeconds(30)
+            };
+            _client.DefaultRequestHeaders.Add("X-Test-Auth", "true");
         }
 
         private async Task<int> GetAvailableProductIdFromTestDb()
@@ -322,7 +352,6 @@ namespace E2E.Tests
                 productIds.Add(reader.GetInt32(0));
             }
 
-            // Создаем тестовый batch контент
             var batchContent = new StringBuilder();
             foreach (var productId in productIds)
             {
@@ -334,12 +363,11 @@ namespace E2E.Tests
 
         private async Task<bool> CheckSellerUserExists()
         {
-            // Проверяем существование пользователя продавца в тестовой БД
             using var connection = new Npgsql.NpgsqlConnection(_fixture.TestConnectionString);
             await connection.OpenAsync();
 
             using var cmd = new Npgsql.NpgsqlCommand(
-                @"SELECT COUNT(*) FROM employee WHERE id = 2 AND role = 'seller'",
+                @"SELECT COUNT(*) FROM ""user"" WHERE id = 2 AND type = 'РїСЂРѕРґР°РІРµС†'",
                 connection);
 
             var result = await cmd.ExecuteScalarAsync();

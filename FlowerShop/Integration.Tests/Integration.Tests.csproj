@@ -33,6 +33,7 @@
     <ProjectReference Include="..\ReceiptOfSale\ReceiptOfSale.csproj" />
     <ProjectReference Include="..\InventoryRepo\InventoryOfProducts.csproj" />
     <ProjectReference Include="..\Domain\Domain.csproj" />
+    <ProjectReference Include="..\Observability\Observability.csproj" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="xunit.runner.json">

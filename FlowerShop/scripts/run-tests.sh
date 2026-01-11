@@ -15,6 +15,13 @@ NC='\033[0m' # No Color
 run_test() {
     local category=$1
     local description=$2
+
+    if [ -z "$FLOWERSHOP_TELEMETRY_ENABLED" ]; then
+        export FLOWERSHOP_TELEMETRY_ENABLED=true
+    fi
+    export FLOWERSHOP_TELEMETRY_SERVICE="FlowerShop.Tests.$category"
+    export FLOWERSHOP_TELEMETRY_TRACE_PATH="analysis/telemetry/tests-${category}-traces.jsonl"
+    export FLOWERSHOP_TELEMETRY_METRICS_PATH="analysis/telemetry/tests-${category}-metrics.jsonl"
     
     echo -e "${YELLOW}=== $description ===${NC}"
     echo "Running: dotnet test --filter Category=$category --configuration Release --logger \"trx\" --results-directory TestResults/$category"

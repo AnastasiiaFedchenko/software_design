@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using Domain.InputPorts;
 using Domain.OutputPorts;
 using Microsoft.Extensions.Logging;
@@ -18,6 +19,10 @@ namespace Domain
 
         public UserType? CheckPasswordAndGetUserType(int id, string password)
         {
+            using var activity = Diagnostics.ActivitySource.StartActivity("UserService.CheckPasswordAndGetUserType");
+            activity?.SetTag("user.id", id);
+            Diagnostics.RecordOperation("UserService.CheckPasswordAndGetUserType");
+
             _logger.LogInformation("Попытка аутентификации пользователя с ID: {UserId}", id);
 
             try
@@ -39,6 +44,7 @@ namespace Domain
             }
             catch (Exception ex)
             {
+                activity?.SetStatus(ActivityStatusCode.Error, ex.Message);
                 _logger.LogError(ex, "Ошибка при проверке учетных данных пользователя {UserId}", id);
                 throw;
             }
@@ -46,6 +52,10 @@ namespace Domain
 
         public bool ChangePassword(int id, string currentPassword, string newPassword)
         {
+            using var activity = Diagnostics.ActivitySource.StartActivity("UserService.ChangePassword");
+            activity?.SetTag("user.id", id);
+            Diagnostics.RecordOperation("UserService.ChangePassword");
+
             _logger.LogInformation("Запрос на смену пароля для пользователя {UserId}", id);
 
             if (string.IsNullOrWhiteSpace(currentPassword) || string.IsNullOrWhiteSpace(newPassword))
@@ -75,6 +85,7 @@ namespace Domain
             }
             catch (Exception ex)
             {
+                activity?.SetStatus(ActivityStatusCode.Error, ex.Message);
                 _logger.LogError(ex, "Ошибка при смене пароля пользователя {UserId}", id);
                 throw;
             }

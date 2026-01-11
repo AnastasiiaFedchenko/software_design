@@ -4,6 +4,13 @@
 echo "Running E2E Tests..."
 echo "Note: Make sure the application is running on http://localhost:5031"
 
+if [ -z "$FLOWERSHOP_TELEMETRY_ENABLED" ]; then
+    export FLOWERSHOP_TELEMETRY_ENABLED=true
+fi
+export FLOWERSHOP_TELEMETRY_SERVICE="FlowerShop.Tests.E2E"
+export FLOWERSHOP_TELEMETRY_TRACE_PATH="analysis/telemetry/tests-E2E-traces.jsonl"
+export FLOWERSHOP_TELEMETRY_METRICS_PATH="analysis/telemetry/tests-E2E-metrics.jsonl"
+
 # Simple check if application might be running
 if curl -f http://localhost:5031/health > /dev/null 2>&1 || \
    curl -f http://localhost:5031/Account/Login > /dev/null 2>&1; then

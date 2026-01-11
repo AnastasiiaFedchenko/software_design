@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using Domain.InputPorts;
 using Domain.OutputPorts;
 using Microsoft.Extensions.Logging;
@@ -24,6 +25,11 @@ namespace Domain
 
         public Inventory GetAllAvailableProducts(int limit, int skip)
         {
+            using var activity = Diagnostics.ActivitySource.StartActivity("ProductService.GetAllAvailableProducts");
+            activity?.SetTag("product.limit", limit);
+            activity?.SetTag("product.skip", skip);
+            Diagnostics.RecordOperation("ProductService.GetAllAvailableProducts");
+
             _logger.LogInformation("Запрос доступных товаров. Лимит: {limit}, Отступ: {skip}", limit, skip);
 
             if (limit <= 0)
@@ -47,6 +53,7 @@ namespace Domain
             }
             catch (Exception ex)
             {
+                activity?.SetStatus(ActivityStatusCode.Error, ex.Message);
                 _logger.LogError(ex, "Ошибка при получении списка товаров");
                 throw;
             }
@@ -54,6 +61,11 @@ namespace Domain
 
         public Receipt? MakePurchase(List<ReceiptLine> items, int customerID)
         {
+            using var activity = Diagnostics.ActivitySource.StartActivity("ProductService.MakePurchase");
+            activity?.SetTag("customer.id", customerID);
+            activity?.SetTag("items.count", items?.Count ?? 0);
+            Diagnostics.RecordOperation("ProductService.MakePurchase");
+
             _logger.LogInformation("Оформление покупки для клиента {IDКлиента}. Товаров: {КоличествоТоваров}",
                 customerID, items.Count);
 
@@ -78,6 +90,7 @@ namespace Domain
             }
             catch (Exception ex)
             {
+                activity?.SetStatus(ActivityStatusCode.Error, ex.Message);
                 _logger.LogError(ex, "Ошибка при оформлении покупки для клиента {IDКлиента}", customerID);
                 throw;
             }
@@ -85,6 +98,10 @@ namespace Domain
 
         public Product GetInfoOnProduct(int productId)
         {
+            using var activity = Diagnostics.ActivitySource.StartActivity("ProductService.GetInfoOnProduct");
+            activity?.SetTag("product.id", productId);
+            Diagnostics.RecordOperation("ProductService.GetInfoOnProduct");
+
             _logger.LogInformation("Запрос информации о товаре {IDТовара}", productId);
 
             if (productId <= 0)
@@ -111,6 +128,7 @@ namespace Domain
             }
             catch (Exception ex)
             {
+                activity?.SetStatus(ActivityStatusCode.Error, ex.Message);
                 _logger.LogError(ex, "Ошибка при получении информации о товаре {IDТовара}", productId);
                 throw;
             }
@@ -118,6 +136,11 @@ namespace Domain
 
         public bool CheckNewAmount(int productId, int newAmount)
         {
+            using var activity = Diagnostics.ActivitySource.StartActivity("ProductService.CheckNewAmount");
+            activity?.SetTag("product.id", productId);
+            activity?.SetTag("product.amount", newAmount);
+            Diagnostics.RecordOperation("ProductService.CheckNewAmount");
+
             _logger.LogInformation("Проверка доступного количества для товара {IDТовара}. Запрашиваемое количество: {Количество}",
                 productId, newAmount);
 
@@ -143,6 +166,7 @@ namespace Domain
             }
             catch (Exception ex)
             {
+                activity?.SetStatus(ActivityStatusCode.Error, ex.Message);
                 _logger.LogError(ex, "Ошибка при проверке количества товара {IDТовара}", productId);
                 throw;
             }
