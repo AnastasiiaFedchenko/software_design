@@ -16,6 +16,8 @@ using System.Security.Cryptography.X509Certificates;
 using Microsoft.AspNetCore.Diagnostics;
 using ConnectionToDB;
 using WebApp.Services;
+using OpenTelemetry.Resources;
+using OpenTelemetry.Trace;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -25,6 +27,24 @@ Log.Logger = new LoggerConfiguration()
     .CreateLogger();
 
 builder.Host.UseSerilog();
+
+var jaegerHost = builder.Configuration.GetValue<string>("Jaeger:Host") ?? "localhost";
+var jaegerPort = builder.Configuration.GetValue<int?>("Jaeger:Port") ?? 6831;
+var jaegerServiceName = builder.Configuration.GetValue<string>("Jaeger:ServiceName") ?? builder.Environment.ApplicationName;
+
+builder.Services.AddOpenTelemetry()
+    .WithTracing(tracerProviderBuilder =>
+    {
+        tracerProviderBuilder
+            .SetResourceBuilder(ResourceBuilder.CreateDefault().AddService(jaegerServiceName))
+            .AddAspNetCoreInstrumentation()
+            .AddHttpClientInstrumentation()
+            .AddJaegerExporter(options =>
+            {
+                options.AgentHost = jaegerHost;
+                options.AgentPort = jaegerPort;
+            });
+    });
 
 // Конфигурация сервисов
 builder.Services.AddControllersWithViews();

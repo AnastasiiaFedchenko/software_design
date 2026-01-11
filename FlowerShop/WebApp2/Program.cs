@@ -17,6 +17,8 @@ using Microsoft.OpenApi.Models;
 using WebApp2.Application.Mappings;
 using Microsoft.AspNetCore.Diagnostics;
 using WebApp2.Services;
+using OpenTelemetry.Resources;
+using OpenTelemetry.Trace;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -26,6 +28,25 @@ Log.Logger = new LoggerConfiguration()
     .CreateLogger();
 
 builder.Host.UseSerilog();
+
+var jaegerHost=builder.Configuration.GetValue<string>("Jaeger:Host")??"localhost";
+var jaegerPort=builder.Configuration.GetValue<int?>("Jaeger:Port")??6831;
+var jaegerServiceName=builder.Configuration.GetValue<string>("Jaeger:ServiceName")??builder.Environment.ApplicationName;
+
+builder.Services.AddOpenTelemetry()
+    .WithTracing(tracerProviderBuilder=>
+    {
+        tracerProviderBuilder
+            .SetResourceBuilder(ResourceBuilder.CreateDefault().AddService(jaegerServiceName))
+            .AddAspNetCoreInstrumentation()
+            .AddHttpClientInstrumentation()
+            .AddJaegerExporter(options=>
+            {
+                options.AgentHost=jaegerHost;
+                options.AgentPort=jaegerPort;
+            });
+    });
+
 
 //  ŒÕ‘»√”–¿÷»ﬂ —≈–¬»—Œ¬
 builder.Services.AddControllers();
@@ -182,8 +203,6 @@ app.MapControllers();
 
 // ÀÓ„ËÓ‚‡ÌËÂ Á‡ÔÛÒÍ‡
 Console.WriteLine("=== APPLICATION STARTED ===");
-Console.WriteLine($"Swagger UI: https://localhost:7036/swagger");
-Console.WriteLine($"Health check: https://localhost:7036/health");
-Console.WriteLine($"Test endpoint: https://localhost:7036/test");
+Console.WriteLine($"Swagger UI: http://localhost:5031/swagger/index.html");
 
 app.Run();
