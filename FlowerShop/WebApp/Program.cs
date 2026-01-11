@@ -37,6 +37,7 @@ builder.Services.AddOpenTelemetry()
     {
         tracerProviderBuilder
             .SetResourceBuilder(ResourceBuilder.CreateDefault().AddService(jaegerServiceName))
+            .AddSource("FlowerShop.WebApp")
             .AddAspNetCoreInstrumentation()
             .AddHttpClientInstrumentation()
             .AddJaegerExporter(options =>

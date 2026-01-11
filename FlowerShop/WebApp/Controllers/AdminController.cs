@@ -11,12 +11,14 @@ using System.Linq;
 using System.Text.Json;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Http;
+using System.Diagnostics;
 
 namespace WebApp.Controllers
 {
     [Authorize(Policy = "AdminOnly")]
     public class AdminController : Controller
     {
+        private static readonly ActivitySource ActivitySource = new("FlowerShop.WebApp");
         private readonly IProductService _productService;
         private readonly IAnalysisService _analysisService;
         private readonly ILoadService _loadService;
@@ -45,6 +47,9 @@ namespace WebApp.Controllers
         [HttpGet]
         public IActionResult Order(int skip = 0)
         {
+            using var activity = ActivitySource.StartActivity("ProductService.GetAllAvailableProducts");
+            activity?.SetTag("app.pagination.skip", skip);
+            activity?.SetTag("app.pagination.limit", _defaultLimit);
             var products = _productService.GetAllAvailableProducts(_defaultLimit, skip);
             var cart = GetCartFromSession();
 
@@ -241,6 +246,9 @@ namespace WebApp.Controllers
                     }
 
                     var customerId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier));
+                    using var activity = ActivitySource.StartActivity("ProductService.MakePurchase");
+                    activity?.SetTag("app.user.id", customerId);
+                    activity?.SetTag("app.cart.items", cart.Count);
                     var receipt = _productService.MakePurchase(cart, customerId);
 
                     HttpContext.Session.Remove("Cart");

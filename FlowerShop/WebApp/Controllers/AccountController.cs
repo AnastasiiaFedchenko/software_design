@@ -9,11 +9,13 @@ using Microsoft.AspNetCore.Authorization;
 using WebApp.Services;
 using Microsoft.Extensions.Options;
 using Microsoft.AspNetCore.Http;
+using System.Diagnostics;
 
 namespace WebApp.Controllers
 {
     public class AccountController : Controller
     {
+        private static readonly ActivitySource ActivitySource = new("FlowerShop.WebApp");
         private readonly IUserService _userService;
         private readonly ILogger<AccountController> _logger;
         private readonly AuthStateService _authState;
@@ -57,6 +59,8 @@ namespace WebApp.Controllers
                 {
                     return LockedAccount(id);
                 }
+                using var activity = ActivitySource.StartActivity("UserService.CheckPasswordAndGetUserType");
+                activity?.SetTag("app.user.id", id);
                 var userType = _userService.CheckPasswordAndGetUserType(id, password);
 
                 switch (userType)
@@ -171,6 +175,8 @@ namespace WebApp.Controllers
                 return Unauthorized();
             }
 
+            using var activity = ActivitySource.StartActivity("UserService.ChangePassword");
+            activity?.SetTag("app.user.id", userId);
             var result = _userService.ChangePassword(userId, currentPassword, newPassword);
             if (!result)
             {
