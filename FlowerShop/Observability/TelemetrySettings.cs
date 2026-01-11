@@ -20,25 +20,30 @@ public sealed class TelemetrySettings
         var enabledValue = configuration["Telemetry:Enabled"];
         var enabled = GetBool("FLOWERSHOP_TELEMETRY_ENABLED", enabledValue);
 
-        var tracePath = Environment.GetEnvironmentVariable("FLOWERSHOP_TELEMETRY_TRACE_PATH")
-                        ?? configuration["Telemetry:TraceFilePath"];
-        var metricsPath = Environment.GetEnvironmentVariable("FLOWERSHOP_TELEMETRY_METRICS_PATH")
-                          ?? configuration["Telemetry:MetricsFilePath"];
+        var tracePath = GetSetting(configuration, "FLOWERSHOP_TELEMETRY_TRACE_PATH", "Telemetry:TraceFilePath");
+        var metricsPath = GetSetting(configuration, "FLOWERSHOP_TELEMETRY_METRICS_PATH", "Telemetry:MetricsFilePath");
 
-        var resolvedService = Environment.GetEnvironmentVariable("FLOWERSHOP_TELEMETRY_SERVICE")
-                              ?? configuration["Telemetry:ServiceName"]
-                              ?? serviceName;
-        var exporter = Environment.GetEnvironmentVariable("FLOWERSHOP_TELEMETRY_EXPORTER")
-                        ?? configuration["Telemetry:Exporter"]
-                        ?? "file";
-        var jaegerHost = Environment.GetEnvironmentVariable("FLOWERSHOP_JAEGER_HOST")
-                         ?? configuration["Telemetry:Jaeger:Host"]
-                         ?? "127.0.0.1";
-        var jaegerPortValue = Environment.GetEnvironmentVariable("FLOWERSHOP_JAEGER_PORT")
-                              ?? configuration["Telemetry:Jaeger:Port"];
-        var otlpEndpoint = Environment.GetEnvironmentVariable("FLOWERSHOP_OTLP_ENDPOINT")
-                           ?? configuration["Telemetry:Otlp:Endpoint"]
-                           ?? "http://127.0.0.1:4318/v1/traces";
+        var resolvedService = GetSettingOrDefault(
+            configuration,
+            "FLOWERSHOP_TELEMETRY_SERVICE",
+            "Telemetry:ServiceName",
+            serviceName);
+        var exporter = GetSettingOrDefault(
+            configuration,
+            "FLOWERSHOP_TELEMETRY_EXPORTER",
+            "Telemetry:Exporter",
+            "file");
+        var jaegerHost = GetSettingOrDefault(
+            configuration,
+            "FLOWERSHOP_JAEGER_HOST",
+            "Telemetry:Jaeger:Host",
+            "127.0.0.1");
+        var jaegerPortValue = GetSetting(configuration, "FLOWERSHOP_JAEGER_PORT", "Telemetry:Jaeger:Port");
+        var otlpEndpoint = GetSettingOrDefault(
+            configuration,
+            "FLOWERSHOP_OTLP_ENDPOINT",
+            "Telemetry:Otlp:Endpoint",
+            "http://127.0.0.1:4318/v1/traces");
 
         return new TelemetrySettings
         {
@@ -76,6 +81,20 @@ public sealed class TelemetrySettings
             JaegerPort = ParsePort(jaegerPortValue, 6831),
             OtlpEndpoint = otlpEndpoint,
         };
+    }
+
+    private static string? GetSetting(IConfiguration configuration, string envVar, string configKey)
+    {
+        return Environment.GetEnvironmentVariable(envVar) ?? configuration[configKey];
+    }
+
+    private static string GetSettingOrDefault(
+        IConfiguration configuration,
+        string envVar,
+        string configKey,
+        string defaultValue)
+    {
+        return GetSetting(configuration, envVar, configKey) ?? defaultValue;
     }
 
     private static bool GetBool(string envVar, string? configValue)

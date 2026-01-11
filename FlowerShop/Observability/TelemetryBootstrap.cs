@@ -54,70 +54,14 @@ public static class TelemetryBootstrap
             return;
         }
 
-        var supportsTracing = TraceStateSupported();
-        var useJaeger = IsJaeger(settings) && supportsTracing;
-        var useOtlp = IsOtlp(settings) && supportsTracing;
-
         var otelBuilder = services.AddOpenTelemetry();
-        if (supportsTracing)
-        {
-            otelBuilder.WithTracing(builder =>
-            {
-                builder.SetResourceBuilder(ResourceBuilder.CreateDefault().AddService(settings.ServiceName));
-                foreach (var source in activitySources)
-                {
-                    builder.AddSource(source);
-                }
-
-                if (includeAspNetCore)
-                {
-                    builder.AddAspNetCoreInstrumentation();
-                }
-
-                if (includeHttpClient)
-                {
-                    builder.AddHttpClientInstrumentation();
-                }
-
-                if (useOtlp)
-                {
-                    builder.AddOtlpExporter(options =>
-                    {
-                        options.Endpoint = new Uri(settings.OtlpEndpoint);
-                        options.Protocol = OtlpExportProtocol.HttpProtobuf;
-                    });
-                }
-                else if (useJaeger)
-                {
-                    builder.AddJaegerExporter(options =>
-                    {
-                        options.AgentHost = settings.JaegerHost;
-                        options.AgentPort = settings.JaegerPort;
-                    });
-                }
-                else
-                {
-                    builder.AddProcessor(new SimpleActivityExportProcessor(
-                        new FileActivityExporter(settings.TraceFilePath)));
-                }
-            });
-        }
-        else
-        {
-            _ = new ActivityFileListener(settings.TraceFilePath, activitySources);
-        }
-
-        otelBuilder.WithMetrics(builder =>
-        {
-            builder.SetResourceBuilder(ResourceBuilder.CreateDefault().AddService(settings.ServiceName));
-            foreach (var meter in meters)
-            {
-                builder.AddMeter(meter);
-            }
-
-            builder.AddReader(new PeriodicExportingMetricReader(
-                new FileMetricExporter(settings.MetricsFilePath)));
-        });
+        ConfigureTracing(
+            otelBuilder,
+            settings,
+            activitySources,
+            includeAspNetCore,
+            includeHttpClient);
+        ConfigureMetrics(otelBuilder, settings, meters);
     }
 
     public static TelemetryHandle StartSdk(
@@ -201,6 +145,87 @@ public static class TelemetryBootstrap
     private static bool IsOtlp(TelemetrySettings settings)
     {
         return string.Equals(settings.Exporter, "otlp", StringComparison.OrdinalIgnoreCase);
+    }
+
+    private static void ConfigureTracing(
+        IOpenTelemetryBuilder otelBuilder,
+        TelemetrySettings settings,
+        IEnumerable<string> activitySources,
+        bool includeAspNetCore,
+        bool includeHttpClient)
+    {
+        if (!TraceStateSupported())
+        {
+            _ = new ActivityFileListener(settings.TraceFilePath, activitySources);
+            return;
+        }
+
+        otelBuilder.WithTracing(builder =>
+        {
+            builder.SetResourceBuilder(ResourceBuilder.CreateDefault().AddService(settings.ServiceName));
+            foreach (var source in activitySources)
+            {
+                builder.AddSource(source);
+            }
+
+            if (includeAspNetCore)
+            {
+                builder.AddAspNetCoreInstrumentation();
+            }
+
+            if (includeHttpClient)
+            {
+                builder.AddHttpClientInstrumentation();
+            }
+
+            ConfigureTracingExporter(builder, settings);
+        });
+    }
+
+    private static void ConfigureTracingExporter(
+        TracerProviderBuilder builder,
+        TelemetrySettings settings)
+    {
+        if (IsOtlp(settings))
+        {
+            builder.AddOtlpExporter(options =>
+            {
+                options.Endpoint = new Uri(settings.OtlpEndpoint);
+                options.Protocol = OtlpExportProtocol.HttpProtobuf;
+            });
+            return;
+        }
+
+        if (IsJaeger(settings))
+        {
+            builder.AddJaegerExporter(options =>
+            {
+                options.AgentHost = settings.JaegerHost;
+                options.AgentPort = settings.JaegerPort;
+            });
+            return;
+        }
+
+        builder.AddProcessor(new SimpleActivityExportProcessor(
+            new FileActivityExporter(settings.TraceFilePath)));
+    }
+
+    private static void ConfigureMetrics(
+        IOpenTelemetryBuilder otelBuilder,
+        TelemetrySettings settings,
+        IEnumerable<string> meters)
+    {
+        otelBuilder.WithMetrics(builder =>
+        {
+            builder.SetResourceBuilder(ResourceBuilder.CreateDefault().AddService(settings.ServiceName));
+            foreach (var meter in meters)
+            {
+                builder.AddMeter(meter);
+            }
+
+            builder.AddReader(new PeriodicExportingMetricReader(
+                new FileMetricExporter(settings.MetricsFilePath)));
+        });
     }
 
     private static bool TraceStateSupported()
