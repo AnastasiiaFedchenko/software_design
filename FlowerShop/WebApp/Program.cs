@@ -28,24 +28,28 @@ Log.Logger = new LoggerConfiguration()
 
 builder.Host.UseSerilog();
 
+var jaegerEnabled = builder.Configuration.GetValue<bool?>("Jaeger:Enabled") ?? true;
 var jaegerHost = builder.Configuration.GetValue<string>("Jaeger:Host") ?? "localhost";
 var jaegerPort = builder.Configuration.GetValue<int?>("Jaeger:Port") ?? 6831;
 var jaegerServiceName = builder.Configuration.GetValue<string>("Jaeger:ServiceName") ?? builder.Environment.ApplicationName;
 
-builder.Services.AddOpenTelemetry()
-    .WithTracing(tracerProviderBuilder =>
-    {
-        tracerProviderBuilder
-            .SetResourceBuilder(ResourceBuilder.CreateDefault().AddService(jaegerServiceName))
-            .AddSource("FlowerShop.WebApp")
-            .AddAspNetCoreInstrumentation()
-            .AddHttpClientInstrumentation()
-            .AddJaegerExporter(options =>
-            {
-                options.AgentHost = jaegerHost;
-                options.AgentPort = jaegerPort;
-            });
-    });
+if (jaegerEnabled)
+{
+    builder.Services.AddOpenTelemetry()
+        .WithTracing(tracerProviderBuilder =>
+        {
+            tracerProviderBuilder
+                .SetResourceBuilder(ResourceBuilder.CreateDefault().AddService(jaegerServiceName))
+                .AddSource("FlowerShop.WebApp")
+                .AddAspNetCoreInstrumentation()
+                .AddHttpClientInstrumentation()
+                .AddJaegerExporter(options =>
+                {
+                    options.AgentHost = jaegerHost;
+                    options.AgentPort = jaegerPort;
+                });
+        });
+}
 
 // Конфигурация сервисов
 builder.Services.AddControllersWithViews();

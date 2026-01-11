@@ -1,54 +1,57 @@
 using System.Security.Claims;
+using ConnectionToDB;
 using Domain;
 using Domain.InputPorts;
 using Domain.OutputPorts;
 using ForecastAnalysis;
 using InventoryOfProducts;
 using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Http.Features;
+using Microsoft.OpenApi.Models;
+using OpenTelemetry.Resources;
+using OpenTelemetry.Trace;
 using ProductBatchLoading;
 using ProductBatchReading;
 using ReceiptOfSale;
 using SegmentAnalysis;
 using Serilog;
 using UserValidation;
-using ConnectionToDB;
-using Microsoft.OpenApi.Models;
 using WebApp2.Application.Mappings;
-using Microsoft.AspNetCore.Diagnostics;
 using WebApp2.Services;
-using OpenTelemetry.Resources;
-using OpenTelemetry.Trace;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Настройка Serilog
+// РќР°СЃС‚СЂРѕР№РєР° Serilog
 Log.Logger = new LoggerConfiguration()
     .ReadFrom.Configuration(builder.Configuration)
     .CreateLogger();
 
 builder.Host.UseSerilog();
 
+var jaegerEnabled = builder.Configuration.GetValue<bool?>("Jaeger:Enabled") ?? true;
 var jaegerHost = builder.Configuration.GetValue<string>("Jaeger:Host") ?? "localhost";
 var jaegerPort = builder.Configuration.GetValue<int?>("Jaeger:Port") ?? 6831;
 var jaegerServiceName = builder.Configuration.GetValue<string>("Jaeger:ServiceName") ?? builder.Environment.ApplicationName;
 
-builder.Services.AddOpenTelemetry()
-    .WithTracing(tracerProviderBuilder =>
-    {
-        tracerProviderBuilder
-            .SetResourceBuilder(ResourceBuilder.CreateDefault().AddService(jaegerServiceName))
-            .AddAspNetCoreInstrumentation()
-            .AddHttpClientInstrumentation()
-            .AddJaegerExporter(options =>
-            {
-                options.AgentHost = jaegerHost;
-                options.AgentPort = jaegerPort;
-            });
-    });
+if (jaegerEnabled)
+{
+    builder.Services.AddOpenTelemetry()
+        .WithTracing(tracerProviderBuilder =>
+        {
+            tracerProviderBuilder
+                .SetResourceBuilder(ResourceBuilder.CreateDefault().AddService(jaegerServiceName))
+                .AddAspNetCoreInstrumentation()
+                .AddHttpClientInstrumentation()
+                .AddJaegerExporter(options =>
+                {
+                    options.AgentHost = jaegerHost;
+                    options.AgentPort = jaegerPort;
+                });
+        });
+}
 
-
-// КОНФИГУРАЦИЯ СЕРВИСОВ
+// РљРћРќР¤РР“РЈР РђР¦РРЇ РЎР•Р Р’РРЎРћР’
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 
@@ -58,8 +61,8 @@ builder.Services.AddCors(options =>
     options.AddPolicy("AllowAll", policy =>
     {
         policy.AllowAnyOrigin()
-              .AllowAnyMethod()
-              .AllowAnyHeader();
+            .AllowAnyMethod()
+            .AllowAnyHeader();
     });
 });
 
@@ -70,7 +73,7 @@ builder.Services.AddSwaggerGen(c =>
     {
         Title = "FlowerShop API",
         Version = "v1",
-        Description = "REST API для системы управления цветочным магазином"
+        Description = "REST API РґР»СЏ СЃРёСЃС‚РµРјС‹ СѓРїСЂР°РІР»РµРЅРёСЏ С†РІРµС‚РѕС‡РЅС‹Рј РјР°РіР°Р·РёРЅРѕРј"
     });
 
     c.IgnoreObsoleteProperties();
@@ -81,7 +84,7 @@ builder.Services.AddSwaggerGen(c =>
 // AutoMapper
 builder.Services.AddAutoMapper(typeof(Program));
 
-// Сессии
+// РЎРµСЃСЃРёРё
 builder.Services.AddSession(options =>
 {
     options.Cookie.HttpOnly = true;
@@ -91,13 +94,13 @@ builder.Services.AddSession(options =>
 
 builder.Services.AddHttpContextAccessor();
 
-// Конфигурация
+// РљРѕРЅС„РёРіСѓСЂР°С†РёСЏ
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 var defaultLimit = builder.Configuration.GetValue<int>("AppSettings:DefaultPaginationLimit");
 var pythonPath = builder.Configuration["PythonSettings:PythonPath"];
 var scriptPath = builder.Configuration["PythonSettings:ScriptPath"];
 
-// Регистрация сервисов
+// Р РµРіРёСЃС‚СЂР°С†РёСЏ СЃРµСЂРІРёСЃРѕРІ
 builder.Services
     .AddSingleton<IUserRepo>(_ => new UserRepo(new NpgsqlConnectionFactory(connectionString)))
     .AddSingleton<IInventoryRepo>(_ => new InventoryRepo(new NpgsqlConnectionFactory(connectionString)))
@@ -110,7 +113,7 @@ builder.Services
     .AddTransient<IAnalysisService, AnalysisService>()
     .AddScoped<ILoadService, LoadService>()
     .AddTransient<IProductService, ProductService>()
-    .AddSingleton<ICartStorageService, CartStorageService>(); ;
+    .AddSingleton<ICartStorageService, CartStorageService>();
 
 builder.Services.Configure<FormOptions>(options =>
 {
@@ -124,14 +127,14 @@ builder.Services.Configure<HostOptions>(options =>
     options.ShutdownTimeout = TimeSpan.FromMinutes(5);
 });
 
-// JSON опции
+// JSON РѕРїС†РёРё
 builder.Services.AddControllers()
     .AddJsonOptions(options =>
     {
         options.JsonSerializerOptions.Converters.Add(new ProductJsonConverter());
     });
 
-// Настройка аутентификации
+// РќР°СЃС‚СЂРѕР№РєР° Р°СѓС‚РµРЅС‚РёС„РёРєР°С†РёРё
 builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
     .AddCookie(options =>
     {
@@ -141,7 +144,7 @@ builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationSc
         options.ExpireTimeSpan = TimeSpan.FromMinutes(30);
     });
 
-// Настройка авторизации
+// РќР°СЃС‚СЂРѕР№РєР° Р°РІС‚РѕСЂРёР·Р°С†РёРё
 builder.Services.AddAuthorization(options =>
 {
     options.AddPolicy("AdminOnly", policy => policy.RequireClaim(ClaimTypes.Role, "Administrator"));
@@ -151,7 +154,7 @@ builder.Services.AddAuthorization(options =>
 
 var app = builder.Build();
 
-// CORS ДОЛЖЕН БЫТЬ ЗДЕСЬ
+// CORS Р”РћР›Р–Р•Рќ Р‘Р«РўР¬ Р—Р”Р•РЎР¬
 app.UseCors("AllowAll");
 
 // Swagger
@@ -162,21 +165,21 @@ app.UseSwaggerUI(c =>
     c.RoutePrefix = "swagger";
 });
 
-// Глобальная обработка ошибок
+// Р“Р»РѕР±Р°Р»СЊРЅР°СЏ РѕР±СЂР°Р±РѕС‚РєР° РѕС€РёР±РѕРє
 app.UseExceptionHandler(errorApp =>
 {
     errorApp.Run(async context =>
     {
         var exception = context.Features.Get<IExceptionHandlerFeature>()?.Error;
         var logger = context.RequestServices.GetRequiredService<ILogger<Program>>();
-        logger.LogError(exception, "Глобальная ошибка");
+        logger.LogError(exception, "Р“Р»РѕР±Р°Р»СЊРЅР°СЏ РѕС€РёР±РєР°");
 
         context.Response.StatusCode = 500;
         context.Response.ContentType = "application/json";
         await context.Response.WriteAsync(System.Text.Json.JsonSerializer.Serialize(new
         {
-            error = "Внутренняя ошибка сервера",
-            message = app.Environment.IsDevelopment() ? exception?.Message : "Обратитесь к администратору"
+            error = "Р’РЅСѓС‚СЂРµРЅРЅСЏСЏ РѕС€РёР±РєР° СЃРµСЂРІРµСЂР°",
+            message = app.Environment.IsDevelopment() ? exception?.Message : "РћР±СЂР°С‚РёС‚РµСЃСЊ Рє Р°РґРјРёРЅРёСЃС‚СЂР°С‚РѕСЂСѓ"
         }));
     });
 });
@@ -194,15 +197,15 @@ app.UseRouting();
 app.UseAuthentication();
 app.UseAuthorization();
 
-// Тестовые endpoints для проверки
+// РўРµСЃС‚РѕРІС‹Рµ endpoints РґР»СЏ РїСЂРѕРІРµСЂРєРё
 //app.MapGet("/", () => "FlowerShop API is running! " + DateTime.Now);
 //app.MapGet("/health", () => new { status = "Healthy", timestamp = DateTime.Now });
 //app.MapGet("/test", () => Results.Ok(new { message = "Test endpoint works!" }));
 
 app.MapControllers();
 
-// Логирование запуска
+// Р›РѕРіРёСЂРѕРІР°РЅРёРµ Р·Р°РїСѓСЃРєР°
 Console.WriteLine("=== APPLICATION STARTED ===");
-Console.WriteLine($"Swagger UI: http://localhost:5031/swagger/index.html");
+Console.WriteLine("Swagger UI: http://localhost:5031/swagger/index.html");
 
 app.Run();
