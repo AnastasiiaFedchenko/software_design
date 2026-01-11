@@ -1,5 +1,0 @@
-timestamp,container,cpu_percent,mem_usage,mem_percent,net_io,block_io
-2026-01-06T17:04:44Z,flowershop_api,37.70%,109.2MiB / 7.625GiB,1.40%,927kB / 2.31MB,0B / 0B
-2026-01-06T17:04:44Z,flowershop_db,2.06%,90.55MiB / 7.625GiB,1.16%,1.77MB / 579kB,0B / 0B
-2026-01-06T17:04:46Z,flowershop_api,10.06%,112.4MiB / 7.625GiB,1.44%,1.01MB / 2.39MB,0B / 0B
-2026-01-06T17:04:46Z,flowershop_db,1.53%,90.84MiB / 7.625GiB,1.16%,1.8MB / 592kB,0B / 0B
