@@ -25,5 +25,11 @@
             </div>
         }
 
+        @if (ViewBag.TwoFactorCode != null)
+        {
+            <div class="alert alert-info mt-3">
+                Код (для тестов): <span id="twofactor-code">@ViewBag.TwoFactorCode</span>
+            </div>
+        }
     </div>
 </div>
