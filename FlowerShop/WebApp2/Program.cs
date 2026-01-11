@@ -29,21 +29,21 @@ Log.Logger = new LoggerConfiguration()
 
 builder.Host.UseSerilog();
 
-var jaegerHost=builder.Configuration.GetValue<string>("Jaeger:Host")??"localhost";
-var jaegerPort=builder.Configuration.GetValue<int?>("Jaeger:Port")??6831;
-var jaegerServiceName=builder.Configuration.GetValue<string>("Jaeger:ServiceName")??builder.Environment.ApplicationName;
+var jaegerHost = builder.Configuration.GetValue<string>("Jaeger:Host") ?? "localhost";
+var jaegerPort = builder.Configuration.GetValue<int?>("Jaeger:Port") ?? 6831;
+var jaegerServiceName = builder.Configuration.GetValue<string>("Jaeger:ServiceName") ?? builder.Environment.ApplicationName;
 
 builder.Services.AddOpenTelemetry()
-    .WithTracing(tracerProviderBuilder=>
+    .WithTracing(tracerProviderBuilder =>
     {
         tracerProviderBuilder
             .SetResourceBuilder(ResourceBuilder.CreateDefault().AddService(jaegerServiceName))
             .AddAspNetCoreInstrumentation()
             .AddHttpClientInstrumentation()
-            .AddJaegerExporter(options=>
+            .AddJaegerExporter(options =>
             {
-                options.AgentHost=jaegerHost;
-                options.AgentPort=jaegerPort;
+                options.AgentHost = jaegerHost;
+                options.AgentPort = jaegerPort;
             });
     });
 
