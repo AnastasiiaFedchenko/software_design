@@ -312,6 +312,59 @@ jobs:
       working-directory: ./FlowerShop
       continue-on-error: false
 
+  e2e-mock-smtp-tests:
+    name: Run E2E Tests (Mock SMTP)
+    runs-on: ubuntu-latest
+    needs: integration-tests
+    if: needs.integration-tests.result == 'success'
+
+    services:
+      postgres:
+        image: postgres:15
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: 5432
+          POSTGRES_DB: postgres
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 5432:5432
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v3
+      with:
+        dotnet-version: ${{ env.DOTNET_VERSION }}
+
+    - name: Restore dependencies
+      run: dotnet restore
+      working-directory: ./FlowerShop
+
+    - name: Build solution
+      run: dotnet build --no-restore --configuration Release
+      working-directory: ./FlowerShop
+
+    - name: Run Mock SMTP E2E tests
+      run: |
+        chmod +x scripts/run-e2e-mock-smtp.sh
+        bash scripts/run-e2e-mock-smtp.sh
+      working-directory: ./FlowerShop
+      continue-on-error: false
+
+    - name: Upload Mock SMTP E2E test results
+      uses: actions/upload-artifact@v4
+      if: always()
+      with:
+        name: e2e-mock-smtp-results
+        path: FlowerShop/TestResults/E2E/
+        retention-days: 30
+
   auth-e2e-tests:
     name: Run Auth E2E Tests (BDD)
     runs-on: ubuntu-latest
@@ -469,7 +522,8 @@ jobs:
     needs:
       - e2e-tests
       - auth-e2e-tests
-    if: needs.e2e-tests.result == 'success' && needs.auth-e2e-tests.result == 'success'
+      - e2e-mock-smtp-tests
+    if: needs.e2e-tests.result == 'success' && needs.auth-e2e-tests.result == 'success' && needs.e2e-mock-smtp-tests.result == 'success'
 
     services:
       postgres:
@@ -538,6 +592,7 @@ jobs:
       - integration-tests  
       - auth-e2e-tests
       - e2e-tests
+      - e2e-mock-smtp-tests
     if: always()
     
     permissions:

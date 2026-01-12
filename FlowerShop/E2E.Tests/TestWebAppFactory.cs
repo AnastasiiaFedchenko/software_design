@@ -31,7 +31,8 @@ namespace E2E.Tests
                     ["EmailSettings:SmtpUser"] = _config["SMTP_USER"] ?? _config["EmailSettings:SmtpUser"],
                     ["EmailSettings:SmtpPassword"] = _config["SMTP_PASSWORD"] ?? _config["EmailSettings:SmtpPassword"],
                     ["EmailSettings:FromEmail"] = _config["SMTP_FROM"] ?? _config["EmailSettings:FromEmail"],
-                    ["EmailSettings:AdminEmail"] = _config["E2E_EMAIL_USER"] ?? _config["EmailSettings:AdminEmail"]
+                    ["EmailSettings:AdminEmail"] = _config["E2E_EMAIL_USER"] ?? _config["EmailSettings:AdminEmail"],
+                    ["EmailSettings:UseSsl"] = _config["SMTP_SSL"] ?? _config["EmailSettings:UseSsl"]
                 };
                 cfg.AddInMemoryCollection(settings!);
             });

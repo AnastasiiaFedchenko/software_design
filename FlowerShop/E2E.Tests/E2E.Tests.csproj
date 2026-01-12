@@ -39,6 +39,7 @@
   <!-- ДОБАВЛЕННАЯ ССЫЛКА НА ВЕБ-ПРИЛОЖЕНИЕ -->
   <ItemGroup>
     <ProjectReference Include="..\WebApp\WebApp.csproj" />
+    <ProjectReference Include="..\MockSmtpServer\MockSmtpServer.csproj" />
   </ItemGroup>
 
 </Project>

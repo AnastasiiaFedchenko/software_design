@@ -73,6 +73,7 @@ namespace E2E.Tests
                     Environment.SetEnvironmentVariable("EmailSettings__SmtpPassword", _config["SMTP_PASSWORD"]);
                     Environment.SetEnvironmentVariable("EmailSettings__FromEmail", _config["SMTP_FROM"]);
                     Environment.SetEnvironmentVariable("EmailSettings__AdminEmail", _config["E2E_EMAIL_USER"]);
+                    Environment.SetEnvironmentVariable("EmailSettings__UseSsl", _config["SMTP_SSL"]);
                 }
                 _factory = new TestWebAppFactory(_fixture.TestConnectionString, _config);
                 _client = _factory.CreateClient(new WebApplicationFactoryClientOptions
