@@ -538,13 +538,12 @@ jobs:
           fi
 
           ASPNETCORE_ENVIRONMENT=Test \
-          ASPNETCORE_URLS="$APP_URL" \
           ConnectionStrings__DefaultConnection="$CONN_STR" \
           Jaeger__Enabled="$tracing" \
           Jaeger__Host="localhost" \
           Jaeger__Port="6831" \
           "${log_env[@]}" \
-          dotnet run --configuration Release --no-build --project WebApp/WebApp.csproj > /tmp/app-$scenario.log 2>&1 &
+          dotnet run --configuration Release --no-build --no-launch-profile --urls "$APP_URL" --project WebApp/WebApp.csproj > /tmp/app-$scenario.log 2>&1 &
 
           local app_pid=$!
           local ready=0
