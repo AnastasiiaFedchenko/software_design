@@ -515,25 +515,14 @@ jobs:
     - name: Measure resource usage
       run: |
         set -euo pipefail
+        export LC_ALL=C
 
         APP_URL="http://localhost:5000"
         CONN_STR="Host=localhost;Port=5432;Database=flowershoptest;Username=postgres;Password=5432"
-        CLK_TCK=$(getconf CLK_TCK)
 
         mkdir -p TestResults/ResourceBenchmark
         CSV_PATH="TestResults/ResourceBenchmark/resource-metrics.csv"
         echo "scenario,tracing,logging,cpu_microseconds,max_rss_kb" > "$CSV_PATH"
-
-        read_cpu_ticks() {
-          local pid="$1"
-          local total=0
-          for stat in /proc/"$pid"/task/*/stat; do
-            local t
-            t=$(awk '{print $14 + $15}' "$stat")
-            total=$((total + t))
-          done
-          echo "$total"
-        }
 
         run_scenario() {
           local scenario="$1"
@@ -548,13 +537,16 @@ jobs:
             log_env+=("Serilog__MinimumLevel__Override__System=Information")
           fi
 
+          local time_file="/tmp/time-$scenario.txt"
           env \
+            LC_ALL=C \
             ASPNETCORE_ENVIRONMENT=Test \
             ConnectionStrings__DefaultConnection="$CONN_STR" \
             Jaeger__Enabled="$tracing" \
             Jaeger__Host="localhost" \
             Jaeger__Port="6831" \
             "${log_env[@]}" \
+            /usr/bin/time -v -o "$time_file" \
             dotnet run --configuration Release --no-build --no-launch-profile --urls "$APP_URL" --project WebApp/WebApp.csproj > /tmp/app-$scenario.log 2>&1 &
 
           local app_pid=$!
@@ -585,8 +577,6 @@ jobs:
             target_pid="$child_pid"
           fi
 
-          local start_ticks
-          start_ticks=$(read_cpu_ticks "$target_pid")
           local max_rss_kb=0
           for i in {1..1000}; do
             curl -s -o /dev/null -f "$APP_URL/Account/Login"
@@ -601,20 +591,24 @@ jobs:
               max_rss_kb="$rss_kb"
             fi
           done
-          local end_ticks
-          end_ticks=$(read_cpu_ticks "$target_pid")
-
-          local delta_ticks=$((end_ticks - start_ticks))
-          local cpu_microseconds
-          cpu_microseconds=$(awk -v d="$delta_ticks" -v t="$CLK_TCK" 'BEGIN { printf "%.0f", (d / t) * 1000000 }')
-
-          echo "$scenario,$tracing,$logging,$cpu_microseconds,$max_rss_kb" >> "$CSV_PATH"
 
           kill "$app_pid" || true
           sleep 2
           if kill -0 "$app_pid" 2>/dev/null; then
             kill -9 "$app_pid" || true
           fi
+
+          local cpu_user
+          local cpu_sys
+          cpu_user=$(awk -F: '/User time \(seconds\)/{gsub(/^[ \t]+/,"",$2); print $2}' "$time_file")
+          cpu_sys=$(awk -F: '/System time \(seconds\)/{gsub(/^[ \t]+/,"",$2); print $2}' "$time_file")
+          if [[ -z "$cpu_user" ]]; then cpu_user=0; fi
+          if [[ -z "$cpu_sys" ]]; then cpu_sys=0; fi
+
+          local cpu_microseconds
+          cpu_microseconds=$(awk -v u="$cpu_user" -v s="$cpu_sys" 'BEGIN { printf "%.0f", (u + s) * 1000000 }')
+
+          echo "$scenario,$tracing,$logging,$cpu_microseconds,$max_rss_kb" >> "$CSV_PATH"
         }
 
         run_scenario "trace_off_log_default" "false" "default"
