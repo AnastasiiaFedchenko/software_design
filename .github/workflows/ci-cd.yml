@@ -519,10 +519,31 @@ jobs:
 
         APP_URL="http://localhost:5000"
         CONN_STR="Host=localhost;Port=5432;Database=flowershoptest;Username=postgres;Password=5432"
+        CLK_TCK=$(getconf CLK_TCK)
 
         mkdir -p TestResults/ResourceBenchmark
         CSV_PATH="TestResults/ResourceBenchmark/resource-metrics.csv"
         echo "scenario,tracing,logging,cpu_microseconds,max_rss_kb" > "$CSV_PATH"
+
+        read_cpu_ticks_for_app() {
+          local total=0
+          local pids
+          pids=$(pgrep -f "WebApp.dll" || true)
+          if [[ -z "$pids" ]]; then
+            echo 0
+            return
+          fi
+          for pid in $pids; do
+            if [[ -d "/proc/$pid/task" ]]; then
+              for stat in /proc/"$pid"/task/*/stat; do
+                local t
+                t=$(awk '{print $14 + $15}' "$stat")
+                total=$((total + t))
+              done
+            fi
+          done
+          echo "$total"
+        }
 
         run_scenario() {
           local scenario="$1"
@@ -541,7 +562,6 @@ jobs:
             log_env+=("Serilog__MinimumLevel__Override__System=Information")
           fi
 
-          local time_file="/tmp/time-$scenario.txt"
           env \
             LC_ALL=C \
             ASPNETCORE_ENVIRONMENT=Test \
@@ -550,7 +570,6 @@ jobs:
             Jaeger__Host="localhost" \
             Jaeger__Port="6831" \
             "${log_env[@]}" \
-            /usr/bin/time -v -o "$time_file" \
             dotnet run --configuration Release --no-build --no-launch-profile --urls "$APP_URL" --project WebApp/WebApp.csproj > /tmp/app-$scenario.log 2>&1 &
 
           local app_pid=$!
@@ -581,6 +600,8 @@ jobs:
             target_pid="$child_pid"
           fi
 
+          local start_ticks
+          start_ticks=$(read_cpu_ticks_for_app)
           local max_rss_kb=0
           for i in {1..1000}; do
             curl -s -o /dev/null -f "$APP_URL/Account/Login"
@@ -600,6 +621,8 @@ jobs:
               max_rss_kb="$rss_kb"
             fi
           done
+          local end_ticks
+          end_ticks=$(read_cpu_ticks_for_app)
 
           kill "$app_pid" || true
           sleep 2
@@ -611,15 +634,8 @@ jobs:
           pkill -f "WebApp.dll" || true
           pkill -f "dotnet run" || true
 
-          local cpu_user
-          local cpu_sys
-          cpu_user=$(awk -F: '/User time \(seconds\)/{gsub(/^[ \t]+/,"",$2); print $2}' "$time_file")
-          cpu_sys=$(awk -F: '/System time \(seconds\)/{gsub(/^[ \t]+/,"",$2); print $2}' "$time_file")
-          if [[ -z "$cpu_user" ]]; then cpu_user=0; fi
-          if [[ -z "$cpu_sys" ]]; then cpu_sys=0; fi
-
           local cpu_microseconds
-          cpu_microseconds=$(awk -v u="$cpu_user" -v s="$cpu_sys" 'BEGIN { printf "%.0f", (u + s) * 1000000 }')
+          cpu_microseconds=$(awk -v d="$end_ticks" -v s="$start_ticks" -v t="$CLK_TCK" 'BEGIN { printf "%.0f", ((d - s) / t) * 1000000 }')
 
           echo "$scenario,$tracing,$logging,$cpu_microseconds,$max_rss_kb" >> "$CSV_PATH"
         }
