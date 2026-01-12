@@ -44,7 +44,6 @@ run_scenario() {
       fuser -k 5000/tcp || true
     fi
     pkill -f "WebApp.dll" || true
-    pkill -f "dotnet run" || true
     sleep 2
 
     log_env=()
@@ -116,7 +115,6 @@ run_scenario() {
       fuser -k 5000/tcp || true
     fi
     pkill -f "WebApp.dll" || true
-    pkill -f "dotnet run" || true
   ' -- "$scenario" "$tracing" "$logging" "$APP_URL" "$CONN_STR" "$REQUESTS" "$rss_file"
 
   local cpu_user
