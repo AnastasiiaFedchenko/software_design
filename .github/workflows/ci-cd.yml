@@ -522,7 +522,7 @@ jobs:
 
         mkdir -p TestResults/ResourceBenchmark
         CSV_PATH="TestResults/ResourceBenchmark/resource-metrics.csv"
-        echo "scenario,tracing,logging,cpu_seconds,max_rss_kb" > "$CSV_PATH"
+        echo "scenario,tracing,logging,cpu_microseconds,max_rss_kb" > "$CSV_PATH"
 
         read_cpu_ticks() {
           local pid="$1"
@@ -605,10 +605,10 @@ jobs:
           end_ticks=$(read_cpu_ticks "$target_pid")
 
           local delta_ticks=$((end_ticks - start_ticks))
-          local cpu_seconds
-          cpu_seconds=$(awk -v d="$delta_ticks" -v t="$CLK_TCK" 'BEGIN { printf "%.6f", d / t }')
+          local cpu_microseconds
+          cpu_microseconds=$(awk -v d="$delta_ticks" -v t="$CLK_TCK" 'BEGIN { printf "%.0f", (d / t) * 1000000 }')
 
-          echo "$scenario,$tracing,$logging,$cpu_seconds,$max_rss_kb" >> "$CSV_PATH"
+          echo "$scenario,$tracing,$logging,$cpu_microseconds,$max_rss_kb" >> "$CSV_PATH"
 
           kill "$app_pid" || true
           sleep 2
@@ -625,19 +625,19 @@ jobs:
         awk -F, '
           NR>1 { cpu[$1]=$4; rss[$1]=$5 }
           END {
-            printf "| Scenario | Tracing | Logging | CPU (s) | Max RSS (MB) |\n"
+            printf "| Scenario | Tracing | Logging | CPU (us) | Max RSS (MB) |\n"
             printf "|---|---|---|---|---|\n"
-            printf "| Trace Off + Log Default | off | default | %.3f | %.2f |\n", cpu["trace_off_log_default"], rss["trace_off_log_default"]/1024
-            printf "| Trace On + Log Default | on | default | %.3f | %.2f |\n", cpu["trace_on_log_default"], rss["trace_on_log_default"]/1024
-            printf "| Trace Off + Log Extended | off | extended | %.3f | %.2f |\n", cpu["trace_off_log_extended"], rss["trace_off_log_extended"]/1024
-            printf "| Trace On + Log Extended | on | extended | %.3f | %.2f |\n", cpu["trace_on_log_extended"], rss["trace_on_log_extended"]/1024
+            printf "| Trace Off + Log Default | off | default | %.0f | %.2f |\n", cpu["trace_off_log_default"], rss["trace_off_log_default"]/1024
+            printf "| Trace On + Log Default | on | default | %.0f | %.2f |\n", cpu["trace_on_log_default"], rss["trace_on_log_default"]/1024
+            printf "| Trace Off + Log Extended | off | extended | %.0f | %.2f |\n", cpu["trace_off_log_extended"], rss["trace_off_log_extended"]/1024
+            printf "| Trace On + Log Extended | on | extended | %.0f | %.2f |\n", cpu["trace_on_log_extended"], rss["trace_on_log_extended"]/1024
             printf "\n"
-            printf "| Delta | CPU (s) | Max RSS (MB) |\n"
+            printf "| Delta | CPU (us) | Max RSS (MB) |\n"
             printf "|---|---|---|\n"
-            printf "| Tracing overhead (default log) | %.3f | %.2f |\n", cpu["trace_on_log_default"]-cpu["trace_off_log_default"], (rss["trace_on_log_default"]-rss["trace_off_log_default"])/1024
-            printf "| Tracing overhead (extended log) | %.3f | %.2f |\n", cpu["trace_on_log_extended"]-cpu["trace_off_log_extended"], (rss["trace_on_log_extended"]-rss["trace_off_log_extended"])/1024
-            printf "| Logging overhead (trace off) | %.3f | %.2f |\n", cpu["trace_off_log_extended"]-cpu["trace_off_log_default"], (rss["trace_off_log_extended"]-rss["trace_off_log_default"])/1024
-            printf "| Logging overhead (trace on) | %.3f | %.2f |\n", cpu["trace_on_log_extended"]-cpu["trace_on_log_default"], (rss["trace_on_log_extended"]-rss["trace_on_log_default"])/1024
+            printf "| Tracing overhead (default log) | %.0f | %.2f |\n", cpu["trace_on_log_default"]-cpu["trace_off_log_default"], (rss["trace_on_log_default"]-rss["trace_off_log_default"])/1024
+            printf "| Tracing overhead (extended log) | %.0f | %.2f |\n", cpu["trace_on_log_extended"]-cpu["trace_off_log_extended"], (rss["trace_on_log_extended"]-rss["trace_off_log_extended"])/1024
+            printf "| Logging overhead (trace off) | %.0f | %.2f |\n", cpu["trace_off_log_extended"]-cpu["trace_off_log_default"], (rss["trace_off_log_extended"]-rss["trace_off_log_default"])/1024
+            printf "| Logging overhead (trace on) | %.0f | %.2f |\n", cpu["trace_on_log_extended"]-cpu["trace_on_log_default"], (rss["trace_on_log_extended"]-rss["trace_on_log_default"])/1024
           }' "$CSV_PATH" > TestResults/ResourceBenchmark/resource-metrics.md
       working-directory: ./FlowerShop
 
