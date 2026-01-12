@@ -129,6 +129,12 @@ run_scenario() {
 
   local max_rss_kb
   max_rss_kb=$(cat "$rss_file" 2>/dev/null || echo 0)
+  if [[ -z "$max_rss_kb" || "$max_rss_kb" -le 0 ]]; then
+    max_rss_kb=$(awk -F: '/Maximum resident set size \(kbytes\)/{gsub(/^[ \t]+/,"",$2); print $2}' "$time_file")
+  fi
+  if [[ -z "$max_rss_kb" ]]; then
+    max_rss_kb=0
+  fi
 
   echo "$scenario,$tracing,$logging,$cpu_microseconds,$max_rss_kb" >> "$CSV_PATH"
 }
