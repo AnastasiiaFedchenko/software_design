@@ -537,15 +537,17 @@ jobs:
             log_env+=("Serilog__MinimumLevel__Override__System=Information")
           fi
 
-          ASPNETCORE_ENVIRONMENT=Test \
-          ConnectionStrings__DefaultConnection="$CONN_STR" \
-          Jaeger__Enabled="$tracing" \
-          Jaeger__Host="localhost" \
-          Jaeger__Port="6831" \
-          "${log_env[@]}" \
-          dotnet run --configuration Release --no-build --no-launch-profile --urls "$APP_URL" --project WebApp/WebApp.csproj > /tmp/app-$scenario.log 2>&1 &
+          env \
+            ASPNETCORE_ENVIRONMENT=Test \
+            ConnectionStrings__DefaultConnection="$CONN_STR" \
+            Jaeger__Enabled="$tracing" \
+            Jaeger__Host="localhost" \
+            Jaeger__Port="6831" \
+            "${log_env[@]}" \
+            dotnet run --configuration Release --no-build --no-launch-profile --urls "$APP_URL" --project WebApp/WebApp.csproj > /tmp/app-$scenario.log 2>&1 &
 
           local app_pid=$!
+          local target_pid="$app_pid"
           local ready=0
           for i in {1..40}; do
             if curl -s -o /dev/null "$APP_URL/Account/Login"; then
@@ -566,28 +568,34 @@ jobs:
             exit 1
           fi
 
+          local child_pid
+          child_pid=$(pgrep -P "$app_pid" -n dotnet || true)
+          if [[ -n "$child_pid" ]]; then
+            target_pid="$child_pid"
+          fi
+
           local start_ticks
-          start_ticks=$(awk '{print $14 + $15}' "/proc/$app_pid/stat")
+          start_ticks=$(awk '{print $14 + $15}' "/proc/$target_pid/stat")
           local max_rss_kb=0
           for i in {1..200}; do
-            curl -s -o /dev/null "$APP_URL/Account/Login"
-            if ! kill -0 "$app_pid" 2>/dev/null; then
+            curl -s -o /dev/null -f "$APP_URL/Account/Login"
+            if ! kill -0 "$target_pid" 2>/dev/null; then
               echo "App exited during sampling for scenario $scenario"
               tail -200 /tmp/app-$scenario.log || true
               exit 1
             fi
             local rss_kb
-            rss_kb=$(awk '/VmRSS/{print $2}' "/proc/$app_pid/status" || echo 0)
+            rss_kb=$(awk '/VmRSS/{print $2}' "/proc/$target_pid/status" || echo 0)
             if [[ "$rss_kb" -gt "$max_rss_kb" ]]; then
               max_rss_kb="$rss_kb"
             fi
           done
           local end_ticks
-          end_ticks=$(awk '{print $14 + $15}' "/proc/$app_pid/stat")
+          end_ticks=$(awk '{print $14 + $15}' "/proc/$target_pid/stat")
 
           local delta_ticks=$((end_ticks - start_ticks))
           local cpu_seconds
-          cpu_seconds=$(awk -v d="$delta_ticks" -v t="$CLK_TCK" 'BEGIN { printf "%.3f", d / t }')
+          cpu_seconds=$(awk -v d="$delta_ticks" -v t="$CLK_TCK" 'BEGIN { printf "%.6f", d / t }')
 
           echo "$scenario,$tracing,$logging,$cpu_seconds,$max_rss_kb" >> "$CSV_PATH"
 
