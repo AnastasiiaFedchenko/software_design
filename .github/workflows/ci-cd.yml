@@ -524,6 +524,17 @@ jobs:
         CSV_PATH="TestResults/ResourceBenchmark/resource-metrics.csv"
         echo "scenario,tracing,logging,cpu_seconds,max_rss_kb" > "$CSV_PATH"
 
+        read_cpu_ticks() {
+          local pid="$1"
+          local total=0
+          for stat in /proc/"$pid"/task/*/stat; do
+            local t
+            t=$(awk '{print $14 + $15}' "$stat")
+            total=$((total + t))
+          done
+          echo "$total"
+        }
+
         run_scenario() {
           local scenario="$1"
           local tracing="$2"
@@ -575,9 +586,9 @@ jobs:
           fi
 
           local start_ticks
-          start_ticks=$(awk '{print $14 + $15}' "/proc/$target_pid/stat")
+          start_ticks=$(read_cpu_ticks "$target_pid")
           local max_rss_kb=0
-          for i in {1..200}; do
+          for i in {1..1000}; do
             curl -s -o /dev/null -f "$APP_URL/Account/Login"
             if ! kill -0 "$target_pid" 2>/dev/null; then
               echo "App exited during sampling for scenario $scenario"
@@ -591,7 +602,7 @@ jobs:
             fi
           done
           local end_ticks
-          end_ticks=$(awk '{print $14 + $15}' "/proc/$target_pid/stat")
+          end_ticks=$(read_cpu_ticks "$target_pid")
 
           local delta_ticks=$((end_ticks - start_ticks))
           local cpu_seconds
