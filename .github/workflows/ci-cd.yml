@@ -530,6 +530,10 @@ jobs:
           local logging="$3"
 
           echo "=== Running scenario: $scenario (tracing=$tracing, logging=$logging) ==="
+          fuser -k 5000/tcp || true
+          pkill -f "WebApp.dll" || true
+          pkill -f "dotnet run" || true
+          sleep 2
           local log_env=()
           if [[ "$logging" == "extended" ]]; then
             log_env+=("Serilog__MinimumLevel__Default=Debug")
@@ -585,8 +589,13 @@ jobs:
               tail -200 /tmp/app-$scenario.log || true
               exit 1
             fi
+            if ! kill -0 "$target_pid" 2>/dev/null; then
+              echo "App exited during sampling for scenario $scenario"
+              tail -200 /tmp/app-$scenario.log || true
+              exit 1
+            fi
             local rss_kb
-            rss_kb=$(awk '/VmRSS/{print $2}' "/proc/$target_pid/status" || echo 0)
+            rss_kb=$(awk '/VmRSS/{print $2}' "/proc/$target_pid/status" 2>/dev/null || echo 0)
             if [[ "$rss_kb" -gt "$max_rss_kb" ]]; then
               max_rss_kb="$rss_kb"
             fi
@@ -598,6 +607,9 @@ jobs:
             kill -9 "$app_pid" || true
           fi
           wait "$app_pid" || true
+          fuser -k 5000/tcp || true
+          pkill -f "WebApp.dll" || true
+          pkill -f "dotnet run" || true
 
           local cpu_user
           local cpu_sys
